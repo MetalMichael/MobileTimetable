@@ -24,3 +24,7 @@ proguard/
 
 # Log Files
 *.log
+
+# Android studio said these too:
+/.idea/workspace.xml
+.DS_Store
