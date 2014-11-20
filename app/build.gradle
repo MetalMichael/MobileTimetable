@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "mad.mobiletimetable"
-        minSdkVersion 15
-        targetSdkVersion 'L'
+        minSdkVersion 14
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
     }
@@ -22,7 +22,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    // You must install or update the Support Repository through the SDK manager to use this dependency.
     // You must install or update the Support Repository through the SDK manager to use this dependency.
     compile 'com.android.support:support-v4:19.+'
 }
