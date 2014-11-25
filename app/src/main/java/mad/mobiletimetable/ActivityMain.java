@@ -51,16 +51,20 @@ public class ActivityMain extends Activity
                 frag = new FragmentTimetable();
                 break;
             case 1:
+                frag = new FragmentModules();
+                break;
+            case 2:
                 //TODO: Add profile pages etc.
                 return;
             default:
                 Intent intent = new Intent(this, ActivitySettings.class);
                 this.startActivity(intent);
+                return;
         }
 
         fragmentManager.beginTransaction()
-                .replace(R.id.container, new FragmentTimetable())
-                .commit();
+            .replace(R.id.container, frag)
+            .commit();
     }
 
     public void restoreActionBar() {

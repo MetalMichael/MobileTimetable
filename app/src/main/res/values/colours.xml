@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <!-- Modules Colours -->
+    <color name="module_row_even">#CCCCCC</color>
+    <color name="module_row_odd">#888888</color>
+</resources>
