@@ -20,14 +20,6 @@
             android:name="mad.mobiletimetable.ActivitySettings"
             android:label="@string/title_activity_activity_settings" >
         </activity>
-        <activity
-            android:name="mad.mobiletimetable.ActivityFullTimetable"
-            android:label="@string/title_activity_activity_full_timetable" >
-        </activity>
-        <activity
-            android:name="mad.mobiletimetable.ActivityTimetable"
-            android:label="@string/title_activity_activity_timetable" >
-        </activity>
     </application>
 
 </manifest>

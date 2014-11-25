@@ -5,14 +5,21 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.net.Uri;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
 
 
-public class ActivityMain extends Activity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class ActivityMain extends FragmentActivity
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, FragmentTimetableDay.OnFragmentInteractionListener  {
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -44,7 +51,7 @@ public class ActivityMain extends Activity
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
 
-        Fragment frag;
+        Fragment frag = null;
 
         switch(position) {
             case 0:
@@ -61,10 +68,11 @@ public class ActivityMain extends Activity
                 this.startActivity(intent);
                 return;
         }
-
-        fragmentManager.beginTransaction()
-            .replace(R.id.container, frag)
-            .commit();
+        if(frag != null) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.container, frag)
+                    .commit();
+        }
     }
 
     public void restoreActionBar() {

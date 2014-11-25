@@ -22,11 +22,9 @@ public class FragmentTimetableDay extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "dayName";
-    private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
     private String mDayName;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
@@ -35,16 +33,14 @@ public class FragmentTimetableDay extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param dayName Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment FragmentTimetableDay.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentTimetableDay newInstance(String dayName, String param2) {
+    public static FragmentTimetableDay newInstance(String dayName) {
         FragmentTimetableDay fragment = new FragmentTimetableDay();
         // Get arguments
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, dayName);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -58,7 +54,6 @@ public class FragmentTimetableDay extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mDayName = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -66,12 +61,14 @@ public class FragmentTimetableDay extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_fragment_timetable_day, container, false);
+
         // Set text if dayName supplied
         if(mDayName!=null) {
             TextView dayName = (TextView)rootView.findViewById(R.id.dayName);
             dayName.setText(mDayName);
         }
         // Inflate the layout for this fragment
+
         return rootView;
     }
 
