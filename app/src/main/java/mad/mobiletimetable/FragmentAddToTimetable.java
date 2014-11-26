@@ -13,6 +13,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.TableLayout;
 import android.util.Log;
 import android.widget.Toast;
+import android.content.Context;
 
 
 /**
@@ -36,7 +37,8 @@ public class FragmentAddToTimetable extends Fragment {
     private Button addNew;
     private TableLayout layoutNew;
     private View root;
-    private String[] types;
+    private String item[];
+
     private OnFragmentInteractionListener mListener;
     private AutoCompleteTextView roomTypeAuto;
     private ArrayAdapter<String> adapter;
@@ -74,11 +76,7 @@ public class FragmentAddToTimetable extends Fragment {
         
     }
 
-    public View getMain(LayoutInflater inflater, ViewGroup container,
-                        Bundle savedInstanceState){
-        View rooter = inflater.inflate(R.layout.fragment_add_to_timetable,container,false);
-        return rooter;
-    }
+
 
 
     @Override
@@ -86,20 +84,24 @@ public class FragmentAddToTimetable extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        root= getMain(inflater,container,savedInstanceState);
+        root= inflater.inflate(R.layout.fragment_add_to_timetable, container, false);
+
         addNew= (Button) root.findViewById(R.id.Add);
 
         // Attempt at Autocomplete
 
-        
-        //types = getResources().getStringArray(R.array.typeFor);
-        //adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(),android.R.layout.simple_list_item_1,types);
-        //roomTypeAuto = (AutoCompleteTextView) root.findViewById(R.id.completeMe);
-        //roomTypeAuto.setAdapter(adapter);
-        //roomTypeAuto.setThreshold(1);
+        Context c = getActivity().getApplicationContext();
+
+        item=getActivity().getResources().getStringArray(R.array.typeFor);
+
+        roomTypeAuto = (AutoCompleteTextView) root.findViewById(R.id.completeMe);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String> (c, android.R.layout.simple_dropdown_item_1line, item);
+
+        roomTypeAuto.setAdapter(adapter);
 
 
-        return inflater.inflate(R.layout.fragment_add_to_timetable, container, false);
+        return root;
     }
 
 
