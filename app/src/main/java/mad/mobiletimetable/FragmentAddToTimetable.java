@@ -14,6 +14,7 @@ import android.widget.TableLayout;
 import android.util.Log;
 import android.widget.Toast;
 import android.content.Context;
+import android.widget.Spinner;
 
 
 /**
@@ -37,11 +38,17 @@ public class FragmentAddToTimetable extends Fragment {
     private Button addNew;
     private TableLayout layoutNew;
     private View root;
-    private String item[];
+    private String roomTypes[];
+    private String ModuleChoice[];
+    private String rooms[];
 
     private OnFragmentInteractionListener mListener;
-    private AutoCompleteTextView roomTypeAuto;
-    private ArrayAdapter<String> adapter;
+
+    private Spinner roomTypeSpinner;
+    private AutoCompleteTextView ModuleChoiceView;
+    private AutoCompleteTextView roomView;
+
+
 
     /**
      * Use this factory method to create a new instance of
@@ -90,15 +97,23 @@ public class FragmentAddToTimetable extends Fragment {
 
         Context c = getActivity().getApplicationContext();
 
-        item=getActivity().getResources().getStringArray(R.array.typeFor);
-
-        roomTypeAuto = (AutoCompleteTextView) root.findViewById(R.id.completeMe);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String> (c, android.R.layout.simple_dropdown_item_1line, item);
-
-        roomTypeAuto.setAdapter(adapter);
+        roomTypes=getActivity().getResources().getStringArray(R.array.roomTypes);
+        ModuleChoice=getActivity().getResources().getStringArray(R.array.ModuleChoices);
+        rooms=getActivity().getResources().getStringArray(R.array.Rooms);
 
 
+        ArrayAdapter<String> adapter1 = new ArrayAdapter<String> (c, android.R.layout.simple_dropdown_item_1line, roomTypes);
+        roomTypeSpinner = (Spinner) root.findViewById(R.id.completeType);
+
+        ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (c, android.R.layout.simple_dropdown_item_1line, ModuleChoice);
+        ModuleChoiceView = (AutoCompleteTextView) root.findViewById(R.id.completeModule);
+
+        ArrayAdapter<String> adapter3 = new ArrayAdapter<String> (c, android.R.layout.simple_dropdown_item_1line, rooms);
+        roomView= (AutoCompleteTextView) root.findViewById(R.id.completeRoom);
+
+        roomTypeSpinner.setAdapter(adapter1);
+        ModuleChoiceView.setAdapter(adapter2);
+        roomView.setAdapter(adapter3);
         return root;
     }
 
