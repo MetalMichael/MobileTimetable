@@ -25,6 +25,12 @@ proguard/
 # Log Files
 *.log
 
+# Ignore .ideas
+.idea/
+
+# Ignore IntelliJ idea module
+*.iml
+
 # Android studio said these too:
 /.idea/workspace.xml
 .DS_Store
