@@ -88,8 +88,6 @@ public class FragmentAddToTimetable extends Fragment {
 
         addNew= (Button) root.findViewById(R.id.Add);
 
-        // Attempt at Autocomplete
-
         Context c = getActivity().getApplicationContext();
 
         item=getActivity().getResources().getStringArray(R.array.typeFor);
