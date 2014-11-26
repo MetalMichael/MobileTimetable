@@ -20,7 +20,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_activity_timetable">ActivityTimetable</string>
 
-    <string-array name="type">
+    <string-array name="typeFor">
 
         <item>Lecture</item>
         <item>Tutorial</item>

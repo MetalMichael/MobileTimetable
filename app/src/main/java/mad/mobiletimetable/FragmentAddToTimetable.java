@@ -36,9 +36,9 @@ public class FragmentAddToTimetable extends Fragment {
     private Button addNew;
     private TableLayout layoutNew;
     private View root;
-
+    private String[] types;
     private OnFragmentInteractionListener mListener;
-    AutoCompleteTextView roomTypeAuto;
+    private AutoCompleteTextView roomTypeAuto;
     private ArrayAdapter<String> adapter;
 
     /**
@@ -87,8 +87,17 @@ public class FragmentAddToTimetable extends Fragment {
         // Inflate the layout for this fragment
 
         root= getMain(inflater,container,savedInstanceState);
-
         addNew= (Button) root.findViewById(R.id.Add);
+
+        // Attempt at Autocomplete
+
+        
+        //types = getResources().getStringArray(R.array.typeFor);
+        //adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(),android.R.layout.simple_list_item_1,types);
+        //roomTypeAuto = (AutoCompleteTextView) root.findViewById(R.id.completeMe);
+        //roomTypeAuto.setAdapter(adapter);
+        //roomTypeAuto.setThreshold(1);
+
 
         return inflater.inflate(R.layout.fragment_add_to_timetable, container, false);
     }
