@@ -161,13 +161,16 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
     android:id="@+id/Add"
     android:layout_column="0"
 
+    android:onClick="onAddClicked"
+
     android:textColor="#ffffff"
     android:textSize="30dip"
     android:clickable="true"
     android:typeface="sans"
     android:shadowColor="@android:color/white"
     android:singleLine="false"
-    android:layout_marginTop="200dp" />
+    android:layout_marginTop="200dp"
+    android:enabled="true" />
 
 </TableLayout>
 

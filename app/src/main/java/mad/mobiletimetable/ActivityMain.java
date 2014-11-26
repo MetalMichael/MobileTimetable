@@ -11,10 +11,17 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
+import android.view.View;
+import android.widget.Toast;
 
 
 public class ActivityMain extends FragmentActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, FragmentTimetableDay.OnFragmentInteractionListener, FragmentAddToTimetable.OnFragmentInteractionListener  {
+
+
+    public void onAddClicked(View v){
+        Toast.makeText(this, "Button CLicked", Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public void onFragmentInteraction(Uri uri) {

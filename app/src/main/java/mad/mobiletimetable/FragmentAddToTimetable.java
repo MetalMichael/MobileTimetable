@@ -10,10 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-
-
-
-
+import android.widget.TableLayout;
+import android.util.Log;
+import android.widget.Toast;
 
 
 /**
@@ -34,6 +33,9 @@ public class FragmentAddToTimetable extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private Button addNew;
+    private TableLayout layoutNew;
+    private View root;
 
     private OnFragmentInteractionListener mListener;
     AutoCompleteTextView roomTypeAuto;
@@ -72,12 +74,25 @@ public class FragmentAddToTimetable extends Fragment {
         
     }
 
+    public View getMain(LayoutInflater inflater, ViewGroup container,
+                        Bundle savedInstanceState){
+        View rooter = inflater.inflate(R.layout.fragment_add_to_timetable,container,false);
+        return rooter;
+    }
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
+        root= getMain(inflater,container,savedInstanceState);
+
+        addNew= (Button) root.findViewById(R.id.Add);
+
         return inflater.inflate(R.layout.fragment_add_to_timetable, container, false);
     }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
