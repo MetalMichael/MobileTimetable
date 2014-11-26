@@ -1,0 +1,177 @@
+
+
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context="mad.mobiletimetable.FragmentAddToTimetable"
+    android:background="#ba0d0d0f"
+    >
+
+
+<TableRow android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:background="#24737373"
+    android:layout_gravity="center"
+    android:layout_margin="5dp">
+    <TableLayout
+        android:layout_marginRight="120px">
+
+        <Button
+            android:layout_width="111dp"
+            android:layout_height="wrap_content"
+            android:text="Module"
+            android:id="@+id/button"
+            android:maxWidth="111dp"
+            android:width="300px"
+
+
+            android:textSize="8pt"
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_gravity="center"
+            android:accessibilityLiveRegion="assertive"
+            android:enabled="true" />
+    </TableLayout>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ModuleSel"
+        android:layout_column="1"
+        android:width="500px"
+        android:layout_gravity="center"
+        android:inputType="text"
+        android:hint="Module Name" />
+</TableRow>
+
+<TableRow android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:background="#ff737373"
+    android:layout_margin="5dp"
+    android:layout_gravity="center">
+
+    <TableLayout android:layout_marginRight="100px">
+
+        <Button
+            android:layout_width="111dp"
+            android:layout_height="wrap_content"
+            android:text="Type"
+            android:id="@+id/TypeChoice"
+            android:textAlignment="inherit"
+            android:maxWidth="111dp"
+            android:width="300px"
+            android:textSize="8pt"
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_gravity="center"
+            android:background="#ff737373"
+            android:accessibilityLiveRegion="assertive" />
+    </TableLayout>
+
+    <AutoCompleteTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/completeMe"
+        android:layout_column="1"
+        android:enabled="true"
+        android:width="500px"
+        android:layout_gravity="center"
+        android:inputType="text"
+        android:hint="Lecture/Tutorial" />
+
+</TableRow>
+<TableRow android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:background="#24737373"
+    android:layout_gravity="center"
+    android:layout_margin="5dp">
+    <TableLayout android:layout_marginRight="100px">
+
+        <Button
+            android:layout_width="111dp"
+            android:layout_height="wrap_content"
+            android:text="Where"
+            android:id="@+id/WhereSel"
+            android:textAlignment="inherit"
+            android:maxWidth="111dp"
+            android:width="300px"
+            android:textSize="8pt"
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_gravity="center"
+            android:accessibilityLiveRegion="assertive"
+            android:enabled="true" />
+    </TableLayout>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/WhereSelection"
+        android:layout_column="1"
+        android:width="500px"
+        android:layout_gravity="center"
+        android:inputType="text"
+        android:hint="Room Location" />
+
+
+</TableRow>
+<TableRow android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:background="#ff737373"
+    android:layout_margin="5dp"
+    android:layout_gravity="center">
+    <TableLayout
+        android:layout_marginRight="120px">
+
+        <Button
+            android:layout_width="111dp"
+            android:layout_height="wrap_content"
+            android:text="When"
+            android:id="@+id/button4"
+            android:maxWidth="111dp"
+            android:width="300px"
+            android:textSize="8pt"
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_gravity="center"
+            android:accessibilityLiveRegion="assertive"
+            android:background="#ff737373" />
+    </TableLayout>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/WhenSelection"
+        android:layout_column="1"
+        android:width="500px"
+        android:layout_gravity="center"
+        android:longClickable="false"
+        android:hint="Date/Time"
+        android:inputType="text" />
+</TableRow>
+
+<TableRow
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+</TableRow>
+
+<Button
+    android:layout_width="288dp"
+    android:layout_height="wrap_content"
+    android:text="ADD"
+
+    android:id="@+id/Add"
+    android:layout_column="0"
+
+    android:textColor="#ffffff"
+    android:textSize="30dip"
+    android:clickable="true"
+    android:typeface="sans"
+    android:shadowColor="@android:color/white"
+    android:singleLine="false"
+    android:layout_marginTop="200dp" />
+
+</TableLayout>
+
+
+
+
+

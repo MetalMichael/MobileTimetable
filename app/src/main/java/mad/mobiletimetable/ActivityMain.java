@@ -14,7 +14,7 @@ import android.content.Intent;
 
 
 public class ActivityMain extends FragmentActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, FragmentTimetableDay.OnFragmentInteractionListener  {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, FragmentTimetableDay.OnFragmentInteractionListener, FragmentAddToTimetable.OnFragmentInteractionListener  {
 
     @Override
     public void onFragmentInteraction(Uri uri) {
@@ -63,6 +63,9 @@ public class ActivityMain extends FragmentActivity
             case 2:
                 //TODO: Add profile pages etc.
                 return;
+            case 3:
+                frag= new FragmentAddToTimetable();
+                break;
             default:
                 Intent intent = new Intent(this, ActivitySettings.class);
                 this.startActivity(intent);

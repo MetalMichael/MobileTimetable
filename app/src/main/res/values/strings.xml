@@ -7,6 +7,7 @@
         <item>Timetable</item>
         <item>Modules</item>
         <item>Profile</item>
+        <item>Add To Timetable</item>
         <item>Settings</item>
     </string-array>
 
@@ -18,5 +19,13 @@
     <string name="title_activity_activity_full_timetable">ActivityFullTimetable</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_activity_timetable">ActivityTimetable</string>
+
+    <string-array name="type">
+
+        <item>Lecture</item>
+        <item>Tutorial</item>
+        <item>Lab</item>
+
+    </string-array>
 
 </resources>
