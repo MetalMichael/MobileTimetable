@@ -53,6 +53,7 @@ public class ActivitySettings extends PreferenceActivity {
      * device configuration dictates that a simplified, single-pane UI should be
      * shown.
      */
+
     private void setupSimplePreferencesScreen() {
         if (!isSimplePreferences(this)) {
             return;

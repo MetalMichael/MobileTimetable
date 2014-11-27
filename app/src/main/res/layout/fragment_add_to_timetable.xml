@@ -8,73 +8,83 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
 
 
 <TableRow android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
-    android:background="#24737373"
+    android:layout_width="match_parent"
+    android:background="#ff737373"
     android:layout_gravity="center"
     android:layout_margin="5dp"
-    android:gravity="fill">
-    <TableLayout
-        android:layout_marginRight="120px">
+
+    android:gravity="center|center_vertical|center_horizontal"
+    >
 
         <Button
-            android:layout_width="111dp"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Module"
             android:id="@+id/button"
-            android:maxWidth="111dp"
-            android:width="300px"
-
-
-            android:textSize="8pt"
-            android:gravity="center_vertical|center_horizontal"
+            android:textSize="12pt"
             android:layout_gravity="center"
             android:accessibilityLiveRegion="assertive"
-            android:enabled="true" />
-    </TableLayout>
+            android:enabled="true"
+            android:background="#ff737373" />
+
+    </TableRow>
+
+    <TableRow android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:background="#24737373"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:gravity="center|center_vertical|center_horizontal">
 
     <AutoCompleteTextView
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/completeModule"
         android:hint="Module Name"
-        android:gravity="center|center_horizontal|left"
         android:layout_gravity="center_vertical"
         android:textSize="20dp"
         android:dropDownSelector="@android:color/background_dark"
         android:inputType="text|textAutoComplete"
         android:singleLine="true"
-        android:maxWidth="300px" />
-</TableRow>
+        android:gravity="center"
+        android:width="400dp" />
+    </TableRow>
 
-<TableRow android:layout_height="wrap_content"
-    android:layout_width="120px"
-    android:background="#ff737373"
-    android:layout_margin="5dp"
-    android:layout_gravity="center"
-    android:gravity="fill">
+    <TableRow android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:background="#ff737373"
+        android:layout_margin="5dp"
+        android:layout_gravity="center"
+        android:gravity="center|center_vertical|center_horizontal">
 
-    <TableLayout android:layout_marginRight="100px">
+
 
         <Button
-            android:layout_width="111dp"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Type"
             android:id="@+id/TypeChoice"
             android:textAlignment="inherit"
-            android:maxWidth="111dp"
-            android:textSize="8pt"
+
+            android:textSize="12pt"
             android:gravity="center_vertical|center_horizontal|fill_vertical"
             android:layout_gravity="center"
             android:background="#ff737373"
             android:accessibilityLiveRegion="assertive"
             />
-    </TableLayout>
+    </TableRow>
 
+    <TableRow android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:background="#24737373"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:gravity="center|center_vertical|center_horizontal">
     <Spinner
-        android:layout_width="200px"
+        android:layout_width="fill_parent"
         android:layout_height="100px"
         android:id="@+id/completeType"
-        android:layout_column="1"
+
         android:enabled="true"
         android:width="500px"
         android:layout_gravity="center"
@@ -86,111 +96,126 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
         android:autoText="true"
         android:spinnerMode="dropdown"
         android:clickable="true"
-        android:gravity="center_vertical|center_horizontal|left"
+        android:gravity="center|center_vertical|center_horizontal|left"
         android:textAlignment="inherit" />
 
-</TableRow>
-<TableRow android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
-    android:background="#24737373"
-    android:layout_gravity="center"
-    android:layout_margin="5dp"
-    android:gravity="fill">
-    <TableLayout android:layout_marginRight="100px">
+    </TableRow>
+    <TableRow android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:background="#ff737373"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:gravity="center|center_vertical|center_horizontal">
+
 
         <Button
-            android:layout_width="111dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Where"
             android:id="@+id/WhereSel"
             android:textAlignment="inherit"
-            android:maxWidth="111dp"
-            android:width="300px"
-            android:textSize="8pt"
+
+            android:width="400dp"
+            android:textSize="12pt"
             android:gravity="center_vertical|center_horizontal"
             android:layout_gravity="center"
             android:accessibilityLiveRegion="assertive"
-            android:enabled="true" />
-    </TableLayout>
+            android:enabled="true"
+            android:background="#ff737373" />
+    </TableRow>
 
-    <AutoCompleteTextView
+    <TableRow android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/completeRoom"
-        android:hint="Room ID"
-        android:gravity="center_vertical|center_horizontal|left"
-        android:layout_gravity="center_vertical"
-        android:textSize="20dp"
-        android:dropDownSelector="@android:color/background_dark"
-        android:inputType="textAutoComplete"
-        android:maxWidth="300px" />
+        android:background="#24737373"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:gravity="center|center_vertical|center_horizontal">
+
+        <AutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/completeRoom"
+            android:hint="Room ID"
+            android:layout_gravity="center_vertical"
+            android:textSize="20dp"
+            android:dropDownSelector="@android:color/background_dark"
+            android:inputType="textAutoComplete"
+            android:gravity="center"
+            android:width="400dp" />
 
 
-</TableRow>
+     </TableRow>
 <TableRow android:layout_height="wrap_content"
     android:layout_width="wrap_content"
     android:background="#ff737373"
     android:layout_margin="5dp"
     android:layout_gravity="center"
-    android:gravity="fill">
-    <TableLayout
-        android:layout_marginRight="120px">
+    android:gravity="center|center_vertical|center_horizontal"
+    android:focusableInTouchMode="false">
+
+
 
         <Button
-            android:layout_width="111dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="When"
             android:id="@+id/button4"
-            android:maxWidth="111dp"
-            android:width="300px"
-            android:textSize="8pt"
+
+            android:width="400dp"
+            android:textSize="12pt"
             android:gravity="center_vertical|center_horizontal"
             android:layout_gravity="center"
             android:accessibilityLiveRegion="assertive"
             android:background="#ff737373" />
-    </TableLayout>
+    </TableRow>
 
-    <EditText
+    <TableRow android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/WhenSelection"
-        android:layout_column="1"
-        android:width="500px"
+        android:background="#24737373"
         android:layout_gravity="center"
-        android:longClickable="false"
-        android:hint="Date/Time"
-        android:inputType="text"
-        android:gravity="center_vertical|center_horizontal|left"
-        android:textSize="20dp"
-        android:maxWidth="300px" />
+        android:layout_margin="5dp"
+        android:gravity="center|center_vertical|center_horizontal">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/WhenSelection"
 
-</TableRow>
+            android:width="400dp"
+            android:layout_gravity="center"
+            android:longClickable="false"
+            android:hint="Date/Time"
+            android:inputType="text"
+            android:gravity="center"
+            android:textSize="20dp"
+             />
 
-<TableRow
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    </TableRow>
 
-</TableRow>
 
-<Button
-    android:layout_width="288dp"
-    android:layout_height="wrap_content"
-    android:text="ADD"
+    <TableRow android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:background="#24737373"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:gravity="center|center_vertical|center_horizontal">
 
-    android:id="@+id/Add"
-    android:layout_column="0"
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ADD"
 
-    android:onClick="onAddClicked"
+        android:id="@+id/Add"
+        android:onClick="onAddClicked"
 
-    android:textColor="#ffffff"
-    android:textSize="30dip"
-    android:clickable="true"
-    android:typeface="sans"
-    android:shadowColor="@android:color/white"
-    android:singleLine="false"
-    android:layout_marginTop="200dp"
-    android:enabled="true" />
-
+        android:textColor="#000000"
+        android:textSize="30dip"
+        android:clickable="true"
+        android:typeface="sans"
+        android:shadowColor="@android:color/white"
+        android:singleLine="false"
+        android:enabled="true"
+        android:gravity="center" />
+  </TableRow>
 </TableLayout>
 
 
