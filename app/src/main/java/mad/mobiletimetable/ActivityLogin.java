@@ -60,6 +60,7 @@ public class ActivityLogin extends Activity{
        FragmentRegister fragmentRegister = new FragmentRegister();
        FragmentManager fragmentManager = getFragmentManager();
        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+       fragmentTransaction.setCustomAnimations(R.animator.card_flip_right_in, R.animator.card_flip_right_out);
        fragmentTransaction.replace(android.R.id.content, fragmentRegister);
        fragmentTransaction.commit();
 
@@ -68,6 +69,7 @@ public class ActivityLogin extends Activity{
         FragmentLogin fragmentLogin = new FragmentLogin();
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.animator.card_flip_left_in, R.animator.card_flip_left_out);
         fragmentTransaction.replace(android.R.id.content, fragmentLogin);
         fragmentTransaction.commit();
     }
