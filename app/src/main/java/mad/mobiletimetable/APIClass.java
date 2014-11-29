@@ -104,6 +104,7 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
 
     }
 
+    // TODO Use in doInBackground
     // Check local storage for result of request if connection unavailable
     // use it as the result if it is present
     private String fetchFromStorage(HashMap<String,String> requestMap){
@@ -126,6 +127,7 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
         return result;
     }
 
+    // TODO Use in doInBackground
     // Save successful request result to local storage
     private void saveToStorage(HashMap<String,String> requestMap,String result){
         String mapCode = Integer.toString(requestMap.hashCode());
