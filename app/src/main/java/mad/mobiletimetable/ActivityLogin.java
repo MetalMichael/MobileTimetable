@@ -53,6 +53,7 @@ public class ActivityLogin extends Activity{
     }
     public void Skip(View view){
         Intent intent = new Intent(this, ActivityMain.class);
+        finish();
         startActivity(intent);
     }
     public void Register(View view){
