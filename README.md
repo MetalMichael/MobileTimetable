@@ -4,6 +4,7 @@ MobileTimetable
 Mobile Application Development Coursework
 
 ## APIClass Example implementation
+**Note:** ```method``` and ```action``` are required key-value pairs in the request HashMap.
 ```Java
 class Callback implements OnTaskCompleted{
     @Override
