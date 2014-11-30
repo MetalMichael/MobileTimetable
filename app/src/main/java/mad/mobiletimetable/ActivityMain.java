@@ -22,7 +22,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 
-public class ActivityMain extends Activity {
+public class ActivityMain extends FragmentActivity
+        implements FragmentTimetableDay.OnFragmentInteractionListener, FragmentAddToTimetable.OnFragmentInteractionListener {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -30,6 +31,11 @@ public class ActivityMain extends Activity {
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private String[] mDrawItems;
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
