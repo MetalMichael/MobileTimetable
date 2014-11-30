@@ -14,7 +14,6 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,8 +30,10 @@ import android.widget.Toast;
  */
 public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObject> {
     private Context c;
-    public void APICall(Context context) {
-        c = context;
+    private OnTaskCompleted listener;
+    public void APICall(Context c, OnTaskCompleted listener) {
+        this.c = c;
+        this.listener = listener;
     }
     private String buildURL(HashMap<String,String> requestMap){
         StringBuilder urlBuilder = new StringBuilder(2083);
@@ -48,7 +49,7 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
                 continue;
             } else {
                 String value = entry.getValue();
-                // URLencode values as UTF-8
+                // URL encode values as UTF-8
                 try {
                     value = URLEncoder.encode(value, "UTF-8");
                 } catch (UnsupportedEncodingException e) {
@@ -67,27 +68,23 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
         InputStream inputStream = null;
         String result = "";
         try {
-
             // create HttpClient
             HttpClient httpclient = new DefaultHttpClient();
-
             // make GET request to the given URL
             HttpResponse httpResponse = httpclient.execute(new HttpGet(url));
-
             // receive response as inputStream
             inputStream = httpResponse.getEntity().getContent();
-
             // convert inputstream to string
-            if(inputStream != null)
+            if(inputStream != null) {
                 result = convertInputStreamToString(inputStream);
-            else
+            } else {
                 result = "Did not work!";
+            }
 
         } catch (Exception e) {
             //Log.i("week06inClass", e.toString());
             result = e.toString();
         }
-
         return result;
     }
 
@@ -180,7 +177,7 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
 
     @Override
     protected void onPostExecute(JSONObject result) {
-        super.onPostExecute(result);
+        listener.onTaskCompleted(result);
     }
 }
 
