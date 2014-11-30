@@ -31,7 +31,7 @@ import android.widget.Toast;
 public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObject> {
     private Context c;
     private OnTaskCompleted listener;
-    public void APICall(Context c, OnTaskCompleted listener) {
+    public APIClass(Context c, OnTaskCompleted listener) {
         this.c = c;
         this.listener = listener;
     }

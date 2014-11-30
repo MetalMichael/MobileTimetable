@@ -12,6 +12,10 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.util.Log;
 
+import org.json.JSONObject;
+
+import java.util.HashMap;
+
 public class FragmentTimetable extends Fragment {
     public FragmentTimetable() {
     }
@@ -55,6 +59,18 @@ public class FragmentTimetable extends Fragment {
                 fTransaction.commit();
 
             }
+            class Callback implements OnTaskCompleted{
+                @Override
+                public void onTaskCompleted(JSONObject result) {
+                    Toast.makeText(getActivity(),"WORKED",Toast.LENGTH_SHORT).show();
+                    Log.d("Resulting Request",result.toString());
+                }
+            }
+            HashMap<String,String> request = new HashMap<String, String>();
+            request.put("method","module");
+            request.put("action","getall");
+            request.put("auth","debug");
+            new APIClass(getActivity().getApplicationContext(),new Callback()).execute(request);
         } else {
 
         }
