@@ -1,8 +1,12 @@
 package mad.mobiletimetable;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -17,7 +21,27 @@ public class FragmentModules extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setHasOptionsMenu(true);
+
         //TODO: API Request
+
+    }
+
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        MenuItem add = menu.add("add");
+        add.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        add.setIcon(R.drawable.ic_action_new);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_new_module:
+                Intent intent = new Intent(getActivity(), ActivityEditModule.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

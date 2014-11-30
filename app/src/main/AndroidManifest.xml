@@ -13,15 +13,16 @@
         <activity
             android:name="mad.mobiletimetable.ActivityMain"
             android:label="@string/app_name" >
-
         </activity>
-        <activity android:name="mad.mobiletimetable.ActivityLogin"
-            android:label="Login">
+        <activity
+            android:name="mad.mobiletimetable.ActivityLogin"
+            android:label="Login" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            </activity>
+        </activity>
         <activity
             android:name="mad.mobiletimetable.ActivitySettings"
             android:label="@string/title_activity_activity_settings" >
@@ -37,6 +38,14 @@
             </intent-filter>
         </activity>
         -->
+        <activity
+            android:name="mad.mobiletimetable.ActivityEditModule"
+            android:label="@string/title_activity_activity_edit_module"
+            android:parentActivityName="mad.mobiletimetable.ActivityMain" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="mad.mobiletimetable.ActivityMain" />
+        </activity>
     </application>
 
 </manifest>

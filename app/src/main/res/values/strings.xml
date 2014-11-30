@@ -19,11 +19,9 @@
     <string name="title_activity_activity_timetable">ActivityTimetable</string>
 
     <string-array name="roomTypes">
-
         <item>Lecture</item>
         <item>Tutorial</item>
         <item>Lab</item>
-
     </string-array>
     <string-array name="ModuleChoices">
         <item>Programming for the WWW</item>
@@ -34,5 +32,9 @@
         <item>N.002</item>
         <item>N.003</item>
     </string-array>
+
+    <string name="action_add_module">Add Module</string>
+    <string name="title_activity_activity_edit_module">ActivityEditModule</string>
+    <string name="action_settings">Settings</string>
 
 </resources>
