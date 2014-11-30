@@ -14,6 +14,7 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
+import java.util.Calendar;
 import java.util.HashMap;
 
 public class FragmentTimetable extends Fragment {
@@ -72,7 +73,39 @@ public class FragmentTimetable extends Fragment {
             request.put("auth","debug");
             new APIClass(getActivity().getApplicationContext(),new Callback()).execute(request);
         } else {
-
+            Calendar c = Calendar.getInstance();
+            int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+            int day = 1;
+            switch(dayOfWeek){
+                case Calendar.SUNDAY:
+                    day = 0;
+                    break;
+                case Calendar.MONDAY:
+                    day = 0;
+                    break;
+                case Calendar.TUESDAY:
+                    day = 1;
+                    break;
+                case Calendar.WEDNESDAY:
+                    day = 2;
+                    break;
+                case Calendar.THURSDAY:
+                    day = 3;
+                    break;
+                case Calendar.FRIDAY:
+                    day = 4;
+                    break;
+                case Calendar.SATURDAY:
+                    day = 0;
+                    break;
+            }
+            String[] dayNames = {"Monday","Tuesday","Wednesday","Thursday","Friday"};
+            Log.v("day",String.valueOf(dayNames[day]));
+            FragmentTimetableDay fragment = null;
+            fragment = FragmentTimetableDay.newInstance(dayNames[day]);
+            FragmentTransaction fTransaction = getFragmentManager().beginTransaction();
+            fTransaction.add(R.id.dayFragment, fragment);
+            fTransaction.commit();
         }
     }
 }

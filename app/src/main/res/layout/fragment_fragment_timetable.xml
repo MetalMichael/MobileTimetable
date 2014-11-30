@@ -4,6 +4,10 @@
     android:layout_height="match_parent"
     tools:context="mad.mobiletimetable.FragmentTimetable">
 
+    <FrameLayout
+        android:id="@+id/dayFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></FrameLayout>
 
     <Spinner
         android:layout_width="wrap_content"
