@@ -94,7 +94,9 @@ public class FragmentAddToTimetable extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        root= inflater.inflate(R.layout.fragment_add_to_timetable, container, false);
+
+
+        root= inflater.inflate( R.layout.fragment_add_to_timetable, container, false);
 
         addNew= (Button) root.findViewById(R.id.Add);
 
