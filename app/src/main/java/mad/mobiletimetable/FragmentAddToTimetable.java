@@ -114,19 +114,19 @@ public class FragmentAddToTimetable extends Fragment {
 
 
         //Set Adapters
-        ArrayAdapter<String> adapter1 = new ArrayAdapter<String> (c, android.R.layout.simple_dropdown_item_1line, roomTypes);
+        ArrayAdapter<String> adapter1 = new ArrayAdapter<String> (c, R.layout.spinner_item, roomTypes);
         roomTypeSpinner = (Spinner) root.findViewById(R.id.completeType);
 
-        ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (c, android.R.layout.simple_dropdown_item_1line, ModuleChoice);
+        ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (c, R.layout.spinner_item, ModuleChoice);
         ModuleChoiceView = (AutoCompleteTextView) root.findViewById(R.id.completeModule);
 
-        ArrayAdapter<String> adapter3 = new ArrayAdapter<String> (c, android.R.layout.simple_dropdown_item_1line, rooms);
+        ArrayAdapter<String> adapter3 = new ArrayAdapter<String> (c, R.layout.spinner_item, rooms);
         roomView= (AutoCompleteTextView) root.findViewById(R.id.completeRoom);
 
-        ArrayAdapter<String> adapter4 = new ArrayAdapter<String> (c, android.R.layout.simple_dropdown_item_1line, dates);
+        ArrayAdapter<String> adapter4 = new ArrayAdapter<String> (c, R.layout.spinner_item, dates);
         DateView= (Spinner) root.findViewById(R.id.DATE);
 
-        ArrayAdapter<String> adapter5 = new ArrayAdapter<String> (c, android.R.layout.simple_dropdown_item_1line, times);
+        ArrayAdapter<String> adapter5 = new ArrayAdapter<String> (c, R.layout.spinner_item, times);
         TimeView= (Spinner) root.findViewById(R.id.TIME);
 
 

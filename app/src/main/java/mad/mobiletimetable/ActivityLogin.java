@@ -3,6 +3,7 @@ package mad.mobiletimetable;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -12,10 +13,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.Toast;
+import java.util.HashMap;
 
 /**
  * Created by Benjy on 26/11/2014.
  */
+
 public class ActivityLogin extends Activity{
     public ActivityLogin(){
     }
@@ -53,6 +58,32 @@ public class ActivityLogin extends Activity{
         fragmentTransaction.commit();
     }
 
+    public void Login(View view){
+     EditText username = (EditText)findViewById(R.id.username);
+
+       EditText password = (EditText)findViewById(R.id.userpassword);
+        HashMap<String,String> request = new HashMap<String, String>();
+        request.put("method","user");
+        request.put("action","auth");
+        request.put("username",username.getText().toString());
+        request.put("password",password.getText().toString());
+
+        if(/*username/password wrong*/ true){
+            Context context = getApplicationContext();
+            CharSequence text = "Username or Password incorrect";
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+
+        }else{
+            /*TODO: store user authentication
+            TODO: pass user authentication through to server request for stored timetable information
+             */
+            Intent intent = new Intent(this, ActivityMain.class);
+            finish();
+            startActivity(intent);
+        }
+    }
 }
 
 
