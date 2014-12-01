@@ -6,7 +6,8 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
 
 
     android:nestedScrollingEnabled="true"
-    android:id="@+id/MainMenu">
+    android:id="@+id/MainMenu"
+    android:background="#f4f4f4f4">
 
 <TableLayout
     android:layout_width="match_parent"
@@ -35,7 +36,7 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
 
     <TableRow android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:background="#24737373"
+        android:background="#a7bebebe"
         android:layout_gravity="center"
         android:gravity="center|center_vertical|center_horizontal"
         android:layout_marginTop="5dp">
@@ -78,7 +79,7 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
 
     <TableRow android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:background="#24737373"
+        android:background="#a7bebebe"
         android:layout_gravity="center"
         android:layout_margin="5dp"
         android:gravity="center|center_vertical|center_horizontal">
@@ -134,7 +135,7 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
 
     <TableRow android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:background="#24737373"
+        android:background="#a7bebebe"
         android:layout_gravity="center"
         android:gravity="center|center_vertical|center_horizontal"
         android:layout_marginTop="5dp">
@@ -144,12 +145,13 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
             android:layout_height="wrap_content"
             android:id="@+id/completeRoom"
             android:hint="Room ID"
-            android:layout_gravity="center_vertical"
+            android:layout_gravity="center"
             android:textSize="8pt"
             android:dropDownSelector="@android:color/background_dark"
             android:inputType="textAutoComplete"
             android:gravity="center"
-            android:width="300dp" />
+            android:width="300dp"
+            android:textColor="#000000" />
 
 
      </TableRow>
@@ -179,7 +181,7 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
 
     <TableRow android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:background="#24737373"
+        android:background="#a7bebebe"
         android:layout_gravity="center"
         android:layout_margin="5dp"
         android:gravity="center|center_vertical|center_horizontal">
@@ -217,7 +219,7 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
 
             android:textAlignment="inherit"
                 android:theme="@style/AppTheme"
-                android:popupBackground="@android:color/background_dark"
+                android:popupBackground="#000000"
                 android:visibility="visible"
                 android:dropDownWidth="match_parent"
                 android:layoutMode="clipBounds"
@@ -252,7 +254,7 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
 
             android:textAlignment="inherit"
                 android:theme="@style/AppTheme"
-                android:popupBackground="@android:color/background_dark"
+                android:popupBackground="#000000"
                 android:visibility="visible"
                 android:dropDownWidth="match_parent"
                 android:layoutMode="clipBounds"
@@ -265,14 +267,14 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
 
     <TableRow android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:background="#24737373"
         android:layout_gravity="center"
         android:layout_margin="5dp"
-        android:gravity="center|center_vertical|center_horizontal">
+        android:gravity="center|center_vertical|center_horizontal"
+        android:layout_marginTop="100px">
 
     <Button
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:text="ADD"
 
         android:id="@+id/Add"
