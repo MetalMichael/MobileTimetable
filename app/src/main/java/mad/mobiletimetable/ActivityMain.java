@@ -37,6 +37,7 @@ public class ActivityMain extends FragmentActivity
 
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -184,4 +185,6 @@ public class ActivityMain extends FragmentActivity
         // Pass any configuration change to the drawer toggls
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
+
+
 }

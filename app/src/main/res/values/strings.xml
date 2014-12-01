@@ -23,14 +23,37 @@
         <item>Tutorial</item>
         <item>Lab</item>
     </string-array>
+
     <string-array name="ModuleChoices">
         <item>Programming for the WWW</item>
         <item>Server Side Programming</item>
     </string-array>
+
     <string-array name="Rooms">
         <item>N.001</item>
         <item>N.002</item>
         <item>N.003</item>
+    </string-array>
+
+    <string-array name="Date">
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+    </string-array>
+
+    <string-array name="Time">
+        <item>9:00-10:00</item>
+        <item>10:00-11:00</item>
+        <item>11:00-12:00</item>
+        <item>12:00-13:00</item>
+        <item>13:00-14:00</item>
+        <item>14:00-15:00</item>
+        <item>15:00-16:00</item>
+        <item>16:00-17:00</item>
+        <item>17:00-18:00</item>
+        <item>18:00-19:00</item>
     </string-array>
 
     <string name="action_add_module">Add Module</string>

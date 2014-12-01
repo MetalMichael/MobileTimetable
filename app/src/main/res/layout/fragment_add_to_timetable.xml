@@ -3,75 +3,74 @@ xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
 tools:context="mad.mobiletimetable.FragmentAddToTimetable"
-    android:background="#ba0d0d0f"
-    >
+
+
+    android:nestedScrollingEnabled="true"
+    android:id="@+id/MainMenu">
 
 
 <TableRow android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:background="#ff737373"
     android:layout_gravity="center"
     android:layout_margin="5dp"
 
     android:gravity="center|center_vertical|center_horizontal"
-    >
+    android:background="#ffffff">
 
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Module"
-            android:id="@+id/button"
-            android:textSize="12pt"
-            android:layout_gravity="center"
-            android:accessibilityLiveRegion="assertive"
-            android:enabled="true"
-            android:background="#ff737373" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Module"
+        android:id="@+id/textView4"
+        android:textSize="10pt"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        android:gravity="center_vertical|center_horizontal" />
 
-    </TableRow>
+</TableRow>
 
     <TableRow android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:background="#24737373"
         android:layout_gravity="center"
-        android:layout_margin="5dp"
-        android:gravity="center|center_vertical|center_horizontal">
+        android:gravity="center|center_vertical|center_horizontal"
+        android:layout_marginTop="5dp">
 
     <AutoCompleteTextView
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/completeModule"
-        android:hint="Module Name"
+        android:hint="Click above for Module"
         android:layout_gravity="center_vertical"
-        android:textSize="20dp"
+        android:textSize="8pt"
         android:dropDownSelector="@android:color/background_dark"
         android:inputType="text|textAutoComplete"
         android:singleLine="true"
         android:gravity="center"
-        android:width="400dp" />
+        android:width="300dp"
+        android:editable="false" />
     </TableRow>
 
     <TableRow android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:background="#ff737373"
+        android:background="#ffffff"
         android:layout_margin="5dp"
         android:layout_gravity="center"
         android:gravity="center|center_vertical|center_horizontal">
 
 
-
-        <Button
-            android:layout_width="fill_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Type"
-            android:id="@+id/TypeChoice"
-            android:textAlignment="inherit"
-
-            android:textSize="12pt"
-            android:gravity="center_vertical|center_horizontal|fill_vertical"
+            android:id="@+id/textView3"
+            android:textSize="10pt"
             android:layout_gravity="center"
-            android:background="#ff737373"
-            android:accessibilityLiveRegion="assertive"
-            />
+            android:textStyle="bold"
+            android:autoText="false"
+            android:gravity="center_vertical|center_horizontal" />
     </TableRow>
 
     <TableRow android:layout_height="wrap_content"
@@ -80,8 +79,9 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
         android:layout_gravity="center"
         android:layout_margin="5dp"
         android:gravity="center|center_vertical|center_horizontal">
+
     <Spinner
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="100px"
         android:id="@+id/completeType"
 
@@ -94,42 +94,47 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
         android:singleLine="true"
         android:textColorLink="#000000"
         android:autoText="true"
-        android:spinnerMode="dropdown"
+        android:spinnerMode="dialog"
         android:clickable="true"
-        android:gravity="center|center_vertical|center_horizontal|left"
-        android:textAlignment="inherit" />
+        android:gravity="center|center_vertical|center_horizontal"
+        android:textAlignment="inherit"
+        android:theme="@style/AppTheme"
+        android:popupBackground="@android:color/background_dark"
+        android:nestedScrollingEnabled="false"
+        android:touchscreenBlocksFocus="false"
+        android:visibility="visible"
+        android:dropDownWidth="match_parent"
+        android:layoutMode="clipBounds"
+
+        android:minWidth="300dp" />
 
     </TableRow>
     <TableRow android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:background="#ff737373"
+        android:background="#ffffff"
         android:layout_gravity="center"
         android:layout_margin="5dp"
         android:gravity="center|center_vertical|center_horizontal">
 
 
-        <Button
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Where"
-            android:id="@+id/WhereSel"
-            android:textAlignment="inherit"
-
-            android:width="400dp"
-            android:textSize="12pt"
-            android:gravity="center_vertical|center_horizontal"
+            android:id="@+id/textView5"
+            android:textSize="10pt"
             android:layout_gravity="center"
-            android:accessibilityLiveRegion="assertive"
-            android:enabled="true"
-            android:background="#ff737373" />
+            android:textStyle="bold"
+            android:gravity="center_vertical|center_horizontal" />
     </TableRow>
 
     <TableRow android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:background="#24737373"
         android:layout_gravity="center"
-        android:layout_margin="5dp"
-        android:gravity="center|center_vertical|center_horizontal">
+        android:gravity="center|center_vertical|center_horizontal"
+        android:layout_marginTop="5dp">
 
         <AutoCompleteTextView
             android:layout_width="match_parent"
@@ -137,36 +142,36 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
             android:id="@+id/completeRoom"
             android:hint="Room ID"
             android:layout_gravity="center_vertical"
-            android:textSize="20dp"
+            android:textSize="8pt"
             android:dropDownSelector="@android:color/background_dark"
             android:inputType="textAutoComplete"
             android:gravity="center"
-            android:width="400dp" />
+            android:width="300dp" />
 
 
      </TableRow>
-<TableRow android:layout_height="wrap_content"
+
+    <TableRow android:layout_height="wrap_content"
     android:layout_width="wrap_content"
-    android:background="#ff737373"
+    android:background="#ffffff"
     android:layout_margin="5dp"
     android:layout_gravity="center"
     android:gravity="center|center_vertical|center_horizontal"
-    android:focusableInTouchMode="false">
+    android:focusableInTouchMode="false"
+        android:orientation="horizontal"
+       >
 
 
-
-        <Button
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="When"
-            android:id="@+id/button4"
-
-            android:width="400dp"
-            android:textSize="12pt"
-            android:gravity="center_vertical|center_horizontal"
+            android:id="@+id/textView6"
+            android:textSize="10pt"
             android:layout_gravity="center"
-            android:accessibilityLiveRegion="assertive"
-            android:background="#ff737373" />
+            android:textStyle="bold"
+            android:gravity="center_vertical|center_horizontal" />
     </TableRow>
 
     <TableRow android:layout_height="wrap_content"
@@ -175,19 +180,82 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
         android:layout_gravity="center"
         android:layout_margin="5dp"
         android:gravity="center|center_vertical|center_horizontal">
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/WhenSelection"
 
-            android:width="400dp"
+        <TableLayout android:layout_gravity="center"
+            android:layout_margin="2dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Day"
+                android:id="@+id/textView"
+                android:layout_gravity="center"
+                android:elegantTextHeight="false"
+                android:textSize="8pt" />
+
+            <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="100px"
+            android:id="@+id/DATE"
+
+            android:enabled="true"
+            android:width="500px"
             android:layout_gravity="center"
-            android:longClickable="false"
-            android:hint="Date/Time"
-            android:inputType="text"
-            android:gravity="center"
-            android:textSize="20dp"
-             />
+
+            android:hint="Day"
+            android:textColor="#000000"
+            android:singleLine="true"
+            android:textColorLink="#000000"
+            android:autoText="true"
+            android:spinnerMode="dialog"
+            android:clickable="true"
+                android:minWidth="300dp"
+
+            android:textAlignment="inherit"
+                android:theme="@style/AppTheme"
+                android:popupBackground="@android:color/background_dark"
+                android:visibility="visible"
+                android:dropDownWidth="match_parent"
+                android:layoutMode="clipBounds"
+                android:gravity="center|center_vertical|center_horizontal" />
+
+            <TextView
+                android:layout_width="250px"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Time"
+                android:id="@+id/textView2"
+                android:layout_gravity="center"
+                android:textSize="8pt" />
+
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="100px"
+                android:id="@+id/TIME"
+
+                android:enabled="true"
+                android:width="500px"
+                android:layout_gravity="center"
+
+                android:hint="Time"
+                android:textColor="#000000"
+                android:singleLine="true"
+                android:textColorLink="#000000"
+                android:autoText="true"
+                android:spinnerMode="dialog"
+                android:clickable="true"
+                android:minWidth="300dp"
+
+            android:textAlignment="inherit"
+                android:theme="@style/AppTheme"
+                android:popupBackground="@android:color/background_dark"
+                android:visibility="visible"
+                android:dropDownWidth="match_parent"
+                android:layoutMode="clipBounds"
+                android:gravity="center|center_vertical|center_horizontal" />
+
+        </TableLayout>
 
     </TableRow>
 
@@ -205,10 +273,10 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
         android:text="ADD"
 
         android:id="@+id/Add"
-        android:onClick="onAddClicked"
+
 
         android:textColor="#000000"
-        android:textSize="30dip"
+        android:textSize="8pt"
         android:clickable="true"
         android:typeface="sans"
         android:shadowColor="@android:color/white"
