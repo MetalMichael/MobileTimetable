@@ -113,7 +113,7 @@ public class FragmentAddToTimetable extends Fragment {
         times=resources.getStringArray(R.array.Time);
 
 
-        //Set Adapters
+
         ArrayAdapter<String> adapter1 = new ArrayAdapter<String> (c, android.R.layout.simple_dropdown_item_1line, roomTypes);
         roomTypeSpinner = (Spinner) root.findViewById(R.id.completeType);
 
