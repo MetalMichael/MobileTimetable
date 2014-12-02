@@ -23,6 +23,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.lang.StringBuilder;
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -153,6 +154,7 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
             if (networkInfo != null && networkInfo.isConnected()) {
                 // Connected, make request
                 String url = buildURL(requestMap);
+                Log.d("APIClass", "Making a Request to: " + url);
                 String requestResult = GET(url);
                 try {
                     result = new JSONObject(requestResult);
