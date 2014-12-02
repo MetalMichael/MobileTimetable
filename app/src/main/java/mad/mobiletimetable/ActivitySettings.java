@@ -3,6 +3,7 @@ package mad.mobiletimetable;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -20,6 +21,7 @@ import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import mad.mobiletimetable.R;
@@ -80,6 +82,8 @@ public class ActivitySettings extends PreferenceActivity {
         // their values. When their values change, their summaries are updated
         // to reflect the new value, per the Android Design guidelines.
         findPreference("change_password").setOnPreferenceChangeListener(UserListener);
+        findPreference("change_password").setDefaultValue("");
+
         findPreference("display_picture").setOnPreferenceClickListener(ClickListener);
         findPreference("display_picture").setOnPreferenceChangeListener(UserListener);
         bindPreferenceSummaryToValue(findPreference("notification_time"));
@@ -188,13 +192,19 @@ public class ActivitySettings extends PreferenceActivity {
     static class Callback implements OnTaskCompleted{
         @Override
         public void onTaskCompleted(JSONObject result) {
-            Log.d("Requesto~",result.toString());
+            try {
+                result.get("error");
+                Log.d("Error!",result.toString());
+            } catch(JSONException e) {
+               Log.d("Success~",result.toString());
+            }
         }
     }
 
     private void requests(String stringValue) {
         HashMap<String,String> request = new HashMap<String, String>();
-
+        SharedPreferences sharedPreferences = getSharedPreferences("MyAuthFile",0);
+        sharedPreferences.getString("Auth","");
         request.put("method","user");
         request.put("action","editpassword");
         request.put("password",stringValue);
