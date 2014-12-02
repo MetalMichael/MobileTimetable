@@ -143,12 +143,34 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
         }
     }
 
+    // Format a module add string to a module get string response
+    private String formatModuleAdd(HashMap<String,String> requestMap){
+        return "";
+    }
+
+    // Format a timetable add string to a timetable get string response
+    private String formatTimetableAdd(HashMap<String,String> requestMap){
+        return "";
+    }
+
     @Override
     protected JSONObject doInBackground(HashMap<String,String>... params) {
         JSONObject result = null;
         HashMap<String,String> requestMap = params[0];
         // Make sure we have the method and action, throw error if we don't
         if(requestMap.containsKey("method") && requestMap.containsKey("action")){
+            if(requestMap.get("action").equals("add")){
+                // swap map action to get, ready for saving
+                requestMap.put("action","get");
+                if(requestMap.get("method").equals("module")) {
+                    // format module response string to save
+                    formatModuleAdd(requestMap);
+                } else if (requestMap.get("method").equals("timetable")){
+                    // format timetable response string to save
+                    formatTimetableAdd(requestMap);
+                }
+
+            }
             // check the network status
             ConnectivityManager connMgr = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
