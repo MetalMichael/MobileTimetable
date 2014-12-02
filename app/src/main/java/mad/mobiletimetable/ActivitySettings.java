@@ -17,8 +17,13 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
+import android.widget.Toast;
+
+import org.json.JSONObject;
+
 import mad.mobiletimetable.R;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -39,7 +44,7 @@ public class ActivitySettings extends PreferenceActivity {
      * as a master/detail two-pane view on tablets. When true, a single pane is
      * shown on tablets.
      */
-    private static final boolean ALWAYS_SIMPLE_PREFS = false;
+    private static final boolean ALWAYS_SIMPLE_PREFS = true;
 
 
     @Override
@@ -73,8 +78,8 @@ public class ActivitySettings extends PreferenceActivity {
         // Bind the summaries of EditText/List/Dialog/Ringtone preferences to
         // their values. When their values change, their summaries are updated
         // to reflect the new value, per the Android Design guidelines.
-        findPreference("change_password").setOnPreferenceChangeListener(PreferenceListener);
-        findPreference("display_picture").setOnPreferenceChangeListener(PreferenceListener);
+        findPreference("change_password").setOnPreferenceChangeListener(UserListener);
+        findPreference("display_picture").setOnPreferenceChangeListener(UserListener);
         bindPreferenceSummaryToValue(findPreference("notification_time"));
 
     }
@@ -117,17 +122,36 @@ public class ActivitySettings extends PreferenceActivity {
     }
 
     /**
+     * API Callback class
+     */
+
+    /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value, along with other things
      */
-    private static Preference.OnPreferenceChangeListener PreferenceListener = new Preference.OnPreferenceChangeListener() {
+    private Preference.OnPreferenceChangeListener UserListener = new Preference.OnPreferenceChangeListener() {
+
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
             String stringValue = value.toString();
-            if(preference.getTitle().equals("Change Password")) {
-
+            if (preference.getTitle().equals("Change Password")) {
+                if(stringValue.length() >= 6 && stringValue.length() <= 20)
+                    requests(stringValue);
+                else
+                    Toast.makeText(getApplicationContext(),"Password must be between 6 and 20 chars",Toast.LENGTH_SHORT ).show();
             }
-            else if (preference instanceof ListPreference) {
+            if (preference.getTitle().equals("Change Display Picture")) {
+                Toast.makeText(getApplicationContext(),"not yet",Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        }
+    };
+    private static Preference.OnPreferenceChangeListener PreferenceListener = new Preference.OnPreferenceChangeListener() {
+
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object value) {
+            String stringValue = value.toString();
+            if (preference instanceof ListPreference) {
                 // For list preferences, look up the correct display value in
                 // the preference's 'entries' list.
                 ListPreference listPreference = (ListPreference) preference;
@@ -143,6 +167,21 @@ public class ActivitySettings extends PreferenceActivity {
         }
     };
 
+    static class Callback implements OnTaskCompleted{
+        @Override
+        public void onTaskCompleted(JSONObject result) {
+            Log.d("Requesto~",result.toString());
+        }
+    }
+
+    private void requests(String stringValue) {
+        HashMap<String,String> request = new HashMap<String, String>();
+
+        request.put("method","user");
+        request.put("action","editpassword");
+        request.put("password",stringValue);
+        new APIClass(ActivitySettings.this,new Callback()).execute(request);
+    }
     /**
      * Binds a preference's summary to its value. More specifically, when the
      * preference's value is changed, its summary (line of text below the
