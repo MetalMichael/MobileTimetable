@@ -1,5 +1,6 @@
 package mad.mobiletimetable;
 
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -153,6 +154,11 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
             NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
             if (networkInfo != null && networkInfo.isConnected()) {
                 // Connected, make request
+                // Get auth if authenticated user
+                String auth = c.getSharedPreferences("MyAuthFile", 0).getString("Auth","");
+                if(!auth.equals("")){
+                    requestMap.put("auth",auth);
+                }
                 String url = buildURL(requestMap);
                 Log.d("APIClass", "Making a Request to: " + url);
                 String requestResult = GET(url);
