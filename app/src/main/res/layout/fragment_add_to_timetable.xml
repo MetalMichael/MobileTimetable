@@ -201,7 +201,7 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
 
             <Spinner
             android:layout_width="match_parent"
-            android:layout_height="100px"
+            android:layout_height="50dp"
             android:id="@+id/DATE"
 
             android:enabled="true"
@@ -238,9 +238,10 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
             <Spinner
                 android:id="@+id/TIME"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:spinnerMode="dialog"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:layout_gravity="center" />
 
         </TableLayout>
 
