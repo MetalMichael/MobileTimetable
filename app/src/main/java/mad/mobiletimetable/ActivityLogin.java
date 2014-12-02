@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -20,6 +21,8 @@ import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.net.URL;
 import java.util.HashMap;
 
 
@@ -77,46 +80,47 @@ public class ActivityLogin extends Activity{
 
         new APIClass(getApplicationContext(),new Callback()).execute(request);
 
-         if(!authenticated)   {
-            Context context = getApplicationContext();
-            CharSequence text = "Username or Password incorrect";
-            int duration = Toast.LENGTH_SHORT;
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
 
-        }else{
-           // TODO: store user authentication
-           // TODO: pass user authentication through to server request for stored timetable information
-
-            Intent intent = new Intent(this, ActivityMain.class);
-            finish();
-            startActivity(intent);
-        }
     }
-    class Callback implements OnTaskCompleted{
+    class Callback implements OnTaskCompleted {
         @Override
-        public void onTaskCompleted(JSONObject result) {
+        public void onTaskCompleted (JSONObject result) {
 
 
-            Log.d("Resulting Request", result.toString());
-            try {
-            String status = result.getString("status");
+                Log.d("Resulting Request", result.toString());
+                try {
+                    String status = result.getString("status");
 
-                    if (status.equals("error")){
-                     authenticated = false;
-                     String authentication = "not Authenticated";
-                     Log.d("Authentication", authentication );
-                    }else{
-                     authenticated = true;
-                        String auth = result.getString("auth");
+                    if (status.equals("error")) {
+                        authenticated = false;
+                        String authentication = "not Authenticated";
+                        Log.d("Authentication", authentication);
+                    } else {
+                        authenticated = true;
+                        String auth;
+                        auth = result.getString("auth");
                         Log.d("Authentication", auth);
                     }
 
-            Log.d("Resulting Request", status);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+                    Log.d("Resulting Request", status);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            if(!authenticated)   {
+                Context context = getApplicationContext();
+                CharSequence text = "Username or Password incorrect";
+                int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
 
+            }else{
+                // TODO: store user authentication
+                // TODO: pass user authentication through to server request for stored timetable information
+
+                Intent intent = new Intent(ActivityLogin.this, ActivityMain.class);
+                finish();
+                startActivity(intent);
+            }
         }
 
     }
