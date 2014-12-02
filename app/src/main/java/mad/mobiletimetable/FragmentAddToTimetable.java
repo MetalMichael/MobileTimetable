@@ -83,10 +83,8 @@ public class FragmentAddToTimetable extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        
+
     }
-
-
 
 
     @Override
@@ -95,6 +93,7 @@ public class FragmentAddToTimetable extends Fragment {
         // Inflate the layout for this fragment
 
 
+        getActivity().setTitle(R.string.add_title);
 
         root= inflater.inflate( R.layout.fragment_add_to_timetable, container, false);
 

@@ -22,6 +22,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_activity_timetable">ActivityTimetable</string>
 
+
+    <string name="add_title">Add To Timetable</string>
     <string-array name="roomTypes">
         <item>Lecture</item>
         <item>Tutorial</item>
