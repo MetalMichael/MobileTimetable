@@ -14,6 +14,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import mad.mobiletimetable.R;
@@ -72,6 +73,8 @@ public class ActivitySettings extends PreferenceActivity {
         // Bind the summaries of EditText/List/Dialog/Ringtone preferences to
         // their values. When their values change, their summaries are updated
         // to reflect the new value, per the Android Design guidelines.
+        findPreference("change_password").setOnPreferenceChangeListener(PreferenceListener);
+        findPreference("display_picture").setOnPreferenceChangeListener(PreferenceListener);
         bindPreferenceSummaryToValue(findPreference("notification_time"));
 
     }
@@ -115,14 +118,16 @@ public class ActivitySettings extends PreferenceActivity {
 
     /**
      * A preference value change listener that updates the preference's summary
-     * to reflect its new value.
+     * to reflect its new value, along with other things
      */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
+    private static Preference.OnPreferenceChangeListener PreferenceListener = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
             String stringValue = value.toString();
+            if(preference.getTitle().equals("Change Password")) {
 
-            if (preference instanceof ListPreference) {
+            }
+            else if (preference instanceof ListPreference) {
                 // For list preferences, look up the correct display value in
                 // the preference's 'entries' list.
                 ListPreference listPreference = (ListPreference) preference;
@@ -133,11 +138,6 @@ public class ActivitySettings extends PreferenceActivity {
                         index >= 0
                                 ? listPreference.getEntries()[index]
                                 : null);
-
-            } else {
-                // For all other preferences, set the summary to the value's
-                // simple string representation.
-                preference.setSummary(stringValue);
             }
             return true;
         }
@@ -150,15 +150,15 @@ public class ActivitySettings extends PreferenceActivity {
      * immediately updated upon calling this method. The exact display format is
      * dependent on the type of preference.
      *
-     * @see #sBindPreferenceSummaryToValueListener
+     * @see #PreferenceListener
      */
     private static void bindPreferenceSummaryToValue(Preference preference) {
         // Set the listener to watch for value changes.
-        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+        preference.setOnPreferenceChangeListener(PreferenceListener);
 
         // Trigger the listener immediately with the preference's
         // current value.
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
+        PreferenceListener.onPreferenceChange(preference,
                 PreferenceManager
                         .getDefaultSharedPreferences(preference.getContext())
                         .getString(preference.getKey(), ""));
@@ -179,6 +179,8 @@ public class ActivitySettings extends PreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
+            findPreference("change_password").setOnPreferenceChangeListener(PreferenceListener);
+            findPreference("display_picture").setOnPreferenceChangeListener(PreferenceListener);
             bindPreferenceSummaryToValue(findPreference("notification_time"));
 
         }
