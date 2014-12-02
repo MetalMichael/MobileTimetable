@@ -1,10 +1,9 @@
 package mad.mobiletimetable;
 
-import android.app.Activity;
 import android.app.FragmentTransaction;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,12 +51,8 @@ public class FragmentTimetable extends Fragment {
                     R.id.thursdayFragment,
                     R.id.fridayFragment
             };
-            FragmentTimetableDay fragment = null;
             for(int i = 0; i < dayNames.length ; i++) {
-                fragment = FragmentTimetableDay.newInstance(dayNames[i]);
-                FragmentTransaction fTransaction = getFragmentManager().beginTransaction();
-                fTransaction.add(dayFragments[i], fragment);
-                fTransaction.commit();
+                addDayFragment(dayNames[i],dayFragments[i]);
 
             }
             class Callback implements OnTaskCompleted{
@@ -100,12 +95,24 @@ public class FragmentTimetable extends Fragment {
                     break;
             }
             String[] dayNames = {"Monday","Tuesday","Wednesday","Thursday","Friday"};
-            Log.v("day",String.valueOf(dayNames[day]));
-            FragmentTimetableDay fragment = null;
-            fragment = FragmentTimetableDay.newInstance(dayNames[day]);
-            FragmentTransaction fTransaction = getFragmentManager().beginTransaction();
-            fTransaction.add(R.id.dayFragment, fragment);
-            fTransaction.commit();
+            addDayFragment(dayNames[day], R.id.dayFragment);
+            View myView = getActivity().findViewById(R.id.dayFragment);
+            myView.setOnTouchListener(new OnSwipeListener(getActivity()) {
+                @Override
+                public void onSwipeRight() {
+                    // Load day - 1
+                }
+                @Override
+                public void onSwipeLeft() {
+                    // Load day + 1
+                }
+            });
         }
+    }
+    private void addDayFragment(String dayName, int dayFragmentID){
+        FragmentTimetableDay fragment = FragmentTimetableDay.newInstance(dayName);
+        FragmentTransaction fTransaction = getFragmentManager().beginTransaction();
+        fTransaction.replace(dayFragmentID, fragment);
+        fTransaction.commit();
     }
 }
