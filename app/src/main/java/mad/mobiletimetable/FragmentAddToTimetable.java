@@ -116,9 +116,6 @@ public class FragmentAddToTimetable extends Fragment {
         //Set Adapters
         ArrayAdapter<String> adapter1 = new ArrayAdapter<String> (c, R.layout.spinner_item, roomTypes);
 
-
-
-
         roomTypeSpinner = (Spinner) root.findViewById(R.id.completeType);
 
         ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (c, R.layout.spinner_item, ModuleChoice);

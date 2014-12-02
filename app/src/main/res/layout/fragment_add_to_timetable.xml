@@ -236,12 +236,33 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
                 android:textSize="8pt" />
 
             <Spinner
-                android:id="@+id/TIME"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:id="@+id/TIME"
+
+                android:enabled="true"
+                android:width="500px"
+                android:layout_gravity="center"
+
+                android:hint="Day"
+                android:textColor="#000000"
+                android:singleLine="true"
+                android:textColorLink="#000000"
+                android:autoText="true"
                 android:spinnerMode="dialog"
+                android:clickable="true"
+                android:minWidth="300dp"
+
                 android:textAlignment="center"
-                android:layout_gravity="center" />
+
+                android:popupBackground="@android:drawable/spinner_background"
+                android:visibility="visible"
+                android:dropDownWidth="match_parent"
+                android:layoutMode="clipBounds"
+                android:gravity="center|center_vertical|center_horizontal"
+                style="@android:style/TextAppearance.DeviceDefault.Widget.DropDownItem" />
+
+
 
         </TableLayout>
 
