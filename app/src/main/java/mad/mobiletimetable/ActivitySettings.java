@@ -2,6 +2,7 @@ package mad.mobiletimetable;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -79,6 +80,7 @@ public class ActivitySettings extends PreferenceActivity {
         // their values. When their values change, their summaries are updated
         // to reflect the new value, per the Android Design guidelines.
         findPreference("change_password").setOnPreferenceChangeListener(UserListener);
+        findPreference("display_picture").setOnPreferenceClickListener(ClickListener);
         findPreference("display_picture").setOnPreferenceChangeListener(UserListener);
         bindPreferenceSummaryToValue(findPreference("notification_time"));
 
@@ -121,13 +123,25 @@ public class ActivitySettings extends PreferenceActivity {
         }
     }
 
-    /**
-     * API Callback class
-     */
+    private Preference.OnPreferenceClickListener ClickListener = new Preference.OnPreferenceClickListener() {
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            Intent pictureUpload = new Intent(Intent.ACTION_GET_CONTENT);
+            pictureUpload.setType("image/*");
+            startActivityForResult(pictureUpload,1);
+            return true;
+        }
+
+    };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Toast.makeText(getApplicationContext(),"allahu ackbar",Toast.LENGTH_SHORT ).show();
+    }
 
     /**
-     * A preference value change listener that updates the preference's summary
-     * to reflect its new value, along with other things
+     * Preference change listener for changing password
+     * separate from other listener because static
      */
     private Preference.OnPreferenceChangeListener UserListener = new Preference.OnPreferenceChangeListener() {
 
@@ -140,12 +154,12 @@ public class ActivitySettings extends PreferenceActivity {
                 else
                     Toast.makeText(getApplicationContext(),"Password must be between 6 and 20 chars",Toast.LENGTH_SHORT ).show();
             }
-            if (preference.getTitle().equals("Change Display Picture")) {
-                Toast.makeText(getApplicationContext(),"not yet",Toast.LENGTH_SHORT).show();
-            }
             return true;
         }
     };
+    /**
+     * Preference change listener for listPreference default value
+     */
     private static Preference.OnPreferenceChangeListener PreferenceListener = new Preference.OnPreferenceChangeListener() {
 
         @Override
@@ -166,6 +180,10 @@ public class ActivitySettings extends PreferenceActivity {
             return true;
         }
     };
+
+    /**
+     * API Callback class
+     */
 
     static class Callback implements OnTaskCompleted{
         @Override
