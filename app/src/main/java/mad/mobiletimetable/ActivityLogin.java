@@ -5,9 +5,11 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.preference.PreferenceScreen;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,17 +33,24 @@ import java.util.HashMap;
  */
 
 public class ActivityLogin extends Activity{
+    public static final String PREFS_NAME = "MyAuthFile";
     private boolean authenticated;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_login);
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        FragmentLogin fragmentLogin = new FragmentLogin();
-        fragmentTransaction.replace(android.R.id.content, fragmentLogin);
-        fragmentTransaction.commit();
+        SharedPreferences authCheck = getSharedPreferences(PREFS_NAME, 0);
+        if(authCheck.getString("Auth", "").equals("")) {
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            FragmentLogin fragmentLogin = new FragmentLogin();
+            fragmentTransaction.replace(android.R.id.content, fragmentLogin);
 
+            fragmentTransaction.commit();
+        }else{
+            Intent intent = new Intent(this, ActivityMain.class);
+            finish();
+            startActivity(intent);
+        }
     }
     public void Skip(View view){
         Intent intent = new Intent(this, ActivityMain.class);
@@ -100,6 +109,10 @@ public class ActivityLogin extends Activity{
                         String auth;
                         auth = result.getString("auth");
                         Log.d("Authentication", auth);
+                        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putString("Auth",auth);
+                        editor.commit();
                     }
 
                     Log.d("Resulting Request", status);
@@ -114,6 +127,7 @@ public class ActivityLogin extends Activity{
                 toast.show();
 
             }else{
+
                 // TODO: store user authentication
                 // TODO: pass user authentication through to server request for stored timetable information
 
