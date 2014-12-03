@@ -5,27 +5,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.util.Log;
-import android.preference.RingtonePreference;
-import android.text.TextUtils;
 import android.widget.Toast;
-
+import android.graphics.Bitmap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import mad.mobiletimetable.R;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.List;
 
@@ -39,6 +36,8 @@ import java.util.List;
  * Android Design: Settings</a> for design guidelines and the <a
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
+ *
+ * Editing done by Sam
  */
 public class ActivitySettings extends PreferenceActivity {
     /**
@@ -49,7 +48,6 @@ public class ActivitySettings extends PreferenceActivity {
      */
     private static final boolean ALWAYS_SIMPLE_PREFS = true;
     private APIClass api;
-    private boolean active;
     private final String PREFS_NAME = "MyAuthFile";
 
 
@@ -61,7 +59,6 @@ public class ActivitySettings extends PreferenceActivity {
     }
     @Override
     public void onDestroy() {
-        active = false;
         if(api != null) {
             api.cancel(true);
         }
@@ -88,9 +85,7 @@ public class ActivitySettings extends PreferenceActivity {
         // Add 'general' preferences.
         addPreferencesFromResource(R.xml.pref_general);
 
-        // Bind the summaries of EditText/List/Dialog/Ringtone preferences to
-        // their values. When their values change, their summaries are updated
-        // to reflect the new value, per the Android Design guidelines.
+        // Setting listeners for each preference
         findPreference("change_password").setOnPreferenceChangeListener(UserListener);
         findPreference("change_password").setDefaultValue("");
         findPreference("logout").setOnPreferenceChangeListener(UserListener);
@@ -137,13 +132,17 @@ public class ActivitySettings extends PreferenceActivity {
         }
     }
 
+    /**
+     * Click listener for the change display pic preference
+     */
     private Preference.OnPreferenceClickListener ClickListener = new Preference.OnPreferenceClickListener() {
         @Override
         public boolean onPreferenceClick(Preference preference) {
             if(preference.getTitle().equals("Change Display Picture")) {
-                Intent pictureUpload = new Intent(Intent.ACTION_GET_CONTENT);
-                pictureUpload.setType("image/*");
-                startActivityForResult(pictureUpload, 1);
+                Intent pictureUpload = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if(pictureUpload.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(pictureUpload, 1);
+                }
 
             }
             return true;
@@ -151,13 +150,41 @@ public class ActivitySettings extends PreferenceActivity {
 
     };
 
+    /**
+     * Saves camera image to local storage, to be used as a display pic.
+     * Uploaded image is saved to local storage with the name user-[auth]-pic and encoded to PNG.
+     * To load it again, decode it from png to bitmap
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Toast.makeText(getApplicationContext(),"allahu ackbar",Toast.LENGTH_SHORT ).show();
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            SharedPreferences auth = getSharedPreferences(PREFS_NAME, 0);
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            File displayPicFile = new File(ActivitySettings.this.getFilesDir(),"user-"+auth.getString("Auth","")+"-pic");
+            FileOutputStream outputStream;
+
+            try {
+                outputStream = new FileOutputStream(displayPicFile);
+                imageBitmap.compress(Bitmap.CompressFormat.PNG,100,outputStream);
+                outputStream.close();
+                Toast.makeText(getApplicationContext(), "Image saved!", Toast.LENGTH_SHORT).show();
+
+            } catch( Exception e) {
+                Toast.makeText(getApplicationContext(), "Image upload failed!", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+
+            }
+
+        } else {
+            Toast.makeText(getApplicationContext(),"Image upload failed!",Toast.LENGTH_SHORT ).show();
+
+        }
+
     }
 
     /**
-     * Preference change listener for changing password
+     * Preference change listener for changing password and logging out
      * separate from other listener because static
      */
     private Preference.OnPreferenceChangeListener UserListener = new Preference.OnPreferenceChangeListener() {
@@ -165,17 +192,23 @@ public class ActivitySettings extends PreferenceActivity {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
             String stringValue = value.toString();
+
             if (preference.getTitle().equals("Change Password")) {
-                if(stringValue.length() >= 6 && stringValue.length() <= 20)
+                if (stringValue.length() >= 6 && stringValue.length() <= 20) {
+                    Log.d("Password",stringValue);
                     requests(stringValue);
-                else
+
+                } else
                     Toast.makeText(getApplicationContext(),"Password must be between 6 and 20 chars",Toast.LENGTH_SHORT ).show();
+
             } else if(preference.getTitle().equals("Logout")) {
                 SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
                 SharedPreferences.Editor editor = settings.edit();
                 editor.clear();
                 editor.commit();
+
                 Toast.makeText(getApplicationContext(),"Logged out!",Toast.LENGTH_SHORT ).show();
+
                 Intent intent = new Intent(ActivitySettings.this, ActivityLogin.class);
                 startActivity(intent);
 
@@ -185,6 +218,7 @@ public class ActivitySettings extends PreferenceActivity {
     };
     /**
      * Preference change listener for listPreference default value
+     * mainly generated code
      */
     private static Preference.OnPreferenceChangeListener PreferenceListener = new Preference.OnPreferenceChangeListener() {
 
@@ -217,8 +251,10 @@ public class ActivitySettings extends PreferenceActivity {
             try {
                 result.get("error");
                 Log.d("Error!",result.toString());
+
             } catch(JSONException e) {
                Log.d("Success~",result.toString());
+
             }
         }
     }
@@ -227,11 +263,14 @@ public class ActivitySettings extends PreferenceActivity {
         HashMap<String,String> request = new HashMap<String, String>();
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME,0);
         sharedPreferences.getString("Auth","");
+
         request.put("method","user");
         request.put("action","editpassword");
         request.put("password",stringValue);
+
         api = new APIClass(ActivitySettings.this,new Callback());
         api.execute(request);
+
     }
     /**
      * Binds a preference's summary to its value. More specifically, when the
