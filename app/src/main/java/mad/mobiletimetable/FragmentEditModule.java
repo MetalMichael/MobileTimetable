@@ -24,7 +24,7 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
     private ModelModule module;
 
     private APIClass api;
-    private boolean active;
+    private boolean active = true;
 
     private FrameLayout view;
     private LayoutInflater inflater;
@@ -38,6 +38,7 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
         //Editing existing module
         if(intent.hasExtra("moduleid")) {
             edit = true;
+            Log.d("FragmentEditModule", "Editing Module");
 
             //Send API request
             HashMap<String, String> request = new HashMap<String, String>();
@@ -49,6 +50,7 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
         } else {
             //Creating new module
             //Nothing else to do
+            Log.d("FragmentEditModule", "Creating New Module");
             edit = false;
         }
     }
@@ -71,7 +73,10 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
         public void onTaskCompleted(JSONObject result) {
             if(!active) return;
 
-            Log.v("FragmentEditModule", result.toString());
+            if(!result.has("module")) {
+                getActivity().finish();
+                return;
+            }
             try {
                 JSONObject moduleInfo = result.getJSONObject("module");
                 module = new ModelModule(moduleInfo);
@@ -131,7 +136,7 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
             request.put("action", "edit");
             request.put("moduleid", Integer.toString(module.getId()));
         } else {
-            request.put("action", "create");
+            request.put("action", "add");
         }
 
         //Fields

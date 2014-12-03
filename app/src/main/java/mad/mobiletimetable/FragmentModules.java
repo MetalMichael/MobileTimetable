@@ -36,7 +36,6 @@ public class FragmentModules extends Fragment {
         switch(item.getItemId()) {
             case R.id.action_new_module:
                 Intent intent = new Intent(getActivity(), ActivityEditModule.class);
-                intent.putExtra("moduleid", "2");
                 startActivity(intent);
                 return true;
             default:
