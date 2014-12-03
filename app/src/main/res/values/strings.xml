@@ -9,6 +9,7 @@
         <item>Profile</item>
         <item>Add To Timetable</item>
         <item>Settings</item>
+
     </string-array>
 
     <string name="create">Create</string>
@@ -71,8 +72,8 @@
     <string name="module_lecturer">Module Lecturer</string>
 
     <string name="action_settings">Settings</string>
-
-
+    <string name="Email">Email</string>
+    <string name="Cancel">Cancel</string>
 
 
 </resources>

@@ -58,7 +58,7 @@
         android:clickable="true"
         android:layout_alignTop="@+id/signInButton"
         android:layout_toRightOf="@+id/skip"
-        android:onClick="Register"/>
+        android:onClick="RegisterFragment"/>
 
 
     <TextView

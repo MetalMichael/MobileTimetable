@@ -35,6 +35,8 @@ import java.util.HashMap;
 public class ActivityLogin extends Activity{
     public static final String PREFS_NAME = "MyAuthFile";
     private boolean authenticated;
+    private boolean registered;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,13 +59,14 @@ public class ActivityLogin extends Activity{
         finish();
         startActivity(intent);
     }
-    public void Register(View view){
+    public void RegisterFragment(View view){
        FragmentRegister fragmentRegister = new FragmentRegister();
        FragmentManager fragmentManager = getFragmentManager();
        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
        fragmentTransaction.setCustomAnimations(R.animator.card_flip_right_in, R.animator.card_flip_right_out);
        fragmentTransaction.replace(android.R.id.content, fragmentRegister);
        fragmentTransaction.commit();
+
 
     }
     public void Cancel(View view){
@@ -81,19 +84,10 @@ public class ActivityLogin extends Activity{
         EditText username = (EditText)findViewById(R.id.username);
 
         EditText password = (EditText)findViewById(R.id.userpassword);
-        HashMap<String,String> request = new HashMap<String, String>();
-        request.put("method","user");
-        request.put("action","auth");
-        request.put("username",username.getText().toString());
-        request.put("password",password.getText().toString());
 
-        new APIClass(getApplicationContext(),new Callback()).execute(request);
-
-
-    }
-    class Callback implements OnTaskCompleted {
-        @Override
-        public void onTaskCompleted (JSONObject result) {
+        class Callback implements OnTaskCompleted {
+            @Override
+            public void onTaskCompleted(JSONObject result) {
 
 
                 Log.d("Resulting Request", result.toString());
@@ -111,7 +105,7 @@ public class ActivityLogin extends Activity{
                         Log.d("Authentication", auth);
                         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
                         SharedPreferences.Editor editor = settings.edit();
-                        editor.putString("Auth",auth);
+                        editor.putString("Auth", auth);
                         editor.commit();
                     }
 
@@ -119,26 +113,96 @@ public class ActivityLogin extends Activity{
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            if(!authenticated)   {
-                Context context = getApplicationContext();
-                CharSequence text = "Username or Password incorrect";
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
+                if (!authenticated) {
+                    Context context = getApplicationContext();
+                    CharSequence text = "Username or Password incorrect";
+                    int duration = Toast.LENGTH_SHORT;
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
 
-            }else{
+                } else {
 
-                // TODO: store user authentication
-                // TODO: pass user authentication through to server request for stored timetable information
+                    Intent intent = new Intent(ActivityLogin.this, ActivityMain.class);
+                    finish();
+                    startActivity(intent);
+                }
+            }
+        }
+        HashMap<String,String> request = new HashMap<String, String>();
+        request.put("method","user");
+        request.put("action","auth");
+        request.put("username",username.getText().toString());
+        request.put("password",password.getText().toString());
 
-                Intent intent = new Intent(ActivityLogin.this, ActivityMain.class);
-                finish();
-                startActivity(intent);
+        new APIClass(getApplicationContext(),new Callback()).execute(request);
+
+
+    }
+    public  void Register(View view) {
+
+        EditText username = (EditText) findViewById(R.id.usernameField);
+        EditText password = (EditText) findViewById(R.id.passwordField);
+        EditText email = (EditText) findViewById(R.id.emailField);
+
+        String mUsername = username.getText().toString();
+        String mPassword = password.getText().toString();
+        String mEmail = email.getText().toString();
+
+        class Callback implements OnTaskCompleted {
+            @Override
+            public void onTaskCompleted(JSONObject result) {
+
+                Log.d("Resulting Request", result.toString());
+                try {
+                    String status = result.getString("status");
+                    if (status.equals("error")) {
+
+                        registered = false;
+                    } else {
+
+                        String auth = result.getString("auth");
+                        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putString("Auth", auth);
+                        editor.commit();
+                        registered = true;
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (!registered) {
+                    String error = null;
+                    try {
+                        error = result.getString("error");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    Toast.makeText(getApplicationContext(),error, Toast.LENGTH_SHORT).show();
+
+                } else {
+                    String registered = "you are now registered";
+                    Toast.makeText(getApplicationContext(), registered, Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(ActivityLogin.this, ActivityLogin.class);
+                    finish();
+                    startActivity(intent);
+                }
             }
         }
 
+        HashMap<String, String> request = new HashMap<String, String>();
+        request.put("method", "user");
+        request.put("action", "create");
+        request.put("username", mUsername);
+        request.put("password", mPassword);
+        request.put("email", mEmail);
+        new APIClass(getApplicationContext(), new Callback()).execute(request);
     }
-
 }
+
+
+
+
+
 
 
