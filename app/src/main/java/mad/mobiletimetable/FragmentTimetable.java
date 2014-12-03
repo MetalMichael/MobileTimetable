@@ -36,6 +36,18 @@ public class FragmentTimetable extends Fragment {
 
         return timetable;
     }
+    //for day changes
+    public class GlobalInt {
+        public int dayIncrement = 0;
+        public int increment(){
+            this.dayIncrement ++;
+            return dayIncrement;
+        }
+        public int decrement(){
+            this.dayIncrement --;
+            return dayIncrement;
+        }
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -94,17 +106,27 @@ public class FragmentTimetable extends Fragment {
                     day = 0;
                     break;
             }
-            String[] dayNames = {"Monday","Tuesday","Wednesday","Thursday","Friday"};
+            final int today = day;
+            final String[] dayNames = {"Monday","Tuesday","Wednesday","Thursday","Friday"};
             addDayFragment(dayNames[day], R.id.dayFragment);
             View myView = getActivity().findViewById(R.id.dayFragment);
+            final GlobalInt global = new GlobalInt();
+
+
             myView.setOnTouchListener(new OnSwipeListener(getActivity()) {
                 @Override
-                public void onSwipeRight() {
+                public void onSwipeLeft() {
                     // Load day - 1
+                    Log.d("Resulting Request","right");
+                    addDayFragment(dayNames[today+(global.increment())], R.id.dayFragment);
+                    View myView = getActivity().findViewById(R.id.dayFragment);
                 }
                 @Override
-                public void onSwipeLeft() {
+                public void onSwipeRight() {
                     // Load day + 1
+                    Log.d("Resulting Request","left");
+                    addDayFragment(dayNames[today+(global.decrement())], R.id.dayFragment);
+                    View myView = getActivity().findViewById(R.id.dayFragment);
                 }
             });
         }
