@@ -142,7 +142,18 @@ public class FragmentTimetable extends Fragment {
             addDayFragment(dayNames[global.returnDay()], R.id.dayFragment);
             View myView = getActivity().findViewById(R.id.dayFragment);
 
-
+            class Callback implements OnTaskCompleted{
+                @Override
+                public void onTaskCompleted(JSONObject result) {
+                    Toast.makeText(getActivity(),"WORKED",Toast.LENGTH_SHORT).show();
+                    Log.d("Resulting Request",result.toString());
+                }
+            }
+            HashMap<String,String> request = new HashMap<String, String>();
+            request.put("method","module");
+            request.put("action","getall");
+            request.put("auth","debug");
+            new APIClass(getActivity(), new Callback()).execute(request);
 
             myView.setOnTouchListener(new OnSwipeListener(getActivity()) {
                 @Override
