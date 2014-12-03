@@ -161,50 +161,53 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
         JSONObject result = null;
         HashMap<String,String> requestMap = params[0];
         // Make sure we have the method and action, throw error if we don't
-        if(requestMap.containsKey("method") && requestMap.containsKey("action")){
-            if(requestMap.get("action").equals("add")){
-                // swap map action to get, ready for saving
-                requestMap.put("action","get");
-                if(requestMap.get("method").equals("module")) {
-                    // format module response string to save
-                    formatModuleAdd(requestMap);
-                } else if (requestMap.get("method").equals("timetable")){
-                    // format timetable response string to save
-                    formatTimetableAdd(requestMap);
-                }
-
-            }
-            // check the network status
-            ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-            if (networkInfo != null && networkInfo.isConnected()) {
-                // Connected, make request
-                // Get auth if authenticated user
-                String auth = context.getSharedPreferences("MyAuthFile", 0).getString("Auth","");
-                if(!auth.equals("")){
-                    requestMap.put("auth",auth);
-                }
-                String url = buildURL(requestMap);
-                Log.d("APIClass", "Making a Request to: " + url);
-                String requestResult = GET(url);
-                Log.d("APIClass", "Response: " + requestResult);
-                try {
-                    result = new JSONObject(requestResult);
-                } catch (JSONException e) {
-                    //It's probably a bad idea to throw runtime errors for the sake of it
-                    e.printStackTrace();
-                    Toast.makeText(context, "Invalid API Response", Toast.LENGTH_LONG).show();
-                    return new JSONObject();
-                }
-
-                //Handle errors
-                if(!result.has("status")) {
-                    Toast.makeText(context, "Invalid API Response", Toast.LENGTH_LONG).show();
-                    return new JSONObject();
+        if(requestMap.containsKey("method") && requestMap.containsKey("action")) {
+            String auth = context.getSharedPreferences("MyAuthFile", 0).getString("Auth","");
+            // if unauthenticated and a non-user method, handle actions locally
+            if(auth.equals("") && !requestMap.get("method").equals("user")) {
+                if(requestMap.get("action").equals("add")) {
+                    // swap map action to get, ready for saving
+                    requestMap.put("action", "get");
+                    if (requestMap.get("method").equals("module")) {
+                        // format module response string to save
+                        formatModuleAdd(requestMap);
+                    } else if (requestMap.get("method").equals("timetable")) {
+                        // format timetable response string to save
+                        formatTimetableAdd(requestMap);
+                    }
                 }
             } else {
-                // Not connected, will look at local storage here
-                publishProgress(0);
+                // check the network status
+                ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+                if (networkInfo != null && networkInfo.isConnected()) {
+                    // Connected, make request
+                    // Get auth if authenticated user
+                    if (!auth.equals("")) {
+                        requestMap.put("auth", auth);
+                    }
+                    String url = buildURL(requestMap);
+                    Log.d("APIClass", "Making a Request to: " + url);
+                    String requestResult = GET(url);
+                    Log.d("APIClass", "Response: " + requestResult);
+                    try {
+                        result = new JSONObject(requestResult);
+                    } catch (JSONException e) {
+                        //It's probably a bad idea to throw runtime errors for the sake of it
+                        e.printStackTrace();
+                        Toast.makeText(context, "Invalid API Response", Toast.LENGTH_LONG).show();
+                        return new JSONObject();
+                    }
+
+                    //Handle errors
+                    if (!result.has("status")) {
+                        Toast.makeText(context, "Invalid API Response", Toast.LENGTH_LONG).show();
+                        return new JSONObject();
+                    }
+                } else {
+                    // Not connected, will look at local storage here
+                    publishProgress(0);
+                }
             }
         } else {
             throw new Error("Set method and action for API call");
