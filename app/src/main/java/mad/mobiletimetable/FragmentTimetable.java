@@ -135,7 +135,7 @@ public class FragmentTimetable extends Fragment {
             request.put("method","module");
             request.put("action","getall");
             request.put("auth","debug");
-            new APIClass(getActivity().getApplicationContext(),new Callback()).execute(request);
+            new APIClass(getActivity(), new Callback()).execute(request);
         } else {
             final GlobalInt global = new GlobalInt();
             final String[] dayNames = {"Monday","Tuesday","Wednesday","Thursday","Friday"};

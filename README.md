@@ -16,5 +16,5 @@ HashMap<String,String> request = new HashMap<String, String>();
 request.put("method","module");
 request.put("action","getall");
 request.put("auth","debug");
-new APIClass(getActivity().getApplicationContext(),new Callback()).execute(request);
+new APIClass(getActivity(), new Callback()).execute(request);
 ```

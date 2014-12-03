@@ -48,6 +48,10 @@ public class ActivityLogin extends Activity{
             fragmentTransaction.replace(android.R.id.content, fragmentLogin);
 
             fragmentTransaction.commit();
+
+            if(getIntent().hasExtra("authentication_error")) {
+                Toast.makeText(this, "Authentication Error. Please Login", Toast.LENGTH_SHORT).show();
+            }
         }else{
             Intent intent = new Intent(this, ActivityMain.class);
             finish();
@@ -116,9 +120,7 @@ public class ActivityLogin extends Activity{
                 if (!authenticated) {
                     Context context = getApplicationContext();
                     CharSequence text = "Username or Password incorrect";
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
+                    Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
 
                 } else {
 
@@ -134,7 +136,7 @@ public class ActivityLogin extends Activity{
         request.put("username",username.getText().toString());
         request.put("password",password.getText().toString());
 
-        new APIClass(getApplicationContext(),new Callback()).execute(request);
+        new APIClass(this, new Callback()).execute(request);
 
 
     }
@@ -196,7 +198,7 @@ public class ActivityLogin extends Activity{
         request.put("username", mUsername);
         request.put("password", mPassword);
         request.put("email", mEmail);
-        new APIClass(getApplicationContext(), new Callback()).execute(request);
+        new APIClass(this, new Callback()).execute(request);
     }
 }
 

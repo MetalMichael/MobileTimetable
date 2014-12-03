@@ -44,7 +44,7 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
             request.put("method", "module");
             request.put("action", "get");
             request.put("moduleid", intent.getStringExtra("moduleid"));
-            api = new APIClass(getActivity().getApplicationContext(), new Callback());
+            api = new APIClass(getActivity(), new Callback());
             api.execute(request);
         } else {
             //Creating new module
@@ -123,7 +123,7 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
 
     @Override
     public void onClick(View v) {
-        api = new APIClass(getActivity().getApplicationContext(), new CreateEditCallback());
+        api = new APIClass(getActivity(), new CreateEditCallback());
 
         HashMap<String, String> request = new HashMap<String, String>();
         request.put("method", "module");

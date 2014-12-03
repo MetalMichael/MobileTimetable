@@ -1,6 +1,7 @@
 package mad.mobiletimetable;
 
-import android.content.SharedPreferences;
+import android.app.Activity;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -31,10 +32,12 @@ import android.widget.Toast;
  * Created by M on 28/11/2014.
  */
 public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObject> {
-    private Context c;
+    private Context context;
+    private Activity activity;
     private OnTaskCompleted listener;
-    public APIClass(Context c, OnTaskCompleted listener) {
-        this.c = c;
+    public APIClass(Activity activity, OnTaskCompleted listener) {
+        this.activity = activity;
+        this.context = activity.getApplicationContext();
         this.listener = listener;
     }
     private String buildURL(HashMap<String,String> requestMap){
@@ -109,11 +112,11 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
     private String fetchFromStorage(HashMap<String,String> requestMap){
         String result = "";
         String mapCode = Integer.toString(requestMap.hashCode());
-        File resultFile = new File(c.getFilesDir(), mapCode);
+        File resultFile = new File(context.getFilesDir(), mapCode);
         if(resultFile.exists()){
             FileInputStream fis = null;
             try {
-                fis = c.openFileInput(mapCode);
+                fis = context.openFileInput(mapCode);
                 char current;
                 while(fis.available() > 0){
                     current = (char) fis.read();
@@ -130,11 +133,11 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
     // Save successful request result to local storage
     private void saveToStorage(HashMap<String,String> requestMap,String result){
         String mapCode = Integer.toString(requestMap.hashCode());
-        File resultFile = new File(c.getFilesDir(), mapCode);
+        File resultFile = new File(context.getFilesDir(), mapCode);
         FileOutputStream fos = null;
         try {
             // Save cached result
-            fos = c.openFileOutput(mapCode, Context.MODE_PRIVATE);
+            fos = context.openFileOutput(mapCode, Context.MODE_PRIVATE);
             fos.write(result.getBytes());
             fos.close();
         } catch (Exception e){
@@ -172,22 +175,29 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
 
             }
             // check the network status
-            ConnectivityManager connMgr = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
+            ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
             if (networkInfo != null && networkInfo.isConnected()) {
                 // Connected, make request
                 // Get auth if authenticated user
-                String auth = c.getSharedPreferences("MyAuthFile", 0).getString("Auth","");
+                String auth = context.getSharedPreferences("MyAuthFile", 0).getString("Auth","");
                 if(!auth.equals("")){
                     requestMap.put("auth",auth);
                 }
                 String url = buildURL(requestMap);
                 Log.d("APIClass", "Making a Request to: " + url);
                 String requestResult = GET(url);
+                Log.d("APIClass", "Response: " + requestResult);
                 try {
                     result = new JSONObject(requestResult);
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
+                }
+
+                //Handle errors
+                if(!result.has("status")) {
+                    Toast.makeText(context, "Invalid API Response", Toast.LENGTH_LONG).show();
+                    return new JSONObject();
                 }
             } else {
                 // Not connected, will look at local storage here
@@ -199,14 +209,37 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
         return result;
     }
 
+    private void showLogin() {
+        Intent intent = new Intent(context, ActivityLogin.class);
+        activity.finish();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("authentication_error", true);
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onProgressUpdate(Integer... values) {
         super.onProgressUpdate(values);
-        Toast.makeText(c.getApplicationContext(),values[0], Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, values[0], Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onPostExecute(JSONObject result) {
+        try {
+            String status = result.getString("status");
+            Log.d("APIClass", "Status: " + status);
+            if (status.equals("error")) {
+                String error = result.getString("error");
+                Log.d("APIClass", "Error: " + error);
+                if(error.equals("403")) {
+                    showLogin();
+                } else {
+                    Toast.makeText(activity, error, Toast.LENGTH_LONG).show();
+                }
+            }
+        } catch(JSONException e) {
+            throw new RuntimeException(e);
+        }
         listener.onTaskCompleted(result);
     }
 }
