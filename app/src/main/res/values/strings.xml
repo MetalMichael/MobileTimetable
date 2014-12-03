@@ -63,6 +63,7 @@
         <item>18:00-19:00</item>
     </string-array>
 
+    <string name="modules">Modules</string>
     <string name="action_add_module">Add Module</string>
     <string name="edit_module">Edit Module</string>
     <string name="add_module">Add Module</string>

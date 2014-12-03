@@ -191,7 +191,10 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
                 try {
                     result = new JSONObject(requestResult);
                 } catch (JSONException e) {
-                    throw new RuntimeException(e);
+                    //It's probably a bad idea to throw runtime errors for the sake of it
+                    e.printStackTrace();
+                    Toast.makeText(context, "Invalid API Response", Toast.LENGTH_LONG).show();
+                    return new JSONObject();
                 }
 
                 //Handle errors
@@ -230,6 +233,9 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
             Log.d("APIClass", "Status: " + status);
             if (status.equals("error")) {
                 String error = result.getString("error");
+                if(error.equals("")) {
+                    error = "An Unknown Error Occurred";
+                }
                 Log.d("APIClass", "Error: " + error);
                 if(error.equals("403")) {
                     showLogin();
