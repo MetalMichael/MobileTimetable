@@ -1,0 +1,6 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_add_timetable"
+        android:icon="@drawable/ic_action_new"
+        android:title="@string/app_name"
+        android:showAsAction="always" />
+</menu>
