@@ -38,14 +38,51 @@ public class FragmentTimetable extends Fragment {
     }
     //for day changes
     public class GlobalInt {
-        public int dayIncrement = 0;
+        public int dayOfWeek = 0;
+        public int day;
+        public void GlobalInt() {
+            Calendar c = Calendar.getInstance();
+            this.dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+            switch (dayOfWeek) {
+                case Calendar.SUNDAY:
+                    day = 0;
+                    break;
+                case Calendar.MONDAY:
+                    day = 0;
+                    break;
+                case Calendar.TUESDAY:
+                    day = 1;
+                    break;
+                case Calendar.WEDNESDAY:
+                    day = 2;
+                    break;
+                case Calendar.THURSDAY:
+                    day = 3;
+                    break;
+                case Calendar.FRIDAY:
+                    day = 4;
+                    break;
+                case Calendar.SATURDAY:
+                    day = 0;
+                    break;
+            }
+        }
+        public int returnDay() {
+               return this.day;
+        }
         public int increment(){
-            this.dayIncrement ++;
-            return dayIncrement;
+            this.day ++;
+            if(this.day >4){
+                this.day = 0;
+            }
+            return this.day;
         }
         public int decrement(){
-            this.dayIncrement --;
-            return dayIncrement;
+            this.day --;
+            if(this.day <0){
+                this.day = 4;
+            }
+            return this.day;
         }
     }
 
@@ -80,37 +117,11 @@ public class FragmentTimetable extends Fragment {
             request.put("auth","debug");
             new APIClass(getActivity().getApplicationContext(),new Callback()).execute(request);
         } else {
-            Calendar c = Calendar.getInstance();
-            int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-            int day = 1;
-            switch(dayOfWeek){
-                case Calendar.SUNDAY:
-                    day = 0;
-                    break;
-                case Calendar.MONDAY:
-                    day = 0;
-                    break;
-                case Calendar.TUESDAY:
-                    day = 1;
-                    break;
-                case Calendar.WEDNESDAY:
-                    day = 2;
-                    break;
-                case Calendar.THURSDAY:
-                    day = 3;
-                    break;
-                case Calendar.FRIDAY:
-                    day = 4;
-                    break;
-                case Calendar.SATURDAY:
-                    day = 0;
-                    break;
-            }
-            final int today = day;
-            final String[] dayNames = {"Monday","Tuesday","Wednesday","Thursday","Friday"};
-            addDayFragment(dayNames[day], R.id.dayFragment);
-            View myView = getActivity().findViewById(R.id.dayFragment);
             final GlobalInt global = new GlobalInt();
+            final String[] dayNames = {"Monday","Tuesday","Wednesday","Thursday","Friday"};
+            addDayFragment(dayNames[global.returnDay()], R.id.dayFragment);
+            View myView = getActivity().findViewById(R.id.dayFragment);
+
 
 
             myView.setOnTouchListener(new OnSwipeListener(getActivity()) {
@@ -118,14 +129,14 @@ public class FragmentTimetable extends Fragment {
                 public void onSwipeLeft() {
                     // Load day - 1
                     Log.d("Resulting Request","right");
-                    addDayFragment(dayNames[today+(global.increment())], R.id.dayFragment);
+                    addDayFragment(dayNames[global.increment()], R.id.dayFragment);
                     View myView = getActivity().findViewById(R.id.dayFragment);
                 }
                 @Override
                 public void onSwipeRight() {
                     // Load day + 1
                     Log.d("Resulting Request","left");
-                    addDayFragment(dayNames[today+(global.decrement())], R.id.dayFragment);
+                    addDayFragment(dayNames[global.decrement()], R.id.dayFragment);
                     View myView = getActivity().findViewById(R.id.dayFragment);
                 }
             });
