@@ -185,7 +185,7 @@ public class ActivityLogin extends Activity{
                 } else {
                     String registered = "you are now registered";
                     Toast.makeText(getApplicationContext(), registered, Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(ActivityLogin.this, ActivityLogin.class);
+                    Intent intent = new Intent(ActivityLogin.this, ActivityMain.class);
                     finish();
                     startActivity(intent);
                 }
