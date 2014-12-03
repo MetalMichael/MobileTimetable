@@ -1,5 +1,6 @@
 package mad.mobiletimetable;
 
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,15 +38,11 @@ public class FragmentTimetable extends Fragment {
         inflater.inflate(R.menu.timetable, menu);
     }
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.action_add_timetable:
-                //Intent intent = new Intent(getActivity(), ActivityMain.class);
-                //intent.putExtra("FragmentAddToTimetable", "3");
-                //startActivity(intent);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.content_frame, new FragmentAddToTimetable())
+                .commit();
+        return true;
     }
 
 
