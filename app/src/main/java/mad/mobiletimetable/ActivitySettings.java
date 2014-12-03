@@ -48,6 +48,9 @@ public class ActivitySettings extends PreferenceActivity {
      * shown on tablets.
      */
     private static final boolean ALWAYS_SIMPLE_PREFS = true;
+    private APIClass api;
+    private boolean active;
+    private final String PREFS_NAME = "MyAuthFile";
 
 
     @Override
@@ -56,7 +59,14 @@ public class ActivitySettings extends PreferenceActivity {
 
         setupSimplePreferencesScreen();
     }
-
+    @Override
+    public void onDestroy() {
+        active = false;
+        if(api != null) {
+            api.cancel(true);
+        }
+        super.onDestroy();
+    }
     @Override
     protected boolean isValidFragment(String fragmentName) {
         return GeneralPreferenceFragment.class.getName().equals(fragmentName);
@@ -83,9 +93,9 @@ public class ActivitySettings extends PreferenceActivity {
         // to reflect the new value, per the Android Design guidelines.
         findPreference("change_password").setOnPreferenceChangeListener(UserListener);
         findPreference("change_password").setDefaultValue("");
-
+        findPreference("logout").setOnPreferenceChangeListener(UserListener);
         findPreference("display_picture").setOnPreferenceClickListener(ClickListener);
-        findPreference("display_picture").setOnPreferenceChangeListener(UserListener);
+
         bindPreferenceSummaryToValue(findPreference("notification_time"));
 
     }
@@ -130,9 +140,12 @@ public class ActivitySettings extends PreferenceActivity {
     private Preference.OnPreferenceClickListener ClickListener = new Preference.OnPreferenceClickListener() {
         @Override
         public boolean onPreferenceClick(Preference preference) {
-            Intent pictureUpload = new Intent(Intent.ACTION_GET_CONTENT);
-            pictureUpload.setType("image/*");
-            startActivityForResult(pictureUpload,1);
+            if(preference.getTitle().equals("Change Display Picture")) {
+                Intent pictureUpload = new Intent(Intent.ACTION_GET_CONTENT);
+                pictureUpload.setType("image/*");
+                startActivityForResult(pictureUpload, 1);
+
+            }
             return true;
         }
 
@@ -157,6 +170,15 @@ public class ActivitySettings extends PreferenceActivity {
                     requests(stringValue);
                 else
                     Toast.makeText(getApplicationContext(),"Password must be between 6 and 20 chars",Toast.LENGTH_SHORT ).show();
+            } else if(preference.getTitle().equals("Logout")) {
+                SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.clear();
+                editor.commit();
+                Toast.makeText(getApplicationContext(),"Logged out!",Toast.LENGTH_SHORT ).show();
+                Intent intent = new Intent(ActivitySettings.this, ActivityLogin.class);
+                startActivity(intent);
+
             }
             return true;
         }
@@ -203,12 +225,13 @@ public class ActivitySettings extends PreferenceActivity {
 
     private void requests(String stringValue) {
         HashMap<String,String> request = new HashMap<String, String>();
-        SharedPreferences sharedPreferences = getSharedPreferences("MyAuthFile",0);
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME,0);
         sharedPreferences.getString("Auth","");
         request.put("method","user");
         request.put("action","editpassword");
         request.put("password",stringValue);
-        new APIClass(ActivitySettings.this,new Callback()).execute(request);
+        api = new APIClass(ActivitySettings.this,new Callback());
+        api.execute(request);
     }
     /**
      * Binds a preference's summary to its value. More specifically, when the

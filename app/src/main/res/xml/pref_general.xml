@@ -32,4 +32,10 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null" />
 
+    <mad.mobiletimetable.LogoutBox
+        android:key="logout"
+        android:title="Logout"
+        android:dialogMessage="Are you sure?"
+
+        />
 </PreferenceScreen>
