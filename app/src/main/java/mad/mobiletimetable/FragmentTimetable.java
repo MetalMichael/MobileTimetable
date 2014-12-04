@@ -132,7 +132,7 @@ public class FragmentTimetable extends Fragment {
                 }
             }
             HashMap<String,String> request = new HashMap<String, String>();
-            request.put("method","module");
+            request.put("method","timetable");
             request.put("action","getall");
             request.put("auth","debug");
             new APIClass(getActivity(), new Callback()).execute(request);
@@ -150,7 +150,7 @@ public class FragmentTimetable extends Fragment {
                 }
             }
             HashMap<String,String> request = new HashMap<String, String>();
-            request.put("method","module");
+            request.put("method","timetable");
             request.put("action","getall");
             request.put("auth","debug");
             new APIClass(getActivity(), new Callback()).execute(request);
