@@ -76,5 +76,7 @@
     <string name="Email">Email</string>
     <string name="Cancel">Cancel</string>
 
+    <string name="list_item_background">Swipe to Delete</string>
+
 
 </resources>

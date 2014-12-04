@@ -1,11 +1,14 @@
 package mad.mobiletimetable;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,15 +16,38 @@ import android.widget.TextView;
 /**
  * Created by Michael on 25/11/2014.
  */
-public class AdapterModules extends ArrayAdapter<ModelModule> {
+public class AdapterModules extends BaseAdapter {
     private final Context context;
-    private final ArrayList<ModelModule> modulesArrayList;
+    private ArrayList<ModelModule> modulesArrayList;
 
     public AdapterModules(Context context, ArrayList<ModelModule> modulesArrayList) {
-        super(context, R.layout.fragment_modules_item, modulesArrayList);
-
         this.context = context;
         this.modulesArrayList = modulesArrayList;
+    }
+
+    public void clear() {
+        modulesArrayList = new ArrayList<ModelModule>();
+        notifyDataSetChanged();
+    }
+
+    public void addAll(ArrayList<ModelModule> items) {
+        modulesArrayList = items;
+        notifyDataSetChanged();
+    }
+
+    public void remove(int position) {
+        modulesArrayList.remove(position);
+        notifyDataSetChanged();
+    }
+
+    public void insert(int position, ModelModule item) {
+        modulesArrayList.add(position, item);
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public ModelModule getItem(int position) {
+        return modulesArrayList.get(position);
     }
 
     @Override
@@ -53,5 +79,10 @@ public class AdapterModules extends ArrayAdapter<ModelModule> {
     @Override
     public int getCount() {
         return modulesArrayList.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 }
