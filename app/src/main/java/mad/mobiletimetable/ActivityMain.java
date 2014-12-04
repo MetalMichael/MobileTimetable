@@ -32,6 +32,8 @@ public class ActivityMain extends FragmentActivity
     private CharSequence mTitle;
     private String[] mDrawItems;
 
+    private int selectedIndex = 0;
+
     @Override
     public void onFragmentInteraction(Uri uri) {
 
@@ -84,9 +86,14 @@ public class ActivityMain extends FragmentActivity
         }
     }
 
+    @Override
+    protected void onResume() {
+        mDrawerList.setItemChecked(selectedIndex, true);
+        super.onResume();
+    }
+
     private void selectItem(int position) {
-        // update the modules content by replacing fragments
-        FragmentManager fragmentManager = getFragmentManager();
+        if(selectedIndex == position) return;
 
         Fragment frag = null;
 
@@ -103,25 +110,17 @@ public class ActivityMain extends FragmentActivity
             default:
                 Intent intent = new Intent(this, ActivitySettings.class);
                 this.startActivity(intent);
-                return;
         }
         if(frag != null) {
-            fragmentManager.beginTransaction()
+            selectedIndex = position;
+
+            getFragmentManager().beginTransaction()
                     .replace(R.id.content_frame, frag)
                     .commit();
+            mDrawerList.setItemChecked(position, true);
         }
 
         mDrawerLayout.closeDrawer(mDrawerList);
-        mDrawerList.setItemChecked(position, true);
-    }
-
-    /* Called whenever we call invalidateOptionsMenu() */
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        //menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
-        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -131,22 +130,7 @@ public class ActivityMain extends FragmentActivity
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        // Handle action buttons
-        switch(item.getItemId()) {
-            /*case R.id.action_settings:
-                // create intent to perform web search for this planet
-                Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-                intent.putExtra(SearchManager.QUERY, getActionBar().getTitle());
-                // catch event that there's no activity to handle intent
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(this, R.string.app_not_available, Toast.LENGTH_LONG).show();
-                }
-                return true;*/
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     /* The click listner for ListView in the navigation drawer */
@@ -162,11 +146,6 @@ public class ActivityMain extends FragmentActivity
         mTitle = title;
         getActionBar().setTitle(mTitle);
     }
-
-    /**
-     * When using the ActionBarDrawerToggle, you must call it during
-     * onPostCreate() and onConfigurationChanged()...
-     */
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {

@@ -14,6 +14,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Toast;
 import android.graphics.Bitmap;
 import org.json.JSONException;
@@ -50,11 +51,11 @@ public class ActivitySettings extends PreferenceActivity {
     private APIClass api;
     private final String PREFS_NAME = "MyAuthFile";
 
-
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         setupSimplePreferencesScreen();
     }
     @Override
@@ -73,6 +74,17 @@ public class ActivitySettings extends PreferenceActivity {
      * device configuration dictates that a simplified, single-pane UI should be
      * shown.
      */
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                super.onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     private void setupSimplePreferencesScreen() {
         if (!isSimplePreferences(this)) {

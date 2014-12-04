@@ -69,6 +69,8 @@ public class AdapterModules extends BaseAdapter {
             rowView.setBackgroundColor(context.getResources().getColor(R.color.module_row_odd));
         }
 
+        rowView.setTag(Integer.toString(module.getId()));
+
         return rowView;
     }
 

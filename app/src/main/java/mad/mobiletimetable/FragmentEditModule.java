@@ -156,13 +156,22 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
         public void onTaskCompleted(JSONObject result) {
             if(!active) return;
 
-            Log.v("FragmentEditModule", result.toString());
-            if(edit) {
-                Toast.makeText(getActivity(), "Edited", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(getActivity(), "Created", Toast.LENGTH_LONG).show();
+            String status;
+            try {
+                status = result.getString("status");
+            } catch(JSONException e) {
+                e.printStackTrace();
+                return;
             }
-            getActivity().finish();
+
+            if(status.equals("OK")) {
+                if (edit) {
+                    Toast.makeText(getActivity(), "Edited", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getActivity(), "Created", Toast.LENGTH_LONG).show();
+                }
+                getActivity().finish();
+            }
         }
     }
 
@@ -184,7 +193,7 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
         ((TextView)v2.findViewById(R.id.module_code)).setText(module.getCode());
         ((TextView)v2.findViewById(R.id.module_lecturer)).setText(module.getLecturer());
 
-        ((Button)v2.findViewById(R.id.module_create)).setText(R.string.create);
+        ((Button)v2.findViewById(R.id.module_create)).setText(R.string.edit);
 
         view.removeAllViews();
         view.addView(v2);

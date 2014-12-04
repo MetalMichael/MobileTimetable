@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
      android:layout_width="match_parent"
      android:descendantFocusability="blocksDescendants"
-     android:layout_height="48dp">
+     android:layout_height="64dp">
     <TextView
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
@@ -17,7 +17,8 @@
         android:id="@+id/swiping_layout"
         android:background="@android:color/white"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingLeft="10dp">
         <RelativeLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"

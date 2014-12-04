@@ -158,14 +158,9 @@ public class FragmentModules extends Fragment {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), "Clicked on item " + mAdapter.getItem(position), Toast.LENGTH_SHORT).show();
-            }
-        });
-        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), "Long clicked on item " + mAdapter.getItem(position), Toast.LENGTH_SHORT).show();
-                return true;
+                Intent intent = new Intent(getActivity(), ActivityEditModule.class);
+                intent.putExtra("moduleid", (String)view.getTag());
+                startActivity(intent);
             }
         });
 
@@ -173,9 +168,7 @@ public class FragmentModules extends Fragment {
 
         SharedPreferences prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
 
-        EnhancedListView.UndoStyle style = EnhancedListView.UndoStyle.SINGLE_POPUP;
-        //style = EnhancedListView.UndoStyle.MULTILEVEL_POPUP;
-        //style = EnhancedListView.UndoStyle.COLLAPSED_POPUP;
+        EnhancedListView.UndoStyle style = EnhancedListView.UndoStyle.MULTILEVEL_POPUP;
         mListView.setUndoStyle(style);
 
         mListView.enableSwipeToDismiss();

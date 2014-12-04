@@ -34,7 +34,6 @@ public class AdapterDrawer extends ArrayAdapter<String> {
         ((TextView)convertView.findViewById(R.id.drawer_item_text)).setText(items[position]);
 
         Drawable drawable;
-        Log.d("AdapterDrawer", "Position: " + Integer.toString(position));
         switch(position) {
             case 0:
                 ((ImageView)convertView.findViewById(R.id.drawer_item_image))
