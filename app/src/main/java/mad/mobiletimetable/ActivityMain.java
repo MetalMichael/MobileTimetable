@@ -31,8 +31,9 @@ public class ActivityMain extends FragmentActivity
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private String[] mDrawItems;
-
-    private int selectedIndex = 0;
+    
+    //Start with no fragment loaded
+    private int selectedIndex = 99;
 
     @Override
     public void onFragmentInteraction(Uri uri) {
