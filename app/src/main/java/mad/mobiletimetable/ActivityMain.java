@@ -51,8 +51,7 @@ public class ActivityMain extends FragmentActivity
         // set a custom shadow that overlays the modules content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mDrawItems));
+        mDrawerList.setAdapter(new AdapterDrawer(this, mDrawItems));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
@@ -99,9 +98,6 @@ public class ActivityMain extends FragmentActivity
                 frag = new FragmentModules();
                 break;
             case 2:
-                //TODO: Add profile pages etc.
-                return;
-            case 3:
                 frag= new FragmentAddToTimetable();
                 break;
             default:

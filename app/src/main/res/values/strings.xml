@@ -6,7 +6,6 @@
     <string-array name="drawer_items">
         <item>Timetable</item>
         <item>Modules</item>
-        <item>Profile</item>
         <item>Add To Timetable</item>
         <item>Settings</item>
 

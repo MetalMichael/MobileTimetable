@@ -40,7 +40,7 @@ public class FragmentModules extends Fragment {
     }
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        getActivity().getMenuInflater().inflate(R.menu.modules, menu);
+        inflater.inflate(R.menu.modules, menu);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
