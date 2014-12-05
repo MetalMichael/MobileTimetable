@@ -20,6 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -107,7 +108,25 @@ public class FragmentTimetable extends Fragment {
             return this.day;
         }
     }
+    class EventsArrray {
+        private ModelEvent[] array;
 
+        public void Add(ModelEvent  x){
+            this.array[this.array.length] = x;
+        }
+
+        public ModelEvent Get(int x){
+            return this.array[x];
+        }
+
+        public ModelEvent[] getAll(){
+            return this.array;
+        }
+
+        public int getLength(){
+            return this.array.length;
+        }
+    }
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -116,14 +135,17 @@ public class FragmentTimetable extends Fragment {
             @Override
             public void onTaskCompleted(JSONObject result) {
                 Toast.makeText(getActivity(), "WORKED", Toast.LENGTH_SHORT).show();
-                Log.d("Resulting Request", result.toString());
+
                 try{
+                    final EventsArrray eventsArray = new EventsArrray();
                     final JSONArray events = result.getJSONArray("events");
                     Log.d("events", events.toString());
                     for(int i = 0; i < events.length(); i++) {
                         Log.d(Integer.toString(i), events.getJSONObject(i).toString());
                         event = new ModelEvent(events.getJSONObject(i));
+                        eventsArray.Add(event);
                         int eventid = event.getId();
+
                         Log.d("event id", String.valueOf(eventid));
                     }
                 } catch(JSONException e) {
@@ -182,4 +204,5 @@ public class FragmentTimetable extends Fragment {
         fTransaction.replace(dayFragmentID, fragment);
         fTransaction.commit();
     }
+
 }
