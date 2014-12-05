@@ -25,7 +25,7 @@ public class ModelEvent {
             day = event.getString("ModuleCode");
 
             SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
-            time = df.parse(event.getString("Lecturer"));
+            time = df.parse(event.getString("Time"));
 
             if(event.has("module") && !event.isNull("module")) {
                 module = new ModelModule(event.getJSONObject("module"));
