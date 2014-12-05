@@ -122,14 +122,13 @@ public class FragmentTimetable extends Fragment {
                     Log.d("events", events.toString());
                     for(int i = 0; i < events.length(); i++) {
                         Log.d(Integer.toString(i), events.getJSONObject(i).toString());
+                        event = new ModelEvent(events.getJSONObject(i));
+                        int eventid = event.getId();
+                        Log.d("event id", String.valueOf(eventid));
                     }
                 } catch(JSONException e) {
                     e.printStackTrace();
                 }
-
-                event = new ModelEvent(result);
-                int eventid = event.getId();
-                Log.d("event id", String.valueOf(eventid));
 
             }
         }
