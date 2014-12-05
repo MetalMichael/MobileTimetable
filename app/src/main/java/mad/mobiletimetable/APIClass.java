@@ -10,6 +10,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -106,13 +107,34 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
 
     }
 
-    // TODO Use in doInBackground
+    private int getFileID(HashMap<String,String> requestMap) {
+        Log.d("API Class","Getting File ID for "+requestMap.toString());
+        int id = 1;
+        String dirPath = context.getFilesDir()+"/"+requestMap.get("method")+"/"+requestMap.get("action");
+        File dir = new File(dirPath);
+        File dirFiles[] = dir.listFiles();
+        if(dirFiles!=null) {
+            Log.d("API Class","We found "+dirFiles.length+" files for "+requestMap.get("method")+"|"+requestMap.get("action"));
+            for (int i = 0; i < dirFiles.length; i++) {
+                int tempid = Integer.parseInt(dirFiles[i].getName().split("-")[0].trim());
+                if (tempid > id) {
+                    id = tempid + 1;
+                }
+            }
+        }
+        Log.d("API Class","ID for "+requestMap.toString()+" is "+Integer.toString(id));
+        return id;
+    }
+
     // Check local storage for result of request if connection unavailable
     // use it as the result if it is present
     private String fetchFromStorage(HashMap<String,String> requestMap){
+        Log.d("API Class","Fetch from Storage");
         String result = "";
         String mapCode = Integer.toString(requestMap.hashCode());
-        File resultFile = new File(context.getFilesDir(), mapCode);
+        String dirPath = context.getFilesDir()+"/"+requestMap.get("method")+"/"+requestMap.get("action");
+        String fileName = getFileID(requestMap)+"-"+mapCode;
+        File resultFile = new File(dirPath, fileName);
         if(resultFile.exists()){
             FileInputStream fis = null;
             try {
@@ -126,14 +148,17 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
                 e.printStackTrace();
             }
         }
+        Log.d("API Class","Fetched from Storage");
         return result;
     }
 
-    // TODO Use in doInBackground
     // Save successful request result to local storage
-    private void saveToStorage(HashMap<String,String> requestMap,String result){
+    private void saveToStorage(HashMap<String,String> requestMap, String result){
+        Log.d("API Class","Saving to Storage");
         String mapCode = Integer.toString(requestMap.hashCode());
-        File resultFile = new File(context.getFilesDir(), mapCode);
+        String dirPath = context.getFilesDir()+"/"+requestMap.get("method")+"/"+requestMap.get("action");
+        String fileName = getFileID(requestMap)+"-"+mapCode;
+        File resultFile = new File(dirPath, fileName);
         FileOutputStream fos = null;
         try {
             // Save cached result
@@ -144,25 +169,120 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
             // We have a permissions problem or the app directory doesn't exist
             e.printStackTrace();
         }
+        Log.d("API Class","Save Finished");
+    }
+
+    private JSONObject appendToArray(String arrayName, JSONObject newElement, HashMap<String,String> requestMap){
+        JSONObject response = new JSONObject();
+        String previousGetAll = fetchFromStorage(requestMap);
+        try {
+            JSONArray elements = new JSONArray();
+            if(previousGetAll != ""){
+                JSONObject previous = new JSONObject(previousGetAll);
+                elements = previous.getJSONArray(arrayName);
+            }
+            elements.put(newElement);
+            response.put(arrayName,elements);
+            response.put("status","OK");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return response;
     }
 
     // Format a module add string to a module get string response
-    private String formatModuleAdd(HashMap<String,String> requestMap){
-        return "";
+    private JSONObject formatModuleGet(HashMap<String,String> requestMap){
+        JSONObject response = new JSONObject();
+        JSONObject module = new JSONObject();
+        try {
+            module.put("ID",getFileID(requestMap));
+            module.put("ModuleCode",requestMap.get("modulecode"));
+            module.put("ModuleTitle",requestMap.get("moduletitle"));
+            module.put("Lecturer",requestMap.get("lecturer"));
+            response.put("module",module);
+            response.put("status","OK");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+    private JSONObject formatModuleGetAll(HashMap<String,String> requestMap){
+        JSONObject response = new JSONObject();
+        JSONObject newModule = formatModuleGet(requestMap);
+        response = appendToArray("modules",newModule,requestMap);
+        return response;
     }
 
     // Format a timetable add string to a timetable get string response
-    private String formatTimetableAdd(HashMap<String,String> requestMap){
-        return "";
+    private JSONObject formatTimetableGet(HashMap<String,String> requestMap){
+        JSONObject response = new JSONObject();
+        JSONObject event = new JSONObject();
+        try {
+            event.put("ID",getFileID(requestMap));
+            event.put("ModuleID",requestMap.get("moduleid"));
+            event.put("Day",requestMap.get("day"));
+            event.put("Time",requestMap.get("time"));
+            event.put("Duration",requestMap.get("duration"));
+            response.put("event",event);
+            response.put("status","OK");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    private JSONObject formatTimetableGetAll(HashMap<String,String> requestMap){
+        JSONObject response = new JSONObject();
+        JSONObject newEvent = formatTimetableGet(requestMap);
+        response = appendToArray("events",newEvent,requestMap);
+        return response;
+    }
+
+    private void localHandler(HashMap<String,String> requestMap){
+        Log.d("API Class","localHandler Called");
+        String method = requestMap.get("method");
+        String action = requestMap.get("action");
+        if(method.equals("module")||method.equals("timetable")){
+            String id = "eventid";
+            if(method.equals("module")){
+                id = "moduleid";
+            }
+            if(action.equals("add")){
+                Log.d("API Class","Adding a "+method);
+                HashMap<String,String> getRequest = new HashMap<String, String>();
+                getRequest.put("method",method);
+                getRequest.put("action", "getall");
+                if(method.equals("module")) {
+                    saveToStorage(getRequest, formatModuleGetAll(requestMap).toString());
+                } else {
+                    saveToStorage(getRequest,formatTimetableGetAll(requestMap).toString());
+                }
+                getRequest.put("action","get");
+                getRequest.put(id, Integer.toString(getFileID(requestMap)));
+                if(method.equals("module")) {
+                    saveToStorage(getRequest,formatModuleGet(requestMap).toString());
+                } else {
+                    saveToStorage(getRequest,formatTimetableGet(requestMap).toString());
+                }
+            } else if(action.equals("get")){
+                Log.d("API Class","Getting a "+method);
+                Log.d("API Class","Fetched request "+fetchFromStorage(requestMap).toString());
+            } else if(action.equals("getall")){
+                Log.d("API Class","Getting all "+method+"s");
+                Log.d("API Class","Fetched request "+fetchFromStorage(requestMap).toString());
+            }
+        }
+        Log.d("API Class","localHandler Finished");
     }
 
     @Override
     protected JSONObject doInBackground(HashMap<String,String>... params) {
         JSONObject result = null;
         HashMap<String,String> requestMap = params[0];
+        String auth = context.getSharedPreferences("MyAuthFile", 0).getString("Auth","");
         // Make sure we have the method and action, throw error if we don't
         if(requestMap.containsKey("method") && requestMap.containsKey("action")) {
-            String auth = context.getSharedPreferences("MyAuthFile", 0).getString("Auth","");
+        /*
             // if unauthenticated and a non-user method, handle actions locally
             if(auth.equals("") && !requestMap.get("method").equals("user")) {
                 if(requestMap.get("action").equals("add")) {
@@ -176,38 +296,42 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
                         formatTimetableAdd(requestMap);
                     }
                 }
-            } else {
-                // check the network status
-                ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-                if (networkInfo != null && networkInfo.isConnected()) {
-                    // Connected, make request
-                    // Get auth if authenticated user
-                    if (!auth.equals("")) {
-                        requestMap.put("auth", auth);
-                    }
-                    String url = buildURL(requestMap);
-                    Log.d("APIClass", "Making a Request to: " + url);
-                    String requestResult = GET(url);
-                    Log.d("APIClass", "Response: " + requestResult);
-                    try {
-                        result = new JSONObject(requestResult);
-                    } catch (JSONException e) {
-                        //It's probably a bad idea to throw runtime errors for the sake of it
-                        e.printStackTrace();
-                        Toast.makeText(context, "Invalid API Response", Toast.LENGTH_LONG).show();
-                        return new JSONObject();
-                    }
-
-                    //Handle errors
-                    if (!result.has("status")) {
-                        Toast.makeText(context, "Invalid API Response", Toast.LENGTH_LONG).show();
-                        return new JSONObject();
-                    }
-                } else {
-                    // Not connected, will look at local storage here
-                    publishProgress(0);
+            }
+        */
+            // check the network status
+            ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+            Boolean networked = (networkInfo != null && networkInfo.isConnected());
+            Boolean authedOrAuthing = (!auth.equals("")||requestMap.get("method").equals("user"));
+            if (networked && authedOrAuthing) {
+                // Connected, make request
+                // Get auth if authenticated user
+                if (!auth.equals("")) {
+                    requestMap.put("auth", auth);
                 }
+                String url = buildURL(requestMap);
+                Log.d("APIClass", "Making a Request to: " + url);
+                String requestResult = GET(url);
+                Log.d("APIClass", "Response: " + requestResult);
+                try {
+                    result = new JSONObject(requestResult);
+                } catch (JSONException e) {
+                    //It's probably a bad idea to throw runtime errors for the sake of it
+                    //Question is - do we want to show the user an internal (API) error?
+                    e.printStackTrace();
+                    Toast.makeText(context, "Invalid API Response", Toast.LENGTH_LONG).show();
+                    return new JSONObject();
+                }
+
+                //Handle errors
+                if (!result.has("status")) {
+                    Toast.makeText(context, "Invalid API Response", Toast.LENGTH_LONG).show();
+                    return new JSONObject();
+                }
+            } else {
+                // Not connected, will look at local storage here
+                localHandler(requestMap);
+                //publishProgress(0);
             }
         } else {
             throw new Error("Set method and action for API call");
@@ -226,30 +350,36 @@ public class APIClass extends AsyncTask<HashMap<String,String>, Integer, JSONObj
     @Override
     protected void onProgressUpdate(Integer... values) {
         super.onProgressUpdate(values);
-        Toast.makeText(activity, values[0], Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, Integer.toString(values[0]), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onPostExecute(JSONObject result) {
-        try {
-            String status = result.getString("status");
-            Log.d("APIClass", "Status: " + status);
-            if (status.equals("error")) {
-                String error = result.getString("error");
-                if(error.equals("")) {
-                    error = "An Unknown Error Occurred";
+        String auth = context.getSharedPreferences("MyAuthFile", 0).getString("Auth","");
+        if(!auth.equals("")) {
+            try {
+                String status = result.getString("status");
+                Log.d("APIClass", "Status: " + status);
+                if (status.equals("error")) {
+                    String error = result.getString("error");
+                    if (error.equals("")) {
+                        error = "An Unknown Error Occurred";
+                    }
+                    Log.d("APIClass", "Error: " + error);
+                    if (error.equals("403")) {
+                        showLogin();
+                    } else {
+                        Toast.makeText(context, error, Toast.LENGTH_LONG).show();
+                    }
                 }
-                Log.d("APIClass", "Error: " + error);
-                if(error.equals("403")) {
-                    showLogin();
-                } else {
-                    Toast.makeText(activity, error, Toast.LENGTH_LONG).show();
-                }
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
             }
-        } catch(JSONException e) {
-            throw new RuntimeException(e);
         }
-        listener.onTaskCompleted(result);
+        if(result!=null) {
+            Log.d("API Result", result.toString());
+            listener.onTaskCompleted(result);
+        }
     }
 }
 
