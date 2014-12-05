@@ -15,7 +15,7 @@ public class ModelEvent {
     private int id;
     private int moduleId;
     private int duration;
-    private String day;
+    private int day;
     private Date time;
     private ModelModule module;
 
@@ -24,7 +24,7 @@ public class ModelEvent {
             id = event.getInt("ID");
             moduleId = event.getInt("ModuleID");
             duration = event.getInt("Duration");
-            day = event.getString("ModuleCode");
+            day = event.getInt("Day");
 
             SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
             time = df.parse(event.getString("Time"));
