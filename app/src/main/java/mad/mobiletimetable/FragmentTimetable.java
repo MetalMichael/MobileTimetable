@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -116,6 +117,15 @@ public class FragmentTimetable extends Fragment {
             public void onTaskCompleted(JSONObject result) {
                 Toast.makeText(getActivity(), "WORKED", Toast.LENGTH_SHORT).show();
                 Log.d("Resulting Request", result.toString());
+                try{
+                    final JSONArray events = result.getJSONArray("events");
+                    Log.d("events", events.toString());
+                    for(int i = 0; i < events.length(); i++) {
+                        Log.d(Integer.toString(i), events.getJSONObject(i).toString());
+                    }
+                } catch(JSONException e) {
+                    e.printStackTrace();
+                }
 
                 event = new ModelEvent(result);
                 int eventid = event.getId();
