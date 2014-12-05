@@ -51,7 +51,7 @@ public class ModelEvent {
 
     public int getDuration() { return duration; }
 
-    public String getDay() {
+    public int getDay() {
         return day;
     }
 
