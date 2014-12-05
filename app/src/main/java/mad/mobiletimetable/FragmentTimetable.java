@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.util.Log;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 public class FragmentTimetable extends Fragment {
     public FragmentTimetable() {
     }
-
+    private ModelEvent event;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,14 +114,20 @@ public class FragmentTimetable extends Fragment {
         class Callback implements OnTaskCompleted{
             @Override
             public void onTaskCompleted(JSONObject result) {
-                Toast.makeText(getActivity(),"WORKED",Toast.LENGTH_SHORT).show();
-                Log.d("Resulting Request",result.toString());
+                Toast.makeText(getActivity(), "WORKED", Toast.LENGTH_SHORT).show();
+                Log.d("Resulting Request", result.toString());
+
+                event = new ModelEvent(result);
+                int eventid = event.getId();
+                Log.d("event id", String.valueOf(eventid));
+
             }
         }
         HashMap<String,String> request = new HashMap<String, String>();
         request.put("method","timetable");
         request.put("action","getall");
         new APIClass(getActivity(), new Callback()).execute(request);
+
 
         if(getView().findViewById(R.id.fullTimetable) != null) {
             String[] dayNames = {"Monday","Tuesday","Wednesday","Thursday","Friday"};
