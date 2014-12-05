@@ -1,10 +1,13 @@
 package mad.mobiletimetable;
 
 import android.annotation.TargetApi;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -24,6 +27,7 @@ import mad.mobiletimetable.R;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
@@ -101,7 +105,7 @@ public class ActivitySettings extends PreferenceActivity {
         findPreference("change_password").setOnPreferenceChangeListener(UserListener);
         findPreference("change_password").setDefaultValue("");
         findPreference("logout").setOnPreferenceChangeListener(UserListener);
-        findPreference("display_picture").setOnPreferenceClickListener(ClickListener);
+        findPreference("display_picture").setOnPreferenceChangeListener(UserListener);
 
         bindPreferenceSummaryToValue(findPreference("notification_time"));
 
@@ -146,21 +150,15 @@ public class ActivitySettings extends PreferenceActivity {
 
     /**
      * Click listener for the change display pic preference
-     */
+
     private Preference.OnPreferenceClickListener ClickListener = new Preference.OnPreferenceClickListener() {
         @Override
         public boolean onPreferenceClick(Preference preference) {
-            if(preference.getTitle().equals("Change Display Picture")) {
-                Intent pictureUpload = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if(pictureUpload.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(pictureUpload, 1);
-                }
 
-            }
             return true;
         }
 
-    };
+    };*/
 
     /**
      * Saves camera image to local storage, to be used as a display pic.
@@ -169,20 +167,41 @@ public class ActivitySettings extends PreferenceActivity {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1 && resultCode == RESULT_OK) {
+        if (requestCode >= 1 && resultCode == RESULT_OK) {
+            Bitmap imageBitmap;
             SharedPreferences auth = getSharedPreferences(PREFS_NAME, 0);
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            File displayPicFile = new File(ActivitySettings.this.getFilesDir(),"user-"+auth.getString("Auth","")+"-pic");
+            if(requestCode == 1) {
+                Bundle extras = data.getExtras();
+                imageBitmap = (Bitmap) extras.get("data");
+
+            } else if(requestCode == 2) {
+                try {
+                    Uri imageUri = Uri.parse(data.getDataString());
+                    ContentResolver cr = getContentResolver();
+                    InputStream in = cr.openInputStream(imageUri);
+                    imageBitmap = BitmapFactory.decodeStream(in,null,new BitmapFactory.Options());
+
+                } catch(Exception e) {
+                    e.printStackTrace();
+                    return;
+
+                }
+
+
+            } else
+                return;
+
+            File displayPicFile = new File(ActivitySettings.this.getFilesDir(), "user-" +
+                                  auth.getString("Auth", "") + "-pic");
             FileOutputStream outputStream;
 
             try {
                 outputStream = new FileOutputStream(displayPicFile);
-                imageBitmap.compress(Bitmap.CompressFormat.PNG,100,outputStream);
+                imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
                 outputStream.close();
                 Toast.makeText(getApplicationContext(), "Image saved!", Toast.LENGTH_SHORT).show();
 
-            } catch( Exception e) {
+            } catch (Exception e) {
                 Toast.makeText(getApplicationContext(), "Image upload failed!", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
 
@@ -205,7 +224,18 @@ public class ActivitySettings extends PreferenceActivity {
         public boolean onPreferenceChange(Preference preference, Object value) {
             String stringValue = value.toString();
 
-            if (preference.getTitle().equals("Change Password")) {
+            if(preference.getTitle().equals("Change Display Picture")) {
+                if(stringValue.equals("1")) {
+                    Intent pictureUpload = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    if (pictureUpload.resolveActivity(getPackageManager()) != null) {
+                        startActivityForResult(pictureUpload, 1);
+                    }
+                } else if(stringValue.equals("2")) {
+                    Intent pictureUpload = new Intent(Intent.ACTION_PICK,
+                            android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                    startActivityForResult(pictureUpload,2);
+                }
+            } else if (preference.getTitle().equals("Change Password")) {
                 if (stringValue.length() >= 6 && stringValue.length() <= 20) {
                     Log.d("Password",stringValue);
                     requests(stringValue);

@@ -6,6 +6,16 @@
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
+    <string name="pref_title_display_picture">Change Display Picture</string>
+    <string-array name="display_picture_options">
+            <item>Camera</item>
+            <item>Upload a Picture</item>
+    </string-array>
+    <string-array name="display_picture_option_values">
+            <item>1</item>
+            <item>2</item>
+    </string-array>
+
     <string name="pref_title_notification_time">Notification Time</string>
     <string name="pref_default_notification_time">Never</string>
     <string-array name="pref_list_notification_times">
@@ -18,7 +28,7 @@
         <item>15</item>
         <item>30</item>
     </string-array>
-    <string name="pref_title_display_picture">Change Display Picture</string>
+
 
     <string name="pref_title_change_password">Change Password</string>
 
