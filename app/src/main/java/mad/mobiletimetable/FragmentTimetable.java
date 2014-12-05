@@ -109,7 +109,18 @@ public class FragmentTimetable extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Toast.makeText(getActivity(),"Ahoy there!",Toast.LENGTH_SHORT).show();
+        //API
+        class Callback implements OnTaskCompleted{
+            @Override
+            public void onTaskCompleted(JSONObject result) {
+                Toast.makeText(getActivity(),"WORKED",Toast.LENGTH_SHORT).show();
+                Log.d("Resulting Request",result.toString());
+            }
+        }
+        HashMap<String,String> request = new HashMap<String, String>();
+        request.put("method","timetable");
+        request.put("action","getall");
+        new APIClass(getActivity(), new Callback()).execute(request);
 
         if(getView().findViewById(R.id.fullTimetable) != null) {
             String[] dayNames = {"Monday","Tuesday","Wednesday","Thursday","Friday"};
@@ -124,36 +135,12 @@ public class FragmentTimetable extends Fragment {
                 addDayFragment(dayNames[i],dayFragments[i]);
 
             }
-            class Callback implements OnTaskCompleted{
-                @Override
-                public void onTaskCompleted(JSONObject result) {
-                    Toast.makeText(getActivity(),"WORKED",Toast.LENGTH_SHORT).show();
-                    Log.d("Resulting Request",result.toString());
-                }
-            }
-            HashMap<String,String> request = new HashMap<String, String>();
-            request.put("method","timetable");
-            request.put("action","getall");
-            request.put("auth","debug");
-            new APIClass(getActivity(), new Callback()).execute(request);
+
         } else {
             final GlobalInt global = new GlobalInt();
             final String[] dayNames = {"Monday","Tuesday","Wednesday","Thursday","Friday"};
             addDayFragment(dayNames[global.returnDay()], R.id.dayFragment);
             View myView = getActivity().findViewById(R.id.dayFragment);
-
-            class Callback implements OnTaskCompleted{
-                @Override
-                public void onTaskCompleted(JSONObject result) {
-                    Toast.makeText(getActivity(),"WORKED",Toast.LENGTH_SHORT).show();
-                    Log.d("Resulting Request",result.toString());
-                }
-            }
-            HashMap<String,String> request = new HashMap<String, String>();
-            request.put("method","timetable");
-            request.put("action","getall");
-            request.put("auth","debug");
-            new APIClass(getActivity(), new Callback()).execute(request);
 
             myView.setOnTouchListener(new OnSwipeListener(getActivity()) {
                 @Override
