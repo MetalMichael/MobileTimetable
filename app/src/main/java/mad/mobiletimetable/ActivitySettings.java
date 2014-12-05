@@ -189,7 +189,7 @@ public class ActivitySettings extends PreferenceActivity {
             }
 
         } else {
-            Toast.makeText(getApplicationContext(),"Image upload failed!",Toast.LENGTH_SHORT ).show();
+            Toast.makeText(getApplicationContext(),"No image saved.",Toast.LENGTH_SHORT ).show();
 
         }
 
