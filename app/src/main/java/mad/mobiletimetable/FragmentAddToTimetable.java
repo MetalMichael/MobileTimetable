@@ -96,22 +96,13 @@ public class FragmentAddToTimetable extends Fragment {
 
 
     }
-    public int returnDayInt(String day){
-       String[] Days={"Monday","Tuesday","Wednesday","Thursday","Friday"};
-       for (int i=0;i<Days.length;i++){
-           if (Days[i].equals(day)){
-               return i;
-           }
-       }
-    }
+
     public void onClick(View v) {
 
         Intent intent = getActivity().getIntent();
 
-
-
         Spinner daySpinner =(Spinner) root.findViewById(R.id.DAY);
-        String day=Integer.toString(returnDayInt(daySpinner.getSelectedItem().toString()));
+        String day = Integer.toString(daySpinner.getSelectedItemPosition());
 
         Spinner durationSpinner =(Spinner) root.findViewById(R.id.DURATION);
         String duration=durationSpinner.getSelectedItem().toString();
@@ -251,8 +242,8 @@ public class FragmentAddToTimetable extends Fragment {
         ArrayAdapter<String> adapter3 = new ArrayAdapter<String> (c, R.layout.spinner_item, rooms);
         roomView= (AutoCompleteTextView) root.findViewById(R.id.completeRoom);
 
-        ArrayAdapter<String> adapter4 = new ArrayAdapter<String> (c, R.layout.spinner_item, dates);
-        DateView= (Spinner) root.findViewById(R.id.DATE);
+        //ArrayAdapter<String> adapter4 = new ArrayAdapter<String> (c, R.layout.spinner_item, dates);
+        //DateView= (Spinner) root.findViewById(R.id.DATE);
 
         ArrayAdapter<String> adapter5 = new ArrayAdapter<String> (c, R.layout.spinner_item, times);
         TimeView= (Spinner) root.findViewById(R.id.TIME);
@@ -262,7 +253,7 @@ public class FragmentAddToTimetable extends Fragment {
         roomTypeSpinner.setAdapter(adapter1);
         ModuleChoiceView.setAdapter(adapter2);
         roomView.setAdapter(adapter3);
-        DateView.setAdapter(adapter4);
+        //DateView.setAdapter(adapter4);
         TimeView.setAdapter(adapter5);
 
         return root;

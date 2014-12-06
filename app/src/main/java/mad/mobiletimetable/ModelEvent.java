@@ -29,7 +29,7 @@ public class ModelEvent {
             day = event.getInt("Day") + 1;
             location = event.getString("Room");
             lessonType = event.getString("Type");
-            
+
             SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
             time = df.parse(event.getString("Time"));
 
