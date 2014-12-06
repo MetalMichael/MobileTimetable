@@ -63,6 +63,11 @@ public class ModelEvent {
         return time;
     }
 
+    public String getDate() {
+        SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+        return df.format(time);
+    }
+
     public ModelModule getModule() {
         return module;
     }

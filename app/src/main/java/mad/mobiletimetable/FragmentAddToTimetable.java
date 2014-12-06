@@ -123,6 +123,7 @@ public class FragmentAddToTimetable extends Fragment {
                 && getIndex(selectedModule)!=-1 && !selectedType.isEmpty() ) {
 
             HashMap<String, String> request = new HashMap<String, String>();
+
             request.put("method", "timetable");
             request.put("action", "add");
             request.put("moduleid", Integer.toString(getIndex(selectedModule)));
@@ -132,7 +133,7 @@ public class FragmentAddToTimetable extends Fragment {
             request.put("time", time);
             request.put("duration", duration);
             //request.put("type",selectedType);
-            request.put("Room", selectedType);
+            request.put("room", selectedType);
 
 
             api = new APIClass(getActivity(), new CreateEventCallback());
@@ -242,8 +243,8 @@ public class FragmentAddToTimetable extends Fragment {
         ArrayAdapter<String> adapter3 = new ArrayAdapter<String> (c, R.layout.spinner_item, rooms);
         roomView= (AutoCompleteTextView) root.findViewById(R.id.completeRoom);
 
-        //ArrayAdapter<String> adapter4 = new ArrayAdapter<String> (c, R.layout.spinner_item, dates);
-        //DateView= (Spinner) root.findViewById(R.id.DATE);
+        ArrayAdapter<String> adapter4 = new ArrayAdapter<String> (c, R.layout.spinner_item, dates);
+        DateView= (Spinner) root.findViewById(R.id.DAY);
 
         ArrayAdapter<String> adapter5 = new ArrayAdapter<String> (c, R.layout.spinner_item, times);
         TimeView= (Spinner) root.findViewById(R.id.TIME);
@@ -253,7 +254,7 @@ public class FragmentAddToTimetable extends Fragment {
         roomTypeSpinner.setAdapter(adapter1);
         ModuleChoiceView.setAdapter(adapter2);
         roomView.setAdapter(adapter3);
-        //DateView.setAdapter(adapter4);
+        DateView.setAdapter(adapter4);
         TimeView.setAdapter(adapter5);
 
         return root;
