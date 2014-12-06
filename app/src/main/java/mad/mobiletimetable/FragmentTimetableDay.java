@@ -4,10 +4,20 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -19,6 +29,7 @@ import android.widget.TextView;
  * create an instance of this fragment.
  */
 public class FragmentTimetableDay extends Fragment {
+    private AdapterTimetable mAdapter;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "dayName";
@@ -54,22 +65,52 @@ public class FragmentTimetableDay extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mDayName = getArguments().getString(ARG_PARAM1);
+
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_fragment_timetable_day, container, false);
+        View timetable = inflater.inflate(R.layout.fragment_fragment_timetable_day, container, false);
 
         // Set text if dayName supplied
         if(mDayName!=null) {
-            TextView dayName = (TextView)rootView.findViewById(R.id.dayName);
+            TextView dayName = (TextView)timetable.findViewById(R.id.day_name);
             dayName.setText(mDayName);
         }
-        // Inflate the layout for this fragment
+        class Callback implements OnTaskCompleted{
+            @Override
+            public void onTaskCompleted(JSONObject result) {
+                Toast.makeText(getActivity(), "WORKED", Toast.LENGTH_SHORT).show();
+                ArrayList<ModelEvent> events = new ArrayList<ModelEvent>();
+                try{
 
-        return rootView;
+                    JSONArray jsonEvents = result.getJSONArray("events");
+
+                    for(int i = 0; i < jsonEvents.length(); i++) {
+
+                        events.add(new ModelEvent((JSONObject)jsonEvents.get(i)));
+                        Log.d("events", events.get(i).getTime().toString());
+                    }
+                } catch(JSONException e) {
+                    e.printStackTrace();
+                }
+                mAdapter.clear();
+                mAdapter.addAll(events);
+            }
+        }
+        HashMap<String,String> request = new HashMap<String, String>();
+        request.put("method","timetable");
+        request.put("action","getall");
+        new APIClass(getActivity(), new Callback()).execute(request);
+
+        // Inflate the layout for this fragment
+        mAdapter = new AdapterTimetable(getActivity(), new ArrayList<ModelEvent>());
+
+        ListView list = (ListView) timetable.findViewById(R.id.day_list);
+        list.setAdapter(mAdapter);
+        return timetable;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

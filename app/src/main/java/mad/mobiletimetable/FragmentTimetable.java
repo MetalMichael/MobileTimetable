@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 import android.util.Log;
 
@@ -25,9 +26,10 @@ import java.util.Calendar;
 import java.util.HashMap;
 
 public class FragmentTimetable extends Fragment {
+
     public FragmentTimetable() {
     }
-    private ModelEvent event;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,9 +54,9 @@ public class FragmentTimetable extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View timetable = inflater.inflate(R.layout.fragment_fragment_timetable, container, false);
-        //Check to see if we're in the tablet landscape viokkkew
 
+        //Check to see if we're in the tablet landscape viokkkew
+        View timetable = inflater.inflate(R.layout.fragment_fragment_timetable_day, container, false);
         return timetable;
     }
     //for day changes
@@ -108,7 +110,7 @@ public class FragmentTimetable extends Fragment {
             return this.day;
         }
     }
-    class EventsArrray {
+    /*class EventsArray {
         private ModelEvent[] array;
 
         public void Add(ModelEvent  x){
@@ -126,38 +128,12 @@ public class FragmentTimetable extends Fragment {
         public int getLength(){
             return this.array.length;
         }
-    }
+    }*/
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         //API
-        class Callback implements OnTaskCompleted{
-            @Override
-            public void onTaskCompleted(JSONObject result) {
-                Toast.makeText(getActivity(), "WORKED", Toast.LENGTH_SHORT).show();
 
-                try{
-                    final EventsArrray eventsArray = new EventsArrray();
-                    final JSONArray events = result.getJSONArray("events");
-                    Log.d("events", events.toString());
-                    for(int i = 0; i < events.length(); i++) {
-                        Log.d(Integer.toString(i), events.getJSONObject(i).toString());
-                        event = new ModelEvent(events.getJSONObject(i));
-                        eventsArray.Add(event);
-                        int eventid = event.getId();
-
-                        Log.d("event id", String.valueOf(eventid));
-                    }
-                } catch(JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }
-        HashMap<String,String> request = new HashMap<String, String>();
-        request.put("method","timetable");
-        request.put("action","getall");
-        new APIClass(getActivity(), new Callback()).execute(request);
 
 
         if(getView().findViewById(R.id.fullTimetable) != null) {
