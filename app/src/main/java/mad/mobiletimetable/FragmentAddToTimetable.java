@@ -12,16 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.DatePicker;
+
 import android.widget.TableLayout;
-import android.widget.TextView;
-import android.widget.TimePicker;
-import android.util.Log;
+
 import android.widget.Toast;
 import android.content.Context;
 import android.widget.Spinner;
 
-import java.sql.Time;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -132,12 +129,12 @@ public class FragmentAddToTimetable extends Fragment {
         String selectedType=classType.getSelectedItem().toString();
 
         if( !day.isEmpty() && !duration.isEmpty() && !time.isEmpty() && !selectedRoom.isEmpty()
-                && ! selectedModule.isEmpty() && ! selectedType.isEmpty() ) {
+                && getIndex(selectedModule)!=-1 && !selectedType.isEmpty() ) {
 
             HashMap<String, String> request = new HashMap<String, String>();
             request.put("method", "timetable");
             request.put("action", "add");
-            request.put("moduleid", moduleMap.get(selectedModule));
+            request.put("moduleid", Integer.toString(getIndex(selectedModule)));
 
 
             request.put("day", day);
@@ -199,15 +196,18 @@ public class FragmentAddToTimetable extends Fragment {
         }
     }
 
-    private String getModule(String name){
+    private int getIndex(String name){
         ArrayList<ModelModule> arrayList=mAdapter.getModulesArrayList();
         for (int i=0;i<arrayList.size();i++){
-
+            if(arrayList.get(i).getTitle().equals(name)){
+                return i;
+            }
         }
+        return -1;
     }
 
     private void clearAll() {
-
+        //need to do
 
     }
 
