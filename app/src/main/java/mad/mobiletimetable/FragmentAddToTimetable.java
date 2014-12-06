@@ -230,6 +230,7 @@ public class FragmentAddToTimetable extends Fragment {
         rooms=resources.getStringArray(R.array.Rooms);
         dates=resources.getStringArray(R.array.Date);
         times=resources.getStringArray(R.array.Time);
+        ModuleChoice=resources.getStringArray(R.array.ModuleNames);
 
 
         //Set Adapters
@@ -237,7 +238,7 @@ public class FragmentAddToTimetable extends Fragment {
 
         roomTypeSpinner = (Spinner) root.findViewById(R.id.completeType);
 
-        ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (c, R.layout.spinner_item, moduleNames);
+        ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (c, R.layout.spinner_item, ModuleChoice);
         ModuleChoiceView = (AutoCompleteTextView) root.findViewById(R.id.completeModule);
 
         ArrayAdapter<String> adapter3 = new ArrayAdapter<String> (c, R.layout.spinner_item, rooms);

@@ -24,11 +24,17 @@
 
 
     <string name="add_title">Add To Timetable</string>
+
     <string-array name="roomTypes">
         <item>Lecture</item>
         <item>Tutorial</item>
         <item>Lab</item>
     </string-array>
+
+    <string-array name="ModuleNames">
+        <item>Robotics</item>
+    </string-array>
+
     <string-array name="Rooms">
         <item>N.001</item>
         <item>N.002</item>
