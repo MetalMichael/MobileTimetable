@@ -202,7 +202,7 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
             <Spinner
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:id="@+id/DATE"
+            android:id="@+id/DAY"
 
             android:enabled="true"
             android:width="500px"
@@ -261,8 +261,40 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
                 android:layoutMode="clipBounds"
                 android:gravity="center|center_vertical|center_horizontal"
                 style="@android:style/TextAppearance.DeviceDefault.Widget.DropDownItem" />
+            <TextView
+                android:layout_width="250px"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Duration"
 
+                android:layout_gravity="center"
+                android:textSize="8pt" />
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/DURATION"
 
+                android:enabled="true"
+                android:width="500px"
+                android:layout_gravity="center"
+
+                android:hint="Duration"
+                android:textColor="#000000"
+                android:singleLine="true"
+                android:textColorLink="#000000"
+                android:autoText="true"
+                android:spinnerMode="dialog"
+                android:clickable="true"
+                android:minWidth="300dp"
+
+                android:textAlignment="center"
+
+                android:popupBackground="@android:drawable/spinner_background"
+                android:visibility="visible"
+                android:dropDownWidth="match_parent"
+                android:layoutMode="clipBounds"
+                android:gravity="center|center_vertical|center_horizontal"
+                style="@android:style/TextAppearance.DeviceDefault.Widget.DropDownItem" />
 
         </TableLayout>
 

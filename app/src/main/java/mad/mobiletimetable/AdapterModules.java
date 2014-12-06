@@ -20,6 +20,9 @@ public class AdapterModules extends BaseAdapter {
         this.context = context;
         this.modulesArrayList = modulesArrayList;
     }
+    public ArrayList<ModelModule> getModulesArrayList(){
+        return modulesArrayList;
+    }
 
     public void clear() {
         modulesArrayList = new ArrayList<ModelModule>();
