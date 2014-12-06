@@ -1,5 +1,6 @@
 package mad.mobiletimetable;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.TableLayout;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.util.Log;
 import android.widget.Toast;
@@ -20,6 +22,13 @@ import android.content.Context;
 import android.widget.Spinner;
 
 import java.sql.Time;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -44,6 +53,11 @@ public class FragmentAddToTimetable extends Fragment {
     private TableLayout layoutNew;
     private View root;
     private String roomTypes[],ModuleChoice[],rooms[],dates[],times[];
+    private APIClass api;
+    private ModelEvent event;
+    private boolean active = true;
+    private AdapterModules mAdapter;
+    private String moduleNames[];
 
 
 
@@ -85,6 +99,117 @@ public class FragmentAddToTimetable extends Fragment {
 
 
     }
+    public int returnDayInt(String day){
+       String[] Days={"Monday","Tuesday","Wednesday","Thursday","Friday"};
+       for (int i=0;i<Days.length;i++){
+           if (Days[i].equals(day)){
+               return i;
+           }
+       }
+    }
+    public void onClick(View v) {
+
+        Intent intent = getActivity().getIntent();
+
+
+
+        Spinner daySpinner =(Spinner) root.findViewById(R.id.DAY);
+        String day=Integer.toString(returnDayInt(daySpinner.getSelectedItem().toString()));
+
+        Spinner durationSpinner =(Spinner) root.findViewById(R.id.DURATION);
+        String duration=durationSpinner.getSelectedItem().toString();
+
+        Spinner timeSpinner =(Spinner) root.findViewById(R.id.TIME);
+        String time=timeSpinner.getSelectedItem().toString();
+
+        AutoCompleteTextView room =(AutoCompleteTextView) root.findViewById(R.id.completeRoom);
+        String selectedRoom=room.getText().toString();
+
+        AutoCompleteTextView module =(AutoCompleteTextView) root.findViewById(R.id.completeModule);
+        String selectedModule=module.getText().toString();
+
+        Spinner classType =(Spinner) root.findViewById(R.id.completeType);
+        String selectedType=classType.getSelectedItem().toString();
+
+        if( !day.isEmpty() && !duration.isEmpty() && !time.isEmpty() && !selectedRoom.isEmpty()
+                && ! selectedModule.isEmpty() && ! selectedType.isEmpty() ) {
+
+            HashMap<String, String> request = new HashMap<String, String>();
+            request.put("method", "timetable");
+            request.put("action", "add");
+            request.put("moduleid", moduleMap.get(selectedModule));
+
+
+            request.put("day", day);
+            request.put("time", time);
+            request.put("duration", duration);
+            //request.put("type",selectedType);
+            request.put("Room", selectedType);
+
+
+            api = new APIClass(getActivity(), new CreateEventCallback());
+            api.execute(request);
+        }
+        else{
+            //Toast Here
+        }
+    }
+
+    private class CreateEventCallback implements OnTaskCompleted {
+        @Override
+        public void onTaskCompleted(JSONObject result) {
+            if(!active) return;
+
+            if(!result.has("module")) {
+                getActivity().finish();
+                Toast.makeText(getActivity(), "Added to Timetable", Toast.LENGTH_LONG).show();
+                return;
+            }
+            try {
+                JSONObject eventID = result.getJSONObject("module");
+                event = new ModelEvent(eventID);
+
+            } catch(JSONException e) {
+                e.printStackTrace();
+            }
+
+            clearAll();
+        }
+    }
+
+    private class ModuleCallback implements OnTaskCompleted {
+        @Override
+        public void onTaskCompleted(JSONObject result) {
+            if(result.has("modules")) {
+                ArrayList<ModelModule> modules = new ArrayList<ModelModule>();
+                try{
+                    JSONArray jsonModules = result.getJSONArray("modules");
+                    for(int i = 0; i < jsonModules.length(); i++) {
+                        ModelModule mod=new ModelModule((JSONObject)jsonModules.get(i));
+                        modules.add(mod);
+                        moduleNames[moduleNames.length]=mod.getTitle();
+
+                    }
+                } catch(JSONException e) {
+                    e.printStackTrace();
+                }
+                mAdapter.clear();
+                mAdapter.addAll(modules);
+            }
+        }
+    }
+
+    private String getModule(String name){
+        ArrayList<ModelModule> arrayList=mAdapter.getModulesArrayList();
+        for (int i=0;i<arrayList.size();i++){
+
+        }
+    }
+
+    private void clearAll() {
+
+
+    }
 
 
     @Override
@@ -106,7 +231,10 @@ public class FragmentAddToTimetable extends Fragment {
 
         //Get String arrays for Spinners and Autocompletes
         roomTypes=resources.getStringArray(R.array.roomTypes);
-        ModuleChoice=resources.getStringArray(R.array.ModuleChoices);
+
+        //need to load modules here
+        //ModuleChoice=resources.getStringArray(R.array.ModuleChoices);
+
         rooms=resources.getStringArray(R.array.Rooms);
         dates=resources.getStringArray(R.array.Date);
         times=resources.getStringArray(R.array.Time);
@@ -117,7 +245,7 @@ public class FragmentAddToTimetable extends Fragment {
 
         roomTypeSpinner = (Spinner) root.findViewById(R.id.completeType);
 
-        ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (c, R.layout.spinner_item, ModuleChoice);
+        ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (c, R.layout.spinner_item, moduleNames);
         ModuleChoiceView = (AutoCompleteTextView) root.findViewById(R.id.completeModule);
 
         ArrayAdapter<String> adapter3 = new ArrayAdapter<String> (c, R.layout.spinner_item, rooms);
@@ -157,6 +285,18 @@ public class FragmentAddToTimetable extends Fragment {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+    }
+    @Override
+    public void onResume(){
+
+        //Send API request
+        HashMap<String, String> request = new HashMap<String, String>();
+        request.put("method", "module");
+        request.put("action", "getall");
+        api = new APIClass(getActivity(), new ModuleCallback());
+        api.execute(request);
+
+        super.onResume();
     }
 
     @Override
