@@ -19,6 +19,7 @@ public class ModelEvent {
     private Date time;
     private ModelModule module;
     private String location;
+    private String lessonType;
 
     public ModelEvent(JSONObject event) {
         try {
@@ -27,6 +28,7 @@ public class ModelEvent {
             duration = event.getInt("Duration");
             day = event.getInt("Day") + 1;
             location = event.getString("Room");
+            lessonType = event.getString("Type");
 
             SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
             time = df.parse(event.getString("Time"));
@@ -65,5 +67,11 @@ public class ModelEvent {
         return module;
     }
 
-    public String getLocation() {return location;}
+    public String getLocation() {
+        return location;
+    }
+
+    public String getLessonType() {
+        return lessonType;
+    }
 }
