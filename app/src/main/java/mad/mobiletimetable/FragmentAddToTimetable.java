@@ -98,11 +98,13 @@ public class FragmentAddToTimetable extends Fragment {
     }
     public int returnDayInt(String day){
        String[] Days={"Monday","Tuesday","Wednesday","Thursday","Friday"};
-       for (int i=0;i<Days.length;i++){
+       int index=0;
+        for (int i=0;i<Days.length;i++){
            if (Days[i].equals(day)){
-               return i;
+               index=i;
            }
        }
+        return index;
     }
     public void onClick(View v) {
 
@@ -132,14 +134,15 @@ public class FragmentAddToTimetable extends Fragment {
                 && getIndex(selectedModule)!=-1 && !selectedType.isEmpty() ) {
 
             HashMap<String, String> request = new HashMap<String, String>();
+
             request.put("method", "timetable");
             request.put("action", "add");
             request.put("moduleid", Integer.toString(getIndex(selectedModule)));
 
 
-            request.put("day", day);
-            request.put("time", time);
-            request.put("duration", duration);
+            request.put("Day", day);
+            request.put("Time", time);
+            request.put("Duration", duration);
             //request.put("type",selectedType);
             request.put("Room", selectedType);
 
@@ -252,7 +255,7 @@ public class FragmentAddToTimetable extends Fragment {
         roomView= (AutoCompleteTextView) root.findViewById(R.id.completeRoom);
 
         ArrayAdapter<String> adapter4 = new ArrayAdapter<String> (c, R.layout.spinner_item, dates);
-        DateView= (Spinner) root.findViewById(R.id.DATE);
+        DateView= (Spinner) root.findViewById(R.id.DAY);
 
         ArrayAdapter<String> adapter5 = new ArrayAdapter<String> (c, R.layout.spinner_item, times);
         TimeView= (Spinner) root.findViewById(R.id.TIME);
