@@ -81,7 +81,7 @@ public class FragmentTimetableDay extends Fragment {
     class Callback implements OnTaskCompleted{
         @Override
         public void onTaskCompleted(JSONObject result) {
-            Toast.makeText(getActivity(), "WORKED", Toast.LENGTH_SHORT).show();
+
             ArrayList<ModelEvent> events = new ArrayList<ModelEvent>();
             try{
 
