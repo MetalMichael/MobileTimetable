@@ -12,12 +12,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import android.widget.SeekBar.*;
 
+import android.widget.SeekBar;
 import android.widget.TableLayout;
 
+import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Context;
 import android.widget.Spinner;
+import android.widget.TimePicker;
+import android.widget.NumberPicker;
 
 
 import org.json.JSONArray;
@@ -49,12 +55,16 @@ public class FragmentAddToTimetable extends Fragment {
     private Button addNew;
     private TableLayout layoutNew;
     private View root;
-    private String roomTypes[],ModuleChoice[],rooms[],dates[],times[];
+    private String roomTypes[],ModuleChoice[],rooms[],dates[],times[],durations[];
     private APIClass api;
     private ModelEvent event;
     private boolean active = true;
     private AdapterModules mAdapter;
     private String moduleNames[];
+    private NumberPicker timePicker,dayPicker,durationPicker;
+
+
+    private EditText durationView;
 
 
 
@@ -94,21 +104,21 @@ public class FragmentAddToTimetable extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-
     }
 
     public void onClick(View v) {
 
-        Intent intent = getActivity().getIntent();
 
-        Spinner daySpinner =(Spinner) root.findViewById(R.id.DAY);
-        String day = Integer.toString(daySpinner.getSelectedItemPosition());
 
-        Spinner durationSpinner =(Spinner) root.findViewById(R.id.DURATION);
-        String duration=durationSpinner.getSelectedItem().toString();
+        NumberPicker day_selector =(NumberPicker) root.findViewById(R.id.DAY);
+        String day = Integer.toString(day_selector.getValue());
 
-        Spinner timeSpinner =(Spinner) root.findViewById(R.id.TIME);
-        String time=timeSpinner.getSelectedItem().toString();
+        NumberPicker duration_selector =(NumberPicker) root.findViewById(R.id.Time);
+        String duration = durations[duration_selector.getValue()];
+
+        NumberPicker time_selector =(NumberPicker) root.findViewById(R.id.Duration);
+        String time = times[time_selector.getValue()];
+
 
         AutoCompleteTextView room =(AutoCompleteTextView) root.findViewById(R.id.completeRoom);
         String selectedRoom=room.getText().toString();
@@ -173,10 +183,11 @@ public class FragmentAddToTimetable extends Fragment {
                 ArrayList<ModelModule> modules = new ArrayList<ModelModule>();
                 try{
                     JSONArray jsonModules = result.getJSONArray("modules");
+                    moduleNames = new String[jsonModules.length()];
                     for(int i = 0; i < jsonModules.length(); i++) {
                         ModelModule mod=new ModelModule((JSONObject)jsonModules.get(i));
                         modules.add(mod);
-                        moduleNames[moduleNames.length]=mod.getTitle();
+                        moduleNames[i]=mod.getTitle();
 
                     }
                 } catch(JSONException e) {
@@ -202,6 +213,17 @@ public class FragmentAddToTimetable extends Fragment {
         //need to do
 
     }
+    private String format(int hour){
+        String output;
+        if(hour<10){
+            output="0"+Integer.toString(hour);
+        }
+        else{
+            output=Integer.toString(hour);
+        }
+        return output;
+    }
+
 
 
     @Override
@@ -214,7 +236,7 @@ public class FragmentAddToTimetable extends Fragment {
 
         root= inflater.inflate( R.layout.fragment_add_to_timetable, container, false);
 
-        addNew= (Button) root.findViewById(R.id.Add);
+
 
         Context c = getActivity().getApplicationContext();
 
@@ -229,13 +251,79 @@ public class FragmentAddToTimetable extends Fragment {
 
         rooms=resources.getStringArray(R.array.Rooms);
         dates=resources.getStringArray(R.array.Date);
-        times=resources.getStringArray(R.array.Time);
+
+        durations= new String[31];
+        times= new String[4*25];
+
+        int test=1;
+
+        int count=0;
+        for (int i=0;i<31;i++){
+            test=(i+1)*10;
+            int index=i+1;
+            int calc=(test % 60);
+            String output=Integer.toString(calc);
+
+
+            durations[count]=format(test);
+            count++;
+
+
+
+
+        }
+        count=0;
+
+        //time every 15 minutes
+        for (int i=0;i<25;i++){
+            int time=i+6;
+            for (int j=0;j<4;j++){
+                if(j==0){
+                    times[count]=format(time)+":"+format(0);
+                    count++;
+                }
+                else{
+                    times[count]=format(time)+":"+format(j*15);
+                    count++;
+                }
+
+            }
+
+        }
+
+
+
+
+        timePicker = (NumberPicker) root.findViewById(R.id.Time);
+        durationPicker = (NumberPicker) root.findViewById(R.id.Duration);
+        dayPicker = (NumberPicker) root.findViewById(R.id.DAY);
+
+
+
+        timePicker.setMinValue(0);
+        timePicker.setMaxValue(times.length-1);
+        timePicker.setWrapSelectorWheel(false);
+        timePicker.setDisplayedValues(times);
+        timePicker.setValue(0);
+
+
+        durationPicker.setMinValue(0);
+        durationPicker.setMaxValue(durations.length-1);
+        durationPicker.setWrapSelectorWheel(false);
+        durationPicker.setDisplayedValues(durations);
+        durationPicker.setValue(0);
+
+        dayPicker.setMinValue(0);
+        dayPicker.setMaxValue(dates.length-1);
+        dayPicker.setWrapSelectorWheel(false);
+        dayPicker.setDisplayedValues(dates);
+        dayPicker.setValue(0);
+
         ModuleChoice=resources.getStringArray(R.array.ModuleNames);
 
 
         //Set Adapters
         ArrayAdapter<String> adapter1 = new ArrayAdapter<String> (c, R.layout.spinner_item, roomTypes);
-
         roomTypeSpinner = (Spinner) root.findViewById(R.id.completeType);
 
         ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (c, R.layout.spinner_item, ModuleChoice);
@@ -244,19 +332,18 @@ public class FragmentAddToTimetable extends Fragment {
         ArrayAdapter<String> adapter3 = new ArrayAdapter<String> (c, R.layout.spinner_item, rooms);
         roomView= (AutoCompleteTextView) root.findViewById(R.id.completeRoom);
 
-        ArrayAdapter<String> adapter4 = new ArrayAdapter<String> (c, R.layout.spinner_item, dates);
-        DateView= (Spinner) root.findViewById(R.id.DAY);
+        //ArrayAdapter<String> adapter4 = new ArrayAdapter<String> (c, R.layout.spinner_item, dates);
+        //DateView= (Spinner) root.findViewById(R.id.DAY);
 
-        ArrayAdapter<String> adapter5 = new ArrayAdapter<String> (c, R.layout.spinner_item, times);
-        TimeView= (Spinner) root.findViewById(R.id.TIME);
+        //ArrayAdapter<String> adapter5 = new ArrayAdapter<String> (c, R.layout.spinner_item, times);
+       // TimeView= (Spinner) root.findViewById(R.id.TIME);
 
 
         //Add Adapters to DropDown Views
         roomTypeSpinner.setAdapter(adapter1);
         ModuleChoiceView.setAdapter(adapter2);
         roomView.setAdapter(adapter3);
-        DateView.setAdapter(adapter4);
-        TimeView.setAdapter(adapter5);
+
 
         return root;
     }

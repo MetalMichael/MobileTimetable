@@ -3,8 +3,6 @@ xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
 tools:context="mad.mobiletimetable.FragmentAddToTimetable"
-
-
     android:nestedScrollingEnabled="true"
     android:id="@+id/MainMenu"
     android:background="#f4f4f4f4">
@@ -13,232 +11,72 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-<TableRow android:layout_height="wrap_content"
-    android:layout_width="match_parent"
-    android:layout_gravity="center"
-    android:layout_margin="5dp"
-
-    android:gravity="center|center_vertical|center_horizontal"
-    android:background="#ffffff">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Module"
-        android:id="@+id/textView4"
-        android:textSize="10pt"
-        android:layout_gravity="center"
-        android:textStyle="bold"
-        android:gravity="center_vertical|center_horizontal" />
-
-</TableRow>
-
     <TableRow android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:background="#a7bebebe"
         android:layout_gravity="center"
         android:gravity="center|center_vertical|center_horizontal"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="5dp"
+        android:background="#D8D8D8">
+        <TableLayout android:layout_gravity="center"
+            android:layout_margin="2dp">
 
-    <AutoCompleteTextView
+            <AutoCompleteTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/completeModule"
-        android:hint="Click above for Module"
+        android:hint="Module"
         android:layout_gravity="center_vertical"
-        android:textSize="8pt"
+        android:textSize="15pt"
         android:dropDownSelector="@android:color/background_dark"
         android:inputType="text|textAutoComplete"
         android:singleLine="true"
-        android:gravity="center"
         android:width="300dp"
-        android:editable="false" />
+        android:editable="false"
+        android:gravity="left" />
+    </TableLayout>
     </TableRow>
 
-    <TableRow android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:background="#ffffff"
-        android:layout_margin="5dp"
-        android:layout_gravity="center"
-        android:gravity="center|center_vertical|center_horizontal">
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Type"
-            android:id="@+id/textView3"
-            android:textSize="10pt"
-            android:layout_gravity="center"
-            android:textStyle="bold"
-            android:autoText="false"
-            android:gravity="center_vertical|center_horizontal" />
-    </TableRow>
 
     <TableRow android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:background="#a7bebebe"
         android:layout_gravity="center"
-        android:layout_margin="5dp"
-        android:gravity="center|center_vertical|center_horizontal">
-
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="100px"
-        android:id="@+id/completeType"
-
-        android:enabled="true"
-        android:width="500px"
-        android:layout_gravity="center"
-
-        android:hint="Lecture/Tutorial"
-        android:textColor="#000000"
-        android:singleLine="true"
-        android:textColorLink="#000000"
-        android:autoText="true"
-        android:spinnerMode="dialog"
-        android:clickable="true"
-        android:gravity="center|center_vertical|center_horizontal"
-        android:textAlignment="center"
-
-        android:popupBackground="@android:color/background_dark"
-        android:nestedScrollingEnabled="false"
-        android:touchscreenBlocksFocus="false"
-        android:visibility="visible"
-        android:dropDownWidth="match_parent"
-        android:layoutMode="clipBounds"
-
-        android:minWidth="300dp" />
-
-    </TableRow>
-    <TableRow android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:background="#ffffff"
-        android:layout_gravity="center"
-        android:layout_margin="5dp"
-        android:gravity="center|center_vertical|center_horizontal">
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Where"
-            android:id="@+id/textView5"
-            android:textSize="10pt"
-            android:layout_gravity="center"
-            android:textStyle="bold"
-            android:gravity="center_vertical|center_horizontal" />
-    </TableRow>
-
-    <TableRow android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:background="#a7bebebe"
-        android:layout_gravity="center"
-        android:gravity="center|center_vertical|center_horizontal"
-        android:layout_marginTop="5dp">
-
-        <AutoCompleteTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/completeRoom"
-            android:hint="Room ID"
-            android:layout_gravity="center"
-            android:textSize="8pt"
-            android:dropDownSelector="@android:color/background_dark"
-            android:inputType="textAutoComplete"
-            android:gravity="center"
-            android:width="300dp"
-            android:textColor="#000000" />
-
-
-     </TableRow>
-
-    <TableRow android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
-    android:background="#ffffff"
-    android:layout_margin="5dp"
-    android:layout_gravity="center"
-    android:gravity="center|center_vertical|center_horizontal"
-    android:focusableInTouchMode="false"
-        android:orientation="horizontal"
-       >
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="When"
-            android:id="@+id/textView6"
-            android:textSize="10pt"
-            android:layout_gravity="center"
-            android:textStyle="bold"
-            android:gravity="center_vertical|center_horizontal" />
-    </TableRow>
-
-    <TableRow android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:background="#a7bebebe"
-        android:layout_gravity="center"
-        android:layout_margin="5dp"
-        android:gravity="center|center_vertical|center_horizontal">
+        android:gravity="center_vertical|center_horizontal"
+        android:layout_marginTop="5dp"
+        android:background="#D8D8D8">
 
         <TableLayout android:layout_gravity="center"
             android:layout_margin="2dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <AutoCompleteTextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Day"
-                android:id="@+id/textView"
+                android:id="@+id/completeRoom"
+                android:hint="Room"
                 android:layout_gravity="center"
-                android:elegantTextHeight="false"
-                android:textSize="8pt" />
+                android:textSize="15pt"
+                android:dropDownSelector="@android:color/background_dark"
+                android:inputType="textAutoComplete"
+                android:gravity="center|left"
+                android:width="300dp"
+                android:textColor="#000000" />
 
-            <Spinner
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:id="@+id/DAY"
+        </TableLayout>
+    </TableRow>
 
-            android:enabled="true"
-            android:width="500px"
-            android:layout_gravity="center"
+    <TableRow android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center|center_vertical|center_horizontal"
+        android:layout_marginTop="5dp"
+        android:background="#D8D8D8">
 
-            android:hint="Day"
-            android:textColor="#000000"
-            android:singleLine="true"
-            android:textColorLink="#000000"
-            android:autoText="true"
-            android:spinnerMode="dialog"
-            android:clickable="true"
-                android:minWidth="300dp"
-
-            android:textAlignment="center"
-
-                android:popupBackground="@android:drawable/spinner_background"
-                android:visibility="visible"
-                android:dropDownWidth="match_parent"
-                android:layoutMode="clipBounds"
-                android:gravity="center|center_vertical|center_horizontal"
-                style="@android:style/TextAppearance.DeviceDefault.Widget.DropDownItem" />
-
-            <TextView
-                android:layout_width="250px"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Time"
-                android:id="@+id/textView2"
-                android:layout_gravity="center"
-                android:textSize="8pt" />
+        <TableLayout android:layout_gravity="center"
+            android:layout_margin="2dp">
 
             <Spinner
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:id="@+id/TIME"
+                android:id="@+id/completeType"
 
                 android:enabled="true"
                 android:width="500px"
@@ -253,79 +91,82 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
                 android:clickable="true"
                 android:minWidth="300dp"
 
-                android:textAlignment="center"
-
-                android:popupBackground="@android:drawable/spinner_background"
-                android:visibility="visible"
-                android:dropDownWidth="match_parent"
-                android:layoutMode="clipBounds"
-                android:gravity="center|center_vertical|center_horizontal"
-                style="@android:style/TextAppearance.DeviceDefault.Widget.DropDownItem" />
-            <TextView
-                android:layout_width="250px"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Duration"
-
-                android:layout_gravity="center"
-                android:textSize="8pt" />
-            <Spinner
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:id="@+id/DURATION"
-
-                android:enabled="true"
-                android:width="500px"
-                android:layout_gravity="center"
-
-                android:hint="Duration"
-                android:textColor="#000000"
-                android:singleLine="true"
-                android:textColorLink="#000000"
-                android:autoText="true"
-                android:spinnerMode="dialog"
-                android:clickable="true"
-                android:minWidth="300dp"
-
-                android:textAlignment="center"
-
-                android:popupBackground="@android:drawable/spinner_background"
-                android:visibility="visible"
-                android:dropDownWidth="match_parent"
-                android:layoutMode="clipBounds"
-                android:gravity="center|center_vertical|center_horizontal"
-                style="@android:style/TextAppearance.DeviceDefault.Widget.DropDownItem" />
-
+                android:textAlignment="center" />
         </TableLayout>
-
     </TableRow>
-
 
     <TableRow android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="5dp"
         android:gravity="center|center_vertical|center_horizontal"
-        android:layout_marginTop="100px">
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:text="ADD"
-
-        android:id="@+id/Add"
+        android:layout_marginTop="5dp">
 
 
-        android:textColor="#000000"
-        android:textSize="8pt"
-        android:clickable="true"
-        android:typeface="sans"
-        android:shadowColor="@android:color/white"
-        android:singleLine="false"
-        android:enabled="true"
-        android:gravity="center" />
-  </TableRow>
-   </TableLayout>
+
+    </TableRow>
+
+    <TableRow android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:measureWithLargestChild="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center|center_vertical|center_horizontal">
+
+        <LinearLayout android:layout_gravity="center"
+            android:gravity="center_vertical|center_horizontal|fill"
+            android:layout_width="fill_parent"
+            android:layout_marginTop="10dp">
+
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/DAY"
+                android:gravity="center"
+                android:showDividers="middle"
+                android:layout_margin="10dp" />
+
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/Time"
+                android:layout_margin="10dp" />
+
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/Duration"
+                android:layout_margin="10dp" />
+
+        </LinearLayout>
+
+
+
+
+    </TableRow>
+
+    <Space android:layout_height="50px"></Space>
+
+    <LinearLayout android:layout_gravity="center"
+        android:gravity="center|center_vertical|center_horizontal"
+        android:layout_width="fill_parent">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Event"
+            android:id="@+id/button"
+            android:layout_gravity="center"
+            android:gravity="center|center_vertical|center_horizontal" />
+    </LinearLayout>
+
+
+
+
+
+
+
+
+</TableLayout>
 </ScrollView>
 
 

@@ -49,39 +49,6 @@
         <item>Friday</item>
     </string-array>
 
-    <string-array name="Time">
-        <item>9:00</item>
-        <item>10:00</item>
-        <item>11:00</item>
-        <item>12:00</item>
-        <item>13:00</item>
-        <item>14:00</item>
-        <item>15:00</item>
-        <item>16:00</item>
-        <item>17:00</item>
-        <item>18:00</item>
-    </string-array>
-
-    <string-array name="Duration">
-        <item>30</item>
-        <item>40</item>
-        <item>50</item>
-        <item>60</item>
-        <item>70</item>
-        <item>80</item>
-        <item>90</item>
-        <item>100</item>
-        <item>110</item>
-        <item>120</item>
-        <item>120</item>
-        <item>130</item>
-        <item>140</item>
-        <item>150</item>
-        <item>160</item>
-        <item>170</item>
-        <item>180</item>
-    </string-array>
-
 
     <string name="modules">Modules</string>
     <string name="action_add_module">Add Module</string>
