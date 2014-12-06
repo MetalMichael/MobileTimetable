@@ -25,7 +25,7 @@ public class ModelEvent {
             id = event.getInt("ID");
             moduleId = event.getInt("ModuleID");
             duration = event.getInt("Duration");
-            day = event.getInt("Day");
+            day = event.getInt("Day") + 1;
             location = event.getString("Room");
 
             SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");

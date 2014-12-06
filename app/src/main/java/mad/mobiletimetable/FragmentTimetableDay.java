@@ -20,38 +20,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FragmentTimetableDay.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link FragmentTimetableDay#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class FragmentTimetableDay extends Fragment {
     private AdapterTimetable mAdapter;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "dayName";
+    private static final String ARG_DAY_NUM = "me.mobiletimetable.fragmenttimetableday";
 
     // TODO: Rename and change types of parameters
-    private String mDayName;
+    private int day;
+    private String dayName;
 
     private OnFragmentInteractionListener mListener;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param dayName Parameter 1.
-     * @return A new instance of fragment FragmentTimetableDay.
-     */
     // TODO: Rename and change types and number of parameters
-    public static FragmentTimetableDay newInstance(String dayName) {
+    public static FragmentTimetableDay newInstance(int day) {
         FragmentTimetableDay fragment = new FragmentTimetableDay();
         // Get arguments
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, dayName);
+        args.putInt(ARG_DAY_NUM, day);
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,10 +49,11 @@ public class FragmentTimetableDay extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mDayName = getArguments().getString(ARG_PARAM1);
 
-        }
+        //mDayName = getArguments().getString(ARG_PARAM1);
+        day = getArguments().getInt(ARG_DAY_NUM);
+        String[] dayNames = {"Monday","Tuesday","Wednesday","Thursday","Friday"};
+        dayName = dayNames[day];
     }
 
     @Override
@@ -74,35 +61,13 @@ public class FragmentTimetableDay extends Fragment {
                              Bundle savedInstanceState) {
         View timetable = inflater.inflate(R.layout.fragment_fragment_timetable_day, container, false);
 
-        // Set text if dayName supplied
-        if(mDayName!=null) {
-            TextView dayName = (TextView)timetable.findViewById(R.id.day_name);
-            dayName.setText(mDayName);
-        }
-        class Callback implements OnTaskCompleted{
-            @Override
-            public void onTaskCompleted(JSONObject result) {
-                Toast.makeText(getActivity(), "WORKED", Toast.LENGTH_SHORT).show();
-                ArrayList<ModelEvent> events = new ArrayList<ModelEvent>();
-                try{
+        TextView dayTextView = (TextView) timetable.findViewById(R.id.day_name);
+        dayTextView.setText(dayName);
 
-                    JSONArray jsonEvents = result.getJSONArray("events");
-
-                    for(int i = 0; i < jsonEvents.length(); i++) {
-
-                        events.add(new ModelEvent((JSONObject)jsonEvents.get(i)));
-                        Log.d("events", events.get(i).getTime().toString());
-                    }
-                } catch(JSONException e) {
-                    e.printStackTrace();
-                }
-                mAdapter.clear();
-                mAdapter.addAll(events);
-            }
-        }
         HashMap<String,String> request = new HashMap<String, String>();
         request.put("method","timetable");
         request.put("action","getall");
+        request.put("day", Integer.toString(day+1));
         new APIClass(getActivity(), new Callback()).execute(request);
 
         // Inflate the layout for this fragment
@@ -111,6 +76,28 @@ public class FragmentTimetableDay extends Fragment {
         ListView list = (ListView) timetable.findViewById(R.id.day_list);
         list.setAdapter(mAdapter);
         return timetable;
+    }
+
+    class Callback implements OnTaskCompleted{
+        @Override
+        public void onTaskCompleted(JSONObject result) {
+            Toast.makeText(getActivity(), "WORKED", Toast.LENGTH_SHORT).show();
+            ArrayList<ModelEvent> events = new ArrayList<ModelEvent>();
+            try{
+
+                JSONArray jsonEvents = result.getJSONArray("events");
+
+                for(int i = 0; i < jsonEvents.length(); i++) {
+
+                    events.add(new ModelEvent((JSONObject)jsonEvents.get(i)));
+                    Log.d("events", events.get(i).getTime().toString());
+                }
+            } catch(JSONException e) {
+                e.printStackTrace();
+            }
+            mAdapter.clear();
+            mAdapter.addAll(events);
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -137,16 +124,6 @@ public class FragmentTimetableDay extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);

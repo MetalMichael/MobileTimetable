@@ -27,6 +27,8 @@ import java.util.HashMap;
 
 public class FragmentTimetable extends Fragment {
 
+    private FragmentTimetableDay currentFragment;
+
     public FragmentTimetable() {
     }
 
@@ -38,10 +40,10 @@ public class FragmentTimetable extends Fragment {
     }
 
     @Override
-
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.timetable, menu);
     }
+
     public boolean onOptionsItemSelected(MenuItem item) {
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
@@ -56,14 +58,14 @@ public class FragmentTimetable extends Fragment {
         super.onCreate(savedInstanceState);
 
         //Check to see if we're in the tablet landscape viokkkew
-        View timetable = inflater.inflate(R.layout.fragment_fragment_timetable_day, container, false);
+        View timetable = inflater.inflate(R.layout.fragment_fragment_timetable, container, false);
         return timetable;
     }
     //for day changes
     public class GlobalInt {
         public int dayOfWeek = 0;
         public int day;
-        GlobalInt() {
+        public void GlobalInt() {
             Calendar c = Calendar.getInstance();
             this.dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
             switch (this.dayOfWeek) {
@@ -110,34 +112,14 @@ public class FragmentTimetable extends Fragment {
             return this.day;
         }
     }
-    /*class EventsArray {
-        private ModelEvent[] array;
 
-        public void Add(ModelEvent  x){
-            this.array[this.array.length] = x;
-        }
-
-        public ModelEvent Get(int x){
-            return this.array[x];
-        }
-
-        public ModelEvent[] getAll(){
-            return this.array;
-        }
-
-        public int getLength(){
-            return this.array.length;
-        }
-    }*/
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         //API
 
+        /*if(view.findViewById(R.id.fullTimetable) != null) {
 
-
-        if(getView().findViewById(R.id.fullTimetable) != null) {
-            String[] dayNames = {"Monday","Tuesday","Wednesday","Thursday","Friday"};
             int[] dayFragments = {
                     R.id.mondayFragment,
                     R.id.tuesdayFragment,
@@ -145,40 +127,38 @@ public class FragmentTimetable extends Fragment {
                     R.id.thursdayFragment,
                     R.id.fridayFragment
             };
-            for(int i = 0; i < dayNames.length ; i++) {
-                addDayFragment(dayNames[i],dayFragments[i]);
-
+            for(int i = 0; i < 5 ; i++) {
+                addDayFragment(i,dayFragments[i]);
             }
 
-        } else {
-            final GlobalInt global = new GlobalInt();
-            final String[] dayNames = {"Monday","Tuesday","Wednesday","Thursday","Friday"};
-            addDayFragment(dayNames[global.returnDay()], R.id.dayFragment);
-            View myView = getActivity().findViewById(R.id.dayFragment);
+        } else {*/
+        final GlobalInt global = new GlobalInt();
+        addDayFragment(global.returnDay());
+        View myView = view.findViewById(R.id.dayFragment);
 
-            myView.setOnTouchListener(new OnSwipeListener(getActivity()) {
-                @Override
-                public void onSwipeLeft() {
-                    // Load day - 1
-                    Log.d("Resulting Request","right");
-                    addDayFragment(dayNames[global.increment()], R.id.dayFragment);
-                    View myView = getActivity().findViewById(R.id.dayFragment);
-                }
-                @Override
-                public void onSwipeRight() {
-                    // Load day + 1
-                    Log.d("Resulting Request","left");
-                    addDayFragment(dayNames[global.decrement()], R.id.dayFragment);
-                    View myView = getActivity().findViewById(R.id.dayFragment);
-                }
-            });
-        }
+        myView.setOnTouchListener(new OnSwipeListener(getActivity()) {
+            @Override
+            public void onSwipeLeft() {
+                // Load day - 1
+                Log.d("Resulting Request", "right");
+                addDayFragment(global.increment());
+                //View myView = getActivity().findViewById(R.id.dayFragment);
+            }
+
+            @Override
+            public void onSwipeRight() {
+                // Load day + 1
+                Log.d("Resulting Request", "left");
+                addDayFragment(global.decrement());
+                //View myView = getActivity().findViewById(R.id.dayFragment);
+            }
+        });
+        //}
     }
-    private void addDayFragment(String dayName, int dayFragmentID){
-        FragmentTimetableDay fragment = FragmentTimetableDay.newInstance(dayName);
-        FragmentTransaction fTransaction = getFragmentManager().beginTransaction();
-        fTransaction.replace(dayFragmentID, fragment);
-        fTransaction.commit();
+
+    private void addDayFragment(int day){
+        currentFragment = FragmentTimetableDay.newInstance(day);
+        getFragmentManager().beginTransaction().replace(R.id.dayFragment, currentFragment).commit();
     }
 
 }
