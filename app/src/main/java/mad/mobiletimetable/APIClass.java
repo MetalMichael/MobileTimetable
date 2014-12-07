@@ -47,8 +47,9 @@ public class APIClass extends APIClassBase {
         File dir = new File(dirPath);
         File dirFiles[] = dir.listFiles();
         if(dirFiles!=null) {
-            Log.d("API Class","We found "+dirFiles.length+" files for "+requestMap.get("method")+"|"+requestMap.get("action"));
+            Log.d("API Class","We found "+dirFiles.length+" files for "+requestMap.get("method")+" "+requestMap.get("action"));
             for (int i = 0; i < dirFiles.length; i++) {
+                Log.d("API Class","File "+i+"| "+dirFiles[i].getName());
                 int tempid = Integer.parseInt(dirFiles[i].getName().split("-")[0].trim());
                 if (tempid > id) {
                     id = tempid + 1;
@@ -59,19 +60,26 @@ public class APIClass extends APIClassBase {
         return id;
     }
 
+    private String getFileName(HashMap<String,String> requestMap){
+        String mapCode = Integer.toString(requestMap.hashCode());
+        String fileName = getFileID(requestMap)+"-"+mapCode;
+        return fileName;
+    }
+
     // Check local storage for result of request if connection unavailable
     // use it as the result if it is present
     private String fetchFromStorage(HashMap<String,String> requestMap){
         Log.d("API Class","Fetch from Storage");
         String result = "";
-        String mapCode = Integer.toString(requestMap.hashCode());
         String dirPath = context.getFilesDir()+"/"+requestMap.get("method")+"/"+requestMap.get("action");
-        String fileName = getFileID(requestMap)+"-"+mapCode;
+        String fileName = getFileName(requestMap);
+        Log.d("API Class","Fetching "+dirPath+"/"+fileName);
         File resultFile = new File(dirPath, fileName);
         if(resultFile.exists()){
+            Log.d("API Class","Found file");
             FileInputStream fis = null;
             try {
-                fis = context.openFileInput(mapCode);
+                fis = new FileInputStream(resultFile);
                 char current;
                 while(fis.available() > 0){
                     current = (char) fis.read();
@@ -88,16 +96,20 @@ public class APIClass extends APIClassBase {
     // Save successful request result to local storage
     private void saveToStorage(HashMap<String,String> requestMap, String result){
         Log.d("API Class","Saving to Storage");
-        String mapCode = Integer.toString(requestMap.hashCode());
         String dirPath = context.getFilesDir()+"/"+requestMap.get("method")+"/"+requestMap.get("action");
-        String fileName = getFileID(requestMap)+"-"+mapCode;
-        File resultFile = new File(dirPath, fileName);
+        String fileName = getFileName(requestMap);
+        Log.d("API Class","Saving "+dirPath+"/"+fileName);
         FileOutputStream fos = null;
         try {
-            // Save cached result
-            fos = context.openFileOutput(mapCode, Context.MODE_PRIVATE);
-            fos.write(result.getBytes());
-            fos.close();
+            File resultFile = new File(dirPath, fileName);
+            if(resultFile.getParentFile().mkdirs()) {
+                resultFile.createNewFile();
+                // Save cached result
+                fos = new FileOutputStream(resultFile);
+                fos.write(result.getBytes());
+                fos.flush();
+                fos.close();
+            }
         } catch (Exception e){
             // We have a permissions problem or the app directory doesn't exist
             e.printStackTrace();
@@ -124,16 +136,22 @@ public class APIClass extends APIClassBase {
     }
 
     // Format a module add string to a module get string response
-    private JSONObject formatModuleGet(HashMap<String,String> requestMap){
+    private JSONObject formatModuleGet(HashMap<String,String> requestMap,Boolean singleResponse){
         JSONObject response = new JSONObject();
         JSONObject module = new JSONObject();
+        Log.d("API Class",singleResponse.toString());
         try {
-            module.put("ID",getFileID(requestMap));
+            int id = getFileID(requestMap);
+            module.put("ID",id);
             module.put("ModuleCode",requestMap.get("modulecode"));
             module.put("ModuleTitle",requestMap.get("moduletitle"));
             module.put("Lecturer",requestMap.get("lecturer"));
-            response.put("module",module);
-            response.put("status","OK");
+            if(singleResponse) {
+                response.put("module",module);
+                response.put("status", "OK");
+            } else {
+                response = module;
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -141,13 +159,13 @@ public class APIClass extends APIClassBase {
     }
     private JSONObject formatModuleGetAll(HashMap<String,String> requestMap){
         JSONObject response = new JSONObject();
-        JSONObject newModule = formatModuleGet(requestMap);
+        JSONObject newModule = formatModuleGet(requestMap,false);
         response = appendToArray("modules",newModule,requestMap);
         return response;
     }
 
     // Format a timetable add string to a timetable get string response
-    private JSONObject formatTimetableGet(HashMap<String,String> requestMap){
+    private JSONObject formatTimetableGet(HashMap<String,String> requestMap,Boolean singleResponse){
         JSONObject response = new JSONObject();
         JSONObject event = new JSONObject();
         try {
@@ -156,8 +174,17 @@ public class APIClass extends APIClassBase {
             event.put("Day",requestMap.get("day"));
             event.put("Time",requestMap.get("time"));
             event.put("Duration",requestMap.get("duration"));
-            response.put("event",event);
-            response.put("status","OK");
+            event.put("Room",requestMap.get("room"));
+            event.put("Type",requestMap.get("type"));
+            requestMap.put("method","module");
+            requestMap.put("action","get");
+            event.put("Module",formatModuleGet(requestMap,false));
+            if(singleResponse) {
+                response.put("event",event);
+                response.put("status", "OK");
+            } else {
+                response = event;
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -166,47 +193,79 @@ public class APIClass extends APIClassBase {
 
     private JSONObject formatTimetableGetAll(HashMap<String,String> requestMap){
         JSONObject response = new JSONObject();
-        JSONObject newEvent = formatTimetableGet(requestMap);
+        JSONObject newEvent = formatTimetableGet(requestMap,false);
         response = appendToArray("events",newEvent,requestMap);
         return response;
     }
 
+    private String performGenericAdd(HashMap<String,String> requestMap){
+        String method = requestMap.get("method");
+        String id = "eventid";
+        if(method.equals("module")){
+            id = "moduleid";
+        }
+        Log.d("API Class","Adding a "+method);
+        HashMap<String,String> getRequest = new HashMap<String, String>();
+        getRequest.put("method",method);
+        getRequest.put("action", "getall");
+        if(method.equals("module")) {
+            saveToStorage(getRequest, formatModuleGetAll(requestMap).toString());
+        } else {
+            saveToStorage(getRequest,formatTimetableGetAll(requestMap).toString());
+        }
+        getRequest.put("action","get");
+        String fileID = Integer.toString(getFileID(requestMap));
+        getRequest.put(id, fileID);
+        if(method.equals("module")) {
+            saveToStorage(getRequest,formatModuleGet(requestMap,true).toString());
+        } else {
+            saveToStorage(getRequest,formatTimetableGet(requestMap,true).toString());
+        }
+        JSONObject response = new JSONObject();
+        try {
+            response.put(id, fileID);
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+        return response.toString();
+    }
+
+    private void performGenericDelete(HashMap<String,String> requestMap){
+        String fileName = getFileName(requestMap);
+        context.deleteFile(fileName);
+    }
+
+    private void performGenericEdit(HashMap<String,String> requestMap){
+        JSONObject original = new JSONObject();
+        requestMap.put("action","get");
+        if(requestMap.get("method").equals("module")){
+            original = formatModuleGet(requestMap,true);
+        } else if(requestMap.get("method").equals("timetable")) {
+            original = formatTimetableGet(requestMap,true);
+        }
+    }
+
     @Override
-    protected void localHandler(HashMap<String,String> requestMap){
+    protected String localHandler(HashMap<String,String> requestMap){
+        String result = "";
         Log.d("API Class","localHandler Called");
         String method = requestMap.get("method");
         String action = requestMap.get("action");
         if(method.equals("module")||method.equals("timetable")){
-            String id = "eventid";
-            if(method.equals("module")){
-                id = "moduleid";
-            }
             if(action.equals("add")){
-                Log.d("API Class","Adding a "+method);
-                HashMap<String,String> getRequest = new HashMap<String, String>();
-                getRequest.put("method",method);
-                getRequest.put("action", "getall");
-                if(method.equals("module")) {
-                    saveToStorage(getRequest, formatModuleGetAll(requestMap).toString());
-                } else {
-                    saveToStorage(getRequest,formatTimetableGetAll(requestMap).toString());
-                }
-                getRequest.put("action","get");
-                getRequest.put(id, Integer.toString(getFileID(requestMap)));
-                if(method.equals("module")) {
-                    saveToStorage(getRequest,formatModuleGet(requestMap).toString());
-                } else {
-                    saveToStorage(getRequest,formatTimetableGet(requestMap).toString());
-                }
+                performGenericAdd(requestMap);
             } else if(action.equals("get")){
-                Log.d("API Class","Getting a "+method);
-                Log.d("API Class","Fetched request "+fetchFromStorage(requestMap).toString());
+                result = fetchFromStorage(requestMap).toString();
             } else if(action.equals("getall")){
-                Log.d("API Class","Getting all "+method+"s");
-                Log.d("API Class","Fetched request "+fetchFromStorage(requestMap).toString());
+                result = fetchFromStorage(requestMap).toString();
+            } else if(action.equals("edit")){
+                performGenericEdit(requestMap);
+            } else if(action.equals("delete")){
+                performGenericDelete(requestMap);
             }
         }
         Log.d("API Class","localHandler Finished");
+        return result;
     }
 
     @Override

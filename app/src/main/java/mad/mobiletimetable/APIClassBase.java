@@ -103,7 +103,7 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
 
     @Override
     protected JSONObject doInBackground(HashMap<String,String>... params) {
-        JSONObject result = null;
+        JSONObject result = new JSONObject();
         HashMap<String,String> requestMap = params[0];
         String auth = context.getSharedPreferences("MyAuthFile", 0).getString("Auth","");
         // Make sure we have the method and action, throw error if we don't
@@ -142,8 +142,6 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
                 try {
                     result = new JSONObject(requestResult);
                 } catch (JSONException e) {
-                    //It's probably a bad idea to throw runtime errors for the sake of it
-                    //Question is - do we want to show the user an internal (API) error?
                     e.printStackTrace();
                     handleError("Invalid API Response");
                     return new JSONObject();
@@ -155,7 +153,16 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
                     return new JSONObject();
                 }
             } else {
-                localHandler(requestMap);
+                String localRequest = localHandler(requestMap);
+                if(!localRequest.equals("")) {
+                    try {
+                        result = new JSONObject(localRequest);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        handleError("Invalid API Response");
+                        return new JSONObject();
+                    }
+                }
             }
         } else {
             throw new Error("Set method and action for API call");
@@ -177,8 +184,8 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
 
     }
 
-    protected void localHandler(HashMap<String, String> map) {
-
+    protected String localHandler(HashMap<String, String> map) {
+        return "";
     }
 
 

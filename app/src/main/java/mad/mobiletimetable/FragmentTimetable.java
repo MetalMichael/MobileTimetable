@@ -118,7 +118,7 @@ public class FragmentTimetable extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         //API
 
-        /*if(view.findViewById(R.id.fullTimetable) != null) {
+        if(view.findViewById(R.id.fullTimetable) != null) {
 
             int[] dayFragments = {
                     R.id.mondayFragment,
@@ -131,9 +131,9 @@ public class FragmentTimetable extends Fragment {
                 addDayFragment(i,dayFragments[i]);
             }
 
-        } else {*/
+        } else {
         final GlobalInt global = new GlobalInt();
-        addDayFragment(global.returnDay());
+        addDayFragment(global.returnDay(),R.id.dayFragment);
         View myView = view.findViewById(R.id.dayFragment);
 
         myView.setOnTouchListener(new OnSwipeListener(getActivity()) {
@@ -141,7 +141,7 @@ public class FragmentTimetable extends Fragment {
             public void onSwipeLeft() {
                 // Load day - 1
                 Log.d("Resulting Request", "right");
-                addDayFragment(global.increment());
+                addDayFragment(global.increment(),R.id.dayFragment);
                 //View myView = getActivity().findViewById(R.id.dayFragment);
             }
 
@@ -149,16 +149,16 @@ public class FragmentTimetable extends Fragment {
             public void onSwipeRight() {
                 // Load day + 1
                 Log.d("Resulting Request", "left");
-                addDayFragment(global.decrement());
+                addDayFragment(global.decrement(),R.id.dayFragment);
                 //View myView = getActivity().findViewById(R.id.dayFragment);
             }
         });
-        //}
+        }
     }
 
-    private void addDayFragment(int day){
+    private void addDayFragment(int day, int dayID){
         currentFragment = FragmentTimetableDay.newInstance(day);
-        getFragmentManager().beginTransaction().replace(R.id.dayFragment, currentFragment).commit();
+        getFragmentManager().beginTransaction().replace(dayID, currentFragment).commit();
     }
 
 }
