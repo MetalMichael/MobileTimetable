@@ -3,12 +3,15 @@ package mad.mobiletimetable;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.app.Activity;
 import android.net.Uri;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
+
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -43,7 +46,7 @@ import java.util.HashMap;
  * create an instance of this fragment.
  *
  */
-public class FragmentAddToTimetable extends Fragment {
+public class FragmentAddToTimetable extends Fragment{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -53,24 +56,18 @@ public class FragmentAddToTimetable extends Fragment {
     private String mParam1;
     private String mParam2;
     private Button addNew;
-    private TableLayout layoutNew;
     private View root;
     private String roomTypes[],ModuleChoice[],rooms[],dates[],times[],durations[];
     private APIClass api;
     private ModelEvent event;
     private boolean active = true;
     private AdapterModules mAdapter;
-    private String moduleNames[];
+    private ArrayList<String> moduleNameArray =new ArrayList<String>();
     private NumberPicker timePicker,dayPicker,durationPicker;
-
-
-    private EditText durationView;
-
-
-
     private OnFragmentInteractionListener mListener;
 
-    private Spinner roomTypeSpinner,DateView,TimeView;
+
+    private Spinner roomTypeSpinner;
     private AutoCompleteTextView ModuleChoiceView,roomView;
 
 
@@ -103,22 +100,29 @@ public class FragmentAddToTimetable extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        //addNew = (Button) root.findViewById(R.id.add_new) ;
+
+
 
     }
 
-    public void onClick(View v) {
 
+
+
+
+    public View makeRequest(View v) {
 
 
         NumberPicker day_selector =(NumberPicker) root.findViewById(R.id.DAY);
-        String day = Integer.toString(day_selector.getValue());
+        String day = Integer.toString(day_selector.getValue()+1);
 
-        NumberPicker duration_selector =(NumberPicker) root.findViewById(R.id.Time);
-        String duration = durations[duration_selector.getValue()];
+        NumberPicker duration_selector =(NumberPicker) root.findViewById(R.id.Duration);
+        String duration  = Integer.toString(duration_selector.getValue()+1);
 
-        NumberPicker time_selector =(NumberPicker) root.findViewById(R.id.Duration);
-        String time = times[time_selector.getValue()];
+        NumberPicker time_selector =(NumberPicker) root.findViewById(R.id.Time);
+        String time = times[time_selector.getValue()]+":00";
 
+        //String output="\nDay: "+day+"\nDur: "+duration+"\nTime"+time;
 
         AutoCompleteTextView room =(AutoCompleteTextView) root.findViewById(R.id.completeRoom);
         String selectedRoom=room.getText().toString();
@@ -129,6 +133,9 @@ public class FragmentAddToTimetable extends Fragment {
         Spinner classType =(Spinner) root.findViewById(R.id.completeType);
         String selectedType=classType.getSelectedItem().toString();
 
+
+
+
         if( !day.isEmpty() && !duration.isEmpty() && !time.isEmpty() && !selectedRoom.isEmpty()
                 && getIndex(selectedModule)!=-1 && !selectedType.isEmpty() ) {
 
@@ -136,22 +143,25 @@ public class FragmentAddToTimetable extends Fragment {
 
             request.put("method", "timetable");
             request.put("action", "add");
-            request.put("moduleid", Integer.toString(getIndex(selectedModule)));
+            request.put("moduleid", Integer.toString(mAdapter.getItem(getIndex(selectedModule)).getId()));
 
 
             request.put("day", day);
             request.put("time", time);
             request.put("duration", duration);
-            //request.put("type",selectedType);
-            request.put("room", selectedType);
+            request.put("type",selectedType);
+            request.put("room", selectedRoom);
 
 
             api = new APIClass(getActivity(), new CreateEventCallback());
             api.execute(request);
         }
+
         else{
-            //Toast Here
+            Toast.makeText(getActivity(), "Please fill in all inputs", Toast.LENGTH_LONG).show();
         }
+
+        return v;
     }
 
     private class CreateEventCallback implements OnTaskCompleted {
@@ -162,17 +172,18 @@ public class FragmentAddToTimetable extends Fragment {
             if(!result.has("module")) {
                 getActivity().finish();
                 Toast.makeText(getActivity(), "Added to Timetable", Toast.LENGTH_LONG).show();
-                return;
+
             }
             try {
                 JSONObject eventID = result.getJSONObject("module");
                 event = new ModelEvent(eventID);
+                Toast.makeText(getActivity(), "Added to Timetable: " +event.getModule().toString(), Toast.LENGTH_LONG).show();
 
             } catch(JSONException e) {
                 e.printStackTrace();
             }
 
-            clearAll();
+            //clearAll();
         }
     }
 
@@ -181,15 +192,19 @@ public class FragmentAddToTimetable extends Fragment {
         public void onTaskCompleted(JSONObject result) {
             if(result.has("modules")) {
                 ArrayList<ModelModule> modules = new ArrayList<ModelModule>();
+
+                mAdapter = new AdapterModules(getActivity(), new ArrayList<ModelModule>());
                 try{
                     JSONArray jsonModules = result.getJSONArray("modules");
-                    moduleNames = new String[jsonModules.length()];
+
                     for(int i = 0; i < jsonModules.length(); i++) {
                         ModelModule mod=new ModelModule((JSONObject)jsonModules.get(i));
                         modules.add(mod);
-                        moduleNames[i]=mod.getTitle();
+                        moduleNameArray.add(mod.getTitle());
+
 
                     }
+                    Log.d("FragmentModules", moduleNameArray.get(0));
                 } catch(JSONException e) {
                     e.printStackTrace();
                 }
@@ -231,10 +246,28 @@ public class FragmentAddToTimetable extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
+        //Send API request
+
+        root= inflater.inflate( R.layout.fragment_add_to_timetable, container, false);
+
+
+        Button mButton = (Button) root.findViewById(R.id.add_new);
+        mButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                makeRequest(v);
+            }
+        });
+
+        HashMap<String, String> request = new HashMap<String, String>();
+        request.put("method", "module");
+        request.put("action", "getall");
+        api = new APIClass(getActivity(), new ModuleCallback());
+        api.execute(request);
+
 
         getActivity().setTitle(R.string.add_title);
 
-        root= inflater.inflate( R.layout.fragment_add_to_timetable, container, false);
+
 
 
 
@@ -252,24 +285,24 @@ public class FragmentAddToTimetable extends Fragment {
         rooms=resources.getStringArray(R.array.Rooms);
         dates=resources.getStringArray(R.array.Date);
 
-        durations= new String[31];
+        durations= new String[9];
         times= new String[4*25];
 
         int test=1;
 
         int count=0;
-        for (int i=0;i<31;i++){
-            test=(i+1)*10;
+        for (int i=0;i<9;i++){
+
             int index=i+1;
-            int calc=(test % 60);
-            String output=Integer.toString(calc);
 
-
-            durations[count]=format(test);
-            count++;
-
-
-
+            if(i==0){
+                durations[count]=Integer.toString(index)+" period";
+                count++;
+            }
+            else{
+                durations[count]=Integer.toString(index)+" periods";
+                count++;
+            }
 
         }
         count=0;
@@ -321,22 +354,17 @@ public class FragmentAddToTimetable extends Fragment {
 
         ModuleChoice=resources.getStringArray(R.array.ModuleNames);
 
-
         //Set Adapters
-        ArrayAdapter<String> adapter1 = new ArrayAdapter<String> (c, R.layout.spinner_item, roomTypes);
+        ArrayAdapter<String> adapter1 = new ArrayAdapter<String> (c, R.layout.spinner_item,roomTypes);
         roomTypeSpinner = (Spinner) root.findViewById(R.id.completeType);
 
-        ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (c, R.layout.spinner_item, ModuleChoice);
+
+        ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (c, R.layout.spinner_item, moduleNameArray);
         ModuleChoiceView = (AutoCompleteTextView) root.findViewById(R.id.completeModule);
 
         ArrayAdapter<String> adapter3 = new ArrayAdapter<String> (c, R.layout.spinner_item, rooms);
         roomView= (AutoCompleteTextView) root.findViewById(R.id.completeRoom);
 
-        //ArrayAdapter<String> adapter4 = new ArrayAdapter<String> (c, R.layout.spinner_item, dates);
-        //DateView= (Spinner) root.findViewById(R.id.DAY);
-
-        //ArrayAdapter<String> adapter5 = new ArrayAdapter<String> (c, R.layout.spinner_item, times);
-       // TimeView= (Spinner) root.findViewById(R.id.TIME);
 
 
         //Add Adapters to DropDown Views
@@ -366,19 +394,15 @@ public class FragmentAddToTimetable extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
     }
-    @Override
+
+    /*
     public void onResume(){
 
-        //Send API request
-        HashMap<String, String> request = new HashMap<String, String>();
-        request.put("method", "module");
-        request.put("action", "getall");
-        api = new APIClass(getActivity(), new ModuleCallback());
-        api.execute(request);
+
 
         super.onResume();
     }
-
+    */
     @Override
     public void onDetach() {
         super.onDetach();
