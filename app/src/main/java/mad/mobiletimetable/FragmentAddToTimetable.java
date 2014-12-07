@@ -170,7 +170,7 @@ public class FragmentAddToTimetable extends Fragment{
             if(!active) return;
 
             if(!result.has("module")) {
-                getActivity().finish();
+
                 Toast.makeText(getActivity(), "Added to Timetable", Toast.LENGTH_LONG).show();
 
             }
