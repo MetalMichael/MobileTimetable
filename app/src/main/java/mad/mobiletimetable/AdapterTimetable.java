@@ -37,8 +37,16 @@ public class AdapterTimetable extends ArrayAdapter<ModelEvent>{
 
         ModelEvent modelEvent = events.get(position);
         ((TextView) rowView.findViewById(R.id.event_time)).setText(modelEvent.getDate());
-        ((TextView) rowView.findViewById(R.id.event_title)).setText(modelEvent.getModule().getTitle());
-        ((TextView) rowView.findViewById(R.id.event_location)).setText(modelEvent.getLocation());
+        
+        //If isn't a dummy
+        if(modelEvent.getId() != null) {
+            ((TextView) rowView.findViewById(R.id.event_title)).setText(modelEvent.getModule().getTitle());
+            ((TextView) rowView.findViewById(R.id.event_location)).setText(modelEvent.getLocation());
+        } else {
+            ((TextView) rowView.findViewById(R.id.event_title)).setText("");
+            ((TextView) rowView.findViewById(R.id.event_location)).setText("");
+        }
+        
 
         if(position %2 == 0) {
             rowView.setBackgroundColor(context.getResources().getColor(R.color.module_row_even));
