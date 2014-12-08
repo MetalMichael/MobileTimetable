@@ -67,8 +67,8 @@ public class FragmentAddToTimetable extends Fragment{
     private OnFragmentInteractionListener mListener;
 
 
-    private Spinner roomTypeSpinner;
-    private AutoCompleteTextView ModuleChoiceView,roomView;
+    private Spinner roomTypeSpinner,ModuleChoiceView;
+    private AutoCompleteTextView roomView;
 
 
     /**
@@ -127,8 +127,8 @@ public class FragmentAddToTimetable extends Fragment{
         AutoCompleteTextView room =(AutoCompleteTextView) root.findViewById(R.id.completeRoom);
         String selectedRoom=room.getText().toString();
 
-        AutoCompleteTextView module =(AutoCompleteTextView) root.findViewById(R.id.completeModule);
-        String selectedModule=module.getText().toString();
+        Spinner module =(Spinner) root.findViewById(R.id.completeModule);
+        String selectedModule=module.getSelectedItem().toString();
 
         Spinner classType =(Spinner) root.findViewById(R.id.completeType);
         String selectedType=classType.getSelectedItem().toString();
@@ -352,15 +352,14 @@ public class FragmentAddToTimetable extends Fragment{
         dayPicker.setDisplayedValues(dates);
         dayPicker.setValue(0);
 
-        ModuleChoice=resources.getStringArray(R.array.ModuleNames);
+        //ModuleChoice=resources.getStringArray(R.array.ModuleNames);
 
         //Set Adapters
         ArrayAdapter<String> adapter1 = new ArrayAdapter<String> (c, R.layout.spinner_item,roomTypes);
         roomTypeSpinner = (Spinner) root.findViewById(R.id.completeType);
 
-
         ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (c, R.layout.spinner_item, moduleNameArray);
-        ModuleChoiceView = (AutoCompleteTextView) root.findViewById(R.id.completeModule);
+        ModuleChoiceView = (Spinner) root.findViewById(R.id.completeModule);
 
         ArrayAdapter<String> adapter3 = new ArrayAdapter<String> (c, R.layout.spinner_item, rooms);
         roomView= (AutoCompleteTextView) root.findViewById(R.id.completeRoom);
@@ -395,14 +394,14 @@ public class FragmentAddToTimetable extends Fragment{
         }
     }
 
-    /*
+
     public void onResume(){
 
 
 
         super.onResume();
     }
-    */
+
     @Override
     public void onDetach() {
         super.onDetach();

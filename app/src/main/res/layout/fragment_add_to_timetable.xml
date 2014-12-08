@@ -19,20 +19,26 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
         <TableLayout android:layout_gravity="center"
             android:layout_margin="2dp">
 
-            <AutoCompleteTextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/completeModule"
-        android:hint="Module"
-        android:layout_gravity="center_vertical"
-        android:textSize="9pt"
-        android:dropDownSelector="@android:color/background_dark"
-        android:inputType="text|textAutoComplete"
-        android:singleLine="true"
-        android:width="300dp"
-        android:editable="false"
-        android:gravity="left" />
-    </TableLayout>
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/completeModule"
+
+                android:enabled="true"
+                android:width="500px"
+                android:layout_gravity="center"
+
+                android:hint="Day"
+                android:textColor="#000000"
+                android:singleLine="true"
+                android:textColorLink="#000000"
+                android:autoText="true"
+                android:spinnerMode="dialog"
+                android:clickable="true"
+                android:minWidth="300dp"
+
+                android:textAlignment="center" />
+         </TableLayout>
     </TableRow>
 
 
