@@ -1,44 +1,51 @@
+/*
+*   Created By: Max Pearson
+*   Student ID: B123103
+*
+ */
+
+//Load Project package
 package mad.mobiletimetable;
 
-import android.content.Intent;
+//Context and Resources for finding predefined values
 import android.content.res.Resources;
+import android.content.Context;
+
+//Bundle of Studio
 import android.os.Bundle;
+
+//Android Logging to terminal
 import android.util.Log;
+
+//Widgets for View
 import android.widget.Button;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.EditText;
+import android.widget.Toast;
+import android.widget.NumberPicker;
+
+//Application
 import android.app.Activity;
-import android.net.Uri;
 import android.app.Fragment;
+
+//Requests
+import android.net.Uri;
+
+//View for containment of widgets
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
-import android.widget.SeekBar.*;
 
-import android.widget.SeekBar;
-import android.widget.TableLayout;
-
-import android.widget.TextView;
-import android.widget.Toast;
-import android.content.Context;
-import android.widget.Spinner;
-import android.widget.TimePicker;
-import android.widget.NumberPicker;
-
-
-
+//HTTP JSON packages
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+//Java Standard Library
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 
 /**
@@ -57,11 +64,9 @@ public class FragmentAddToTimetable extends Fragment{
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-    private Button addNew;
+    private String mParam1, mParam2;
     private View root;
-    private String[] roomTypes,rooms,dates,times,durations;
+    private String[] roomTypes,dates,times,durations;
     private APIClass api;
     private ModelEvent event;
     private boolean active = true;
@@ -73,11 +78,9 @@ public class FragmentAddToTimetable extends Fragment{
     private NumberPicker timePicker,dayPicker,durationPicker;
     private OnFragmentInteractionListener mListener;
 
-
     private Spinner roomTypeSpinner;
     private Spinner ModuleChoiceView;
-    private AutoCompleteTextView roomView;
-
+    private EditText roomView;
 
     /**
      * Use this factory method to create a new instance of
@@ -108,52 +111,49 @@ public class FragmentAddToTimetable extends Fragment{
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        //addNew = (Button) root.findViewById(R.id.add_new) ;
-
-
-
     }
+    /*
+    *   makeRequest(View v)
+    *
+    *   Find Inputs and using APIClass create values needed for JSON query
+    *
+     */
+    public View MakeRequest(View v) {
 
-
-
-
-
-    public View makeRequest(View v) {
-
-
+        //Number Picker set
         NumberPicker day_selector =(NumberPicker) root.findViewById(R.id.DAY);
-        String day = Integer.toString(day_selector.getValue()+1);
-
         NumberPicker duration_selector =(NumberPicker) root.findViewById(R.id.Duration);
-        String duration  = Integer.toString(duration_selector.getValue()+1);
-
         NumberPicker time_selector =(NumberPicker) root.findViewById(R.id.Time);
-        String time = times[time_selector.getValue()]+":00";
 
-        //String output="\nDay: "+day+"\nDur: "+duration+"\nTime"+time;
-
-        AutoCompleteTextView room =(AutoCompleteTextView) root.findViewById(R.id.completeRoom);
-        String selectedRoom=room.getText().toString();
-
+        //Edit and Spinner set
+        EditText room =(EditText) root.findViewById(R.id.completeRoom);
         Spinner moduleSpinner =(Spinner) root.findViewById(R.id.completeModule);
-        String selectedModule=moduleSpinner.getSelectedItem().toString();
-
         Spinner classType =(Spinner) root.findViewById(R.id.completeType);
+
+        //Day
+        String day = Integer.toString(day_selector.getValue()+1);
+        //Duration of event
+        String duration  = Integer.toString(duration_selector.getValue()+1);
+        //Time of event
+        String time = times[time_selector.getValue()]+":00";
+        //Room of event
+        String selectedRoom=room.getText().toString();
+        //Module String
+        String selectedModule=moduleSpinner.getSelectedItem().toString();
+        //Event Type
         String selectedType=classType.getSelectedItem().toString();
 
 
-
-
+        //Check is all Inputs are filled in
         if( !day.isEmpty() && !duration.isEmpty() && !time.isEmpty() && !selectedRoom.isEmpty()
                 && getIndex(selectedModule)!=-1 && !selectedType.isEmpty() ) {
 
             HashMap<String, String> request = new HashMap<String, String>();
 
+            //Create Request and fill
             request.put("method", "timetable");
             request.put("action", "add");
             request.put("moduleid", Integer.toString(mAdapter.getItem(getIndex(selectedModule)).getId()));
-
-
             request.put("day", day);
             request.put("time", time);
             request.put("duration", duration);
@@ -178,9 +178,7 @@ public class FragmentAddToTimetable extends Fragment{
             if(!active) return;
 
             if(!result.has("module")) {
-
                 Toast.makeText(getActivity(), "Added to Timetable", Toast.LENGTH_LONG).show();
-
             }
             try {
                 JSONObject eventID = result.getJSONObject("module");
@@ -190,8 +188,6 @@ public class FragmentAddToTimetable extends Fragment{
             } catch(JSONException e) {
                 e.printStackTrace();
             }
-
-            //clearAll();
         }
     }
 
@@ -208,28 +204,37 @@ public class FragmentAddToTimetable extends Fragment{
                 try{
                     JSONArray jsonModules = result.getJSONArray("modules");
 
+                    /*
+                    *   Loop adding json query results into moduleNameArray and mAdapter
+                    *   outside of loop
+                     */
                     for(int i = 0; i < jsonModules.length(); i++) {
                         ModelModule mod=new ModelModule((JSONObject)jsonModules.get(i));
                         modules.add(mod);
                         moduleNameArray.add(mod.getTitle());
                     }
+                    Log.d("FragmentModules", "Modules Found");
 
 
-                    Log.d("FragmentModules", moduleNameArray.get(0));
-                } catch(JSONException e) {
+                }
+                catch(JSONException e) {
                     e.printStackTrace();
                 }
+                //reset json storage container
                 mAdapter.clear();
-                mAdapter.addAll(modules);
-                //Add Adapters to DropDown Views
 
+                //add all modules to container
+                mAdapter.addAll(modules);
+
+                //Update adapters
                 ModuleChoiceView.setAdapter(adapter1);
                 roomTypeSpinner.setAdapter(adapter2);
-                roomView.setAdapter(adapter3);
+
             }
         }
     }
 
+    //return index of Module Name
     private int getIndex(String name){
         ArrayList<ModelModule> arrayList=mAdapter.getModulesArrayList();
         for (int i=0;i<arrayList.size();i++){
@@ -237,13 +242,11 @@ public class FragmentAddToTimetable extends Fragment{
                 return i;
             }
         }
+        //if nothing return -1
         return -1;
     }
 
-    private void clearAll() {
-        //need to do
-
-    }
+    //Get int time as String and return
     private String format(int hour){
         String output;
         if(hour<10){
@@ -256,7 +259,6 @@ public class FragmentAddToTimetable extends Fragment{
     }
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -266,39 +268,38 @@ public class FragmentAddToTimetable extends Fragment{
         root= inflater.inflate( R.layout.fragment_add_to_timetable, container, false);
 
 
-
+        //Button to make new Event
         Button mButton = (Button) root.findViewById(R.id.add_new);
         mButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                makeRequest(v);
+                MakeRequest(v);
             }
         });
 
+        //Request code to create event
         HashMap<String, String> request = new HashMap<String, String>();
         request.put("method", "module");
         request.put("action", "getall");
         api = new APIClass(getActivity(), new ModuleCallback());
         api.execute(request);
 
+        //Fragment Title
+        getActivity().setTitle("Add Event");
 
-        getActivity().setTitle(R.string.add_title);
-
+        //set context for Actiity Fragment
         Context c = getActivity().getApplicationContext();
 
+        //Get Resources from strings
         Resources resources=getActivity().getResources();
 
 
-        //Get String arrays for Spinners and Autocompletes
+        //Resources
         roomTypes=resources.getStringArray(R.array.roomTypes);
-
-        //need to load modules here
-        //ModuleChoice=resources.getStringArray(R.array.ModuleChoices);
-
-        rooms=resources.getStringArray(R.array.Rooms);
         dates=resources.getStringArray(R.array.Date);
 
+        //Duration and Time String arrays
         durations= new String[9];
-        times= new String[4*19];
+        times= new String[4*18];
 
         int test=1;
 
@@ -320,7 +321,7 @@ public class FragmentAddToTimetable extends Fragment{
         count=0;
 
         //time every 15 minutes
-        for (int i=0;i<19;i++){
+        for (int i=0;i<18;i++){
             int time=i+6;
             for (int j=0;j<4;j++){
                 if(j==0){
@@ -336,60 +337,44 @@ public class FragmentAddToTimetable extends Fragment{
 
         }
 
-
-
-
+        //Find Number Picker elements
         timePicker = (NumberPicker) root.findViewById(R.id.Time);
         durationPicker = (NumberPicker) root.findViewById(R.id.Duration);
         dayPicker = (NumberPicker) root.findViewById(R.id.DAY);
 
+        //Find Spinner elements
+        ModuleChoiceView = (Spinner) root.findViewById(R.id.completeModule);
+        roomTypeSpinner = (Spinner) root.findViewById(R.id.completeType);
 
-
+        //Set timePicker attributes
         timePicker.setMinValue(0);
         timePicker.setMaxValue(times.length-1);
         timePicker.setWrapSelectorWheel(false);
         timePicker.setDisplayedValues(times);
         timePicker.setValue(0);
 
-
+        //Set durationPicker attributes
         durationPicker.setMinValue(0);
         durationPicker.setMaxValue(durations.length-1);
         durationPicker.setWrapSelectorWheel(false);
         durationPicker.setDisplayedValues(durations);
         durationPicker.setValue(0);
 
+        //Set dayPicker attributes
         dayPicker.setMinValue(0);
         dayPicker.setMaxValue(dates.length-1);
         dayPicker.setWrapSelectorWheel(false);
         dayPicker.setDisplayedValues(dates);
         dayPicker.setValue(0);
 
-        //ModuleChoice=resources.getStringArray(R.array.ModuleNames);
-
-        //Set Adapters
-
-
-
+        //Populate adapters with modules and rooms
         adapter1 = new ArrayAdapter<String> (c, R.layout.spinner_item, moduleNameArray);
-        ModuleChoiceView = (Spinner) root.findViewById(R.id.completeModule);
-
-
         adapter2 = new ArrayAdapter<String> (c, R.layout.spinner_item,roomTypes);
-        roomTypeSpinner = (Spinner) root.findViewById(R.id.completeType);
-
-
-        adapter3 = new ArrayAdapter<String> (c, R.layout.spinner_item, rooms);
-        roomView= (AutoCompleteTextView) root.findViewById(R.id.completeRoom);
-
-
-
-        //Add Adapters to DropDown Views
 
         ModuleChoiceView.setAdapter(adapter1);
         roomTypeSpinner.setAdapter(adapter2);
-        roomView.setAdapter(adapter3);
 
-
+        //return View
         return root;
     }
 
@@ -411,15 +396,11 @@ public class FragmentAddToTimetable extends Fragment{
                     + " must implement OnFragmentInteractionListener");
         }
     }
-
-    /*
+    @Override
     public void onResume(){
-
-
-
         super.onResume();
     }
-    */
+
     @Override
     public void onDetach() {
         super.onDetach();

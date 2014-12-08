@@ -53,15 +53,15 @@ tools:context="mad.mobiletimetable.FragmentAddToTimetable"
         <TableLayout android:layout_gravity="center"
             android:layout_margin="2dp">
 
-            <AutoCompleteTextView
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/completeRoom"
                 android:hint="Room"
                 android:layout_gravity="center"
                 android:textSize="9pt"
-                android:dropDownSelector="@android:color/background_dark"
-                android:inputType="textAutoComplete"
+
+                android:inputType="text"
                 android:gravity="center|left"
                 android:width="300dp"
                 android:textColor="#000000" />
