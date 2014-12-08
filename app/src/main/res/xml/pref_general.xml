@@ -25,7 +25,7 @@
     <ListPreference
         android:key="notification_time"
         android:title="@string/pref_title_notification_time"
-        android:defaultValue="0"
+        android:defaultValue="15"
         android:entries="@array/pref_list_notification_times"
         android:entryValues="@array/pref_list_notification_values"
         android:negativeButtonText="@null"
