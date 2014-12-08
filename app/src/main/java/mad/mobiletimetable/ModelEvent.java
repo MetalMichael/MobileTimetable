@@ -20,6 +20,17 @@ public class ModelEvent {
     private ModelModule module;
     private String location;
     private String lessonType;
+    
+    public ModelEvent(int day, Date time) {
+        id = null;
+        moduleId = null;
+        duration = 1;
+        day = day;
+        this.time = time;
+        module = null;
+        location = null;
+        lessonType = null;
+    }
 
     public ModelEvent(JSONObject event) {
         try {
