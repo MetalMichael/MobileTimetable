@@ -11,6 +11,8 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -29,12 +31,14 @@ import android.widget.TimePicker;
 import android.widget.NumberPicker;
 
 
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -57,17 +61,21 @@ public class FragmentAddToTimetable extends Fragment{
     private String mParam2;
     private Button addNew;
     private View root;
-    private String roomTypes[],ModuleChoice[],rooms[],dates[],times[],durations[];
+    private String[] roomTypes,rooms,dates,times,durations;
     private APIClass api;
     private ModelEvent event;
     private boolean active = true;
     private AdapterModules mAdapter;
     private ArrayList<String> moduleNameArray =new ArrayList<String>();
+    private ArrayAdapter<String> adapter1,adapter2,adapter3;
+
+
     private NumberPicker timePicker,dayPicker,durationPicker;
     private OnFragmentInteractionListener mListener;
 
 
-    private Spinner roomTypeSpinner,ModuleChoiceView;
+    private Spinner roomTypeSpinner;
+    private Spinner ModuleChoiceView;
     private AutoCompleteTextView roomView;
 
 
@@ -127,8 +135,8 @@ public class FragmentAddToTimetable extends Fragment{
         AutoCompleteTextView room =(AutoCompleteTextView) root.findViewById(R.id.completeRoom);
         String selectedRoom=room.getText().toString();
 
-        Spinner module =(Spinner) root.findViewById(R.id.completeModule);
-        String selectedModule=module.getSelectedItem().toString();
+        Spinner moduleSpinner =(Spinner) root.findViewById(R.id.completeModule);
+        String selectedModule=moduleSpinner.getSelectedItem().toString();
 
         Spinner classType =(Spinner) root.findViewById(R.id.completeType);
         String selectedType=classType.getSelectedItem().toString();
@@ -190,10 +198,13 @@ public class FragmentAddToTimetable extends Fragment{
     private class ModuleCallback implements OnTaskCompleted {
         @Override
         public void onTaskCompleted(JSONObject result) {
+
+
             if(result.has("modules")) {
                 ArrayList<ModelModule> modules = new ArrayList<ModelModule>();
 
                 mAdapter = new AdapterModules(getActivity(), new ArrayList<ModelModule>());
+
                 try{
                     JSONArray jsonModules = result.getJSONArray("modules");
 
@@ -201,15 +212,20 @@ public class FragmentAddToTimetable extends Fragment{
                         ModelModule mod=new ModelModule((JSONObject)jsonModules.get(i));
                         modules.add(mod);
                         moduleNameArray.add(mod.getTitle());
-
-
                     }
+
+
                     Log.d("FragmentModules", moduleNameArray.get(0));
                 } catch(JSONException e) {
                     e.printStackTrace();
                 }
                 mAdapter.clear();
                 mAdapter.addAll(modules);
+                //Add Adapters to DropDown Views
+
+                ModuleChoiceView.setAdapter(adapter1);
+                roomTypeSpinner.setAdapter(adapter2);
+                roomView.setAdapter(adapter3);
             }
         }
     }
@@ -246,9 +262,9 @@ public class FragmentAddToTimetable extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        //Send API request
 
         root= inflater.inflate( R.layout.fragment_add_to_timetable, container, false);
+
 
 
         Button mButton = (Button) root.findViewById(R.id.add_new);
@@ -267,10 +283,6 @@ public class FragmentAddToTimetable extends Fragment{
 
         getActivity().setTitle(R.string.add_title);
 
-
-
-
-
         Context c = getActivity().getApplicationContext();
 
         Resources resources=getActivity().getResources();
@@ -286,7 +298,7 @@ public class FragmentAddToTimetable extends Fragment{
         dates=resources.getStringArray(R.array.Date);
 
         durations= new String[9];
-        times= new String[4*25];
+        times= new String[4*19];
 
         int test=1;
 
@@ -308,7 +320,7 @@ public class FragmentAddToTimetable extends Fragment{
         count=0;
 
         //time every 15 minutes
-        for (int i=0;i<25;i++){
+        for (int i=0;i<19;i++){
             int time=i+6;
             for (int j=0;j<4;j++){
                 if(j==0){
@@ -355,20 +367,26 @@ public class FragmentAddToTimetable extends Fragment{
         //ModuleChoice=resources.getStringArray(R.array.ModuleNames);
 
         //Set Adapters
-        ArrayAdapter<String> adapter1 = new ArrayAdapter<String> (c, R.layout.spinner_item,roomTypes);
-        roomTypeSpinner = (Spinner) root.findViewById(R.id.completeType);
 
-        ArrayAdapter<String> adapter2 = new ArrayAdapter<String> (c, R.layout.spinner_item, moduleNameArray);
+
+
+        adapter1 = new ArrayAdapter<String> (c, R.layout.spinner_item, moduleNameArray);
         ModuleChoiceView = (Spinner) root.findViewById(R.id.completeModule);
 
-        ArrayAdapter<String> adapter3 = new ArrayAdapter<String> (c, R.layout.spinner_item, rooms);
+
+        adapter2 = new ArrayAdapter<String> (c, R.layout.spinner_item,roomTypes);
+        roomTypeSpinner = (Spinner) root.findViewById(R.id.completeType);
+
+
+        adapter3 = new ArrayAdapter<String> (c, R.layout.spinner_item, rooms);
         roomView= (AutoCompleteTextView) root.findViewById(R.id.completeRoom);
 
 
 
         //Add Adapters to DropDown Views
-        roomTypeSpinner.setAdapter(adapter1);
-        ModuleChoiceView.setAdapter(adapter2);
+
+        ModuleChoiceView.setAdapter(adapter1);
+        roomTypeSpinner.setAdapter(adapter2);
         roomView.setAdapter(adapter3);
 
 
@@ -394,14 +412,14 @@ public class FragmentAddToTimetable extends Fragment{
         }
     }
 
-
+    /*
     public void onResume(){
 
 
 
         super.onResume();
     }
-
+    */
     @Override
     public void onDetach() {
         super.onDetach();
