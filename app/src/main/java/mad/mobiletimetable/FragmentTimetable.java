@@ -1,29 +1,18 @@
 package mad.mobiletimetable;
 
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.Toast;
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 
 public class FragmentTimetable extends Fragment {
 
@@ -45,11 +34,14 @@ public class FragmentTimetable extends Fragment {
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.content_frame, new FragmentAddToTimetable())
-                .commit();
-        return true;
+        switch(item.getItemId()) {
+            case R.id.action_add_timetable:
+                Intent intent = new Intent(getActivity(), ActivityAddToTimetable.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 
@@ -58,7 +50,7 @@ public class FragmentTimetable extends Fragment {
         super.onCreate(savedInstanceState);
 
         //Check to see if we're in the tablet landscape viokkkew
-        View timetable = inflater.inflate(R.layout.fragment_fragment_timetable, container, false);
+        View timetable = inflater.inflate(R.layout.fragment_timetable, container, false);
         return timetable;
     }
     //for day changes

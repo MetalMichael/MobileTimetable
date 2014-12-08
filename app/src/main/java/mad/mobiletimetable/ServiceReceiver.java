@@ -10,8 +10,6 @@ import android.content.Intent;
 public class ServiceReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Intent newIntent = new Intent(context, ServiceNotifications.class);
-        context.startService(newIntent);
+        ServiceNotifications.ensureRunning(context);
     }
-
 }

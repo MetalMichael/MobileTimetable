@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,7 +60,7 @@ public class FragmentTimetableDay extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View timetable = inflater.inflate(R.layout.fragment_fragment_timetable_day, container, false);
+        View timetable = inflater.inflate(R.layout.fragment_timetable_day, container, false);
 
         TextView dayTextView = (TextView) timetable.findViewById(R.id.day_name);
         dayTextView.setText(dayName);

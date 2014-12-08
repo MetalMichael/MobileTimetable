@@ -30,22 +30,22 @@
         </activity>
         <activity
             android:name="mad.mobiletimetable.ActivitySettings"
-            android:label="@string/title_activity_activity_settings" >
+            android:label="@string/title_activity_activity_settings"
+            android:parentActivityName="mad.mobiletimetable.ActivityMain" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="mad.mobiletimetable.ActivityMain" />
         </activity>
-        <!--
-        <activity
-            android:name=".Add"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        -->
         <activity
             android:name="mad.mobiletimetable.ActivityEditModule"
             android:label="@string/add_module"
+            android:parentActivityName="mad.mobiletimetable.ActivityMain" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="mad.mobiletimetable.ActivityMain" />
+        </activity>
+        <activity android:name=".ActivityAddToTimetable"
+            android:label="@string/add_event"
             android:parentActivityName="mad.mobiletimetable.ActivityMain" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

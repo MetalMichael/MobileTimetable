@@ -1,12 +1,16 @@
 package mad.mobiletimetable;
 
+import android.app.ActivityManager;
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.*;
 import android.os.Process;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -19,37 +23,68 @@ public class ServiceNotifications extends IntentService {
     private Looper mServiceLooper;
     private ServiceHandler mServiceHandler;
 
+    //Static Method to ensure that this service is running.
+    public static void ensureRunning(Context context) {
+        if(!isServiceRunning(context)) {
+            Intent intent = new Intent(context, ServiceNotifications.class);
+            context.startService(intent);
+        }
+    }
+
+    //Check if this service is running, statically
+    private static boolean isServiceRunning(Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (ServiceNotifications.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private final class ServiceHandler extends Handler {
         private APIClassBase api;
+        HashMap<String, String> request;
+        SharedPreferences pref;
 
         public ServiceHandler(Looper looper) {
             super(looper);
 
-            api = new APIClassBase(getApplicationContext(), new Callback());
-            HashMap<String, String> request = new HashMap<String, String>();
+            request = new HashMap<String, String>();
             request.put("method", "api");
-            api.execute();
+            request.put("action", "getnotifications");
+            pref = getSharedPreferences("MyAuthFile", 0);
         }
 
         private class Callback implements OnTaskCompleted {
             public void onTaskCompleted(JSONObject response) {
-                Log.d("ServiceNotifications", "completed");
+                String status;
+                try {
+                    status = response.getString("status");
+                } catch(JSONException e) {
+                    e.printStackTrace();
+                    return;
+                }
+                if(status == "OK") {
+                    //
+                }
+                mServiceHandler.sendMessageDelayed(Message.obtain(), 60*1000);
             }
         }
 
         public void handleMessage(Message msg) {
-            while(true) {
-                checkNotifications();
-
-                try {
-                    wait(60);
-                } catch (Exception e) {
-
-                }
-            }
+            checkNotifications();
         }
 
         private void checkNotifications() {
+            if(api != null && api.getStatus() == AsyncTask.Status.RUNNING) {
+                return;
+            }
+
+            api = new APIClassBase(getApplicationContext(), new Callback());
+
+            //request.put("notificationtime", pref.getString("notification_time", "never"));
+            api.execute(request);
         }
     }
 

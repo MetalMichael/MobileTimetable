@@ -64,6 +64,7 @@
     <string name="Cancel">Cancel</string>
 
     <string name="list_item_background">Swipe to Delete</string>
+    <string name="add_event">Add Event</string>
 
 
 </resources>

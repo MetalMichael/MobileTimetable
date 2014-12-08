@@ -174,12 +174,6 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
         Log.d("APIClassBase", message);
     }
 
-    @Override
-    protected void onProgressUpdate(Integer... values) {
-        super.onProgressUpdate(values);
-        Toast.makeText(context, Integer.toString(values[0]), Toast.LENGTH_SHORT).show();
-    }
-
     protected void handlePermissionError() {
 
     }
@@ -205,7 +199,7 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
                     if (error.equals("403")) {
                         handlePermissionError();
                     } else {
-                        Toast.makeText(context, error, Toast.LENGTH_LONG).show();
+                        handleError(error);
                     }
                 }
             } catch (JSONException e) {

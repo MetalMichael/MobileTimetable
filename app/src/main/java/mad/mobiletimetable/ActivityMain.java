@@ -2,8 +2,10 @@ package mad.mobiletimetable;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -40,11 +42,13 @@ public class ActivityMain extends FragmentActivity
 
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Service
+        ServiceNotifications.ensureRunning(this.getApplicationContext());
 
         mTitle = mDrawerTitle = getTitle();
         mDrawItems = getResources().getStringArray(R.array.drawer_items);
@@ -97,6 +101,7 @@ public class ActivityMain extends FragmentActivity
         if(selectedIndex == position) return;
 
         Fragment frag = null;
+        Intent intent;
 
         switch(position) {
             case 0:
@@ -106,10 +111,11 @@ public class ActivityMain extends FragmentActivity
                 frag = new FragmentModules();
                 break;
             case 2:
-                frag= new FragmentAddToTimetable();
+                intent = new Intent(this, ActivityAddToTimetable.class);
+                this.startActivity(intent);
                 break;
             default:
-                Intent intent = new Intent(this, ActivitySettings.class);
+                intent = new Intent(this, ActivitySettings.class);
                 this.startActivity(intent);
         }
         if(frag != null) {
