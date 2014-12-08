@@ -22,10 +22,10 @@ public class ModelEvent {
     private String lessonType;
     
     public ModelEvent(int day, Date time) {
-        id = null;
-        moduleId = null;
+        id = -1;    //can't be null
+        moduleId = -1;  //can't be null
         duration = 1;
-        day = day;
+        this.day = day;
         this.time = time;
         module = null;
         location = null;
@@ -56,38 +56,24 @@ public class ModelEvent {
         }
     }
 
-    public int getId() {
-        return id;
-    }
+    public int getId() { return id; }
 
-    public int getModuleId() {
-        return moduleId;
-    }
+    public int getModuleId() { return moduleId; }
 
     public int getDuration() { return duration; }
 
-    public int getDay() {
-        return day;
-    }
+    public int getDay() { return day; }
 
-    public Date getTime() {
-        return time;
-    }
+    public Date getTime() { return time; }
 
     public String getDate() {
         SimpleDateFormat df = new SimpleDateFormat("HH:mm");
         return df.format(time);
     }
 
-    public ModelModule getModule() {
-        return module;
-    }
+    public ModelModule getModule() { return module; }
 
-    public String getLocation() {
-        return location;
-    }
+    public String getLocation() { return location; }
 
-    public String getLessonType() {
-        return lessonType;
-    }
+    public String getLessonType() { return lessonType; }
 }

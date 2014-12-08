@@ -39,10 +39,10 @@ public class AdapterTimetable extends ArrayAdapter<ModelEvent>{
         ((TextView) rowView.findViewById(R.id.event_time)).setText(modelEvent.getDate());
         
         //If isn't a dummy
-        if(modelEvent.getId() != null) {
+        if(modelEvent.getId() != -1) {
             ((TextView) rowView.findViewById(R.id.event_title)).setText(modelEvent.getModule().getTitle());
             ((TextView) rowView.findViewById(R.id.event_location)).setText(modelEvent.getLocation());
-        } else {
+            } else {
             ((TextView) rowView.findViewById(R.id.event_title)).setText("");
             ((TextView) rowView.findViewById(R.id.event_location)).setText("");
         }

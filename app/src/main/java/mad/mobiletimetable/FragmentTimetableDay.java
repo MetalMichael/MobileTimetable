@@ -16,6 +16,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -52,7 +54,7 @@ public class FragmentTimetableDay extends Fragment {
 
         //mDayName = getArguments().getString(ARG_PARAM1);
         day = getArguments().getInt(ARG_DAY_NUM);
-        String[] dayNames = {"Monday","Tuesday","Wednesday","Thursday","Friday"};
+        String[] dayNames = {"Monday","Tuesday","Wednesday","Thursday","Friday"};   //sort out XML format
         dayName = dayNames[day];
     }
 
@@ -83,20 +85,48 @@ public class FragmentTimetableDay extends Fragment {
         public void onTaskCompleted(JSONObject result) {
 
             ArrayList<ModelEvent> events = new ArrayList<ModelEvent>();
+            ArrayList<ModelEvent> completeEvents = new ArrayList<ModelEvent>();
             try{
-
-                JSONArray jsonEvents = result.getJSONArray("events");
-
-                for(int i = 0; i < jsonEvents.length(); i++) {
-
-                    events.add(new ModelEvent((JSONObject)jsonEvents.get(i)));
-                    Log.d("events", events.get(i).getTime().toString());
+                if(result.length()!=0) {
+                    JSONArray jsonEvents = result.getJSONArray("events");
+                    int counter = 0;
+                    for (int i = 0; i < jsonEvents.length(); i++) {
+                        events.add(new ModelEvent((JSONObject) jsonEvents.get(i)));
+                        Log.d("events", events.get(i).getTime().toString());
+                    }
                 }
             } catch(JSONException e) {
                 e.printStackTrace();
             }
+            try {
+                int counter = 0;
+                final String[] times = {"8:00","9:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00"};
+                for(int i = 0; i < 11; i++) {
+                    if(events.size()>0) {
+                        Log.d("Date", events.get(counter).getDate());
+                        Log.d("time", times[i]);
+                        if (events.get(counter).getDate() == times[i]) {
+                            completeEvents.add(events.get(counter));
+                            counter++;
+
+                        } else {
+                            SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+                            completeEvents.add(new ModelEvent(day, df.parse(times[i])));
+
+                        }
+                    }else{
+                        SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+                        completeEvents.add(new ModelEvent(day, df.parse(times[i])));
+                    }
+                }
+            }catch(ParseException e) {
+                e.printStackTrace();
+            }
+
+
+
             mAdapter.clear();
-            mAdapter.addAll(events);
+            mAdapter.addAll(completeEvents);
         }
     }
 
