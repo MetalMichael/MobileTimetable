@@ -191,7 +191,7 @@ public class FragmentTimetableDay extends Fragment {
             mAdapter.addAll(completeEvents);
         }
     }
-    public static class EventDialog extends DialogFragment{
+    public class EventDialog extends DialogFragment{
        public EventDialog(){
         }
         @Override
@@ -213,7 +213,12 @@ public class FragmentTimetableDay extends Fragment {
                    .setNegativeButton("DELETE",new DialogInterface.OnClickListener() {
                        @Override
                        public void onClick(DialogInterface dialog, int which) {
-                           // Delete Activity
+                           HashMap<String,String> request = new HashMap<String, String>();
+                           request.put("method","timetable");
+                           request.put("action","delete");
+                           request.put("eventid", info);
+                           new APIClass(getActivity(), new Callback()).execute(request);
+                           startActivity(getActivity().getIntent());
                        }
                    });}
             else{
