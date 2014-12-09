@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -20,9 +21,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import de.timroes.android.listview.EnhancedListView;
+
 
 public class FragmentTimetableDay extends Fragment {
+
+
     private AdapterTimetable mAdapter;
+    private EnhancedListView mListView;
+
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_DAY_NUM = "me.mobiletimetable.fragmenttimetableday";
@@ -81,6 +89,25 @@ public class FragmentTimetableDay extends Fragment {
 
         ListView list = (ListView) timetable.findViewById(R.id.day_list);
         list.setAdapter(mAdapter);
+
+        // Show toast message on click and long click on list items.
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //Intent intent = new Intent(getActivity(), ActivityEditModule.class);
+                //intent.putExtra("moduleid", (String)view.getTag());
+                //startActivity(intent);
+                String info = (String)view.getTag();
+                if(info.contains("-")){
+                    Log.d("made it", "Add");
+                }else{
+                    Log.d("made it", "Edit");
+                }
+
+
+            }
+        });
+
         return timetable;
     }
 

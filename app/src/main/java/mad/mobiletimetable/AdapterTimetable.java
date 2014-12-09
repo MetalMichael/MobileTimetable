@@ -42,9 +42,11 @@ public class AdapterTimetable extends ArrayAdapter<ModelEvent>{
         if(modelEvent.getId() != -1) {
             ((TextView) rowView.findViewById(R.id.event_title)).setText(modelEvent.getModule().getTitle());
             ((TextView) rowView.findViewById(R.id.event_location)).setText(modelEvent.getLocation());
+            rowView.setTag(Integer.toString(modelEvent.getId()));
             } else {
             ((TextView) rowView.findViewById(R.id.event_title)).setText("");
             ((TextView) rowView.findViewById(R.id.event_location)).setText("");
+            rowView.setTag(modelEvent.getDate()+"-"+modelEvent.getDay());
         }
         
 
