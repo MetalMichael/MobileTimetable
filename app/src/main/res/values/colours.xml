@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="event_row_odd">#CCCCCC</color>
+    <color name="event_row_even">#EEEEEE</color>
 
     <!-- Modules Colours -->
     <color name="module_row_even">#CCCCCC</color>
@@ -9,4 +11,6 @@
 
     <color name="list_bg">#ff454545</color>
     <color name="section_header">#FFCCCCCC</color>
+
+    <color name="timetable_item_background">#7F4C99</color>
 </resources>

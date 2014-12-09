@@ -43,17 +43,19 @@ public class AdapterTimetable extends ArrayAdapter<ModelEvent>{
             ((TextView) rowView.findViewById(R.id.event_title)).setText(modelEvent.getModule().getTitle());
             ((TextView) rowView.findViewById(R.id.event_location)).setText(modelEvent.getLocation());
             rowView.setTag(Integer.toString(modelEvent.getId()));
-            } else {
+            ((View) rowView.findViewById(R.id.event_item_info)).setVisibility(View.VISIBLE);
+        } else {
             ((TextView) rowView.findViewById(R.id.event_title)).setText("");
             ((TextView) rowView.findViewById(R.id.event_location)).setText("");
             rowView.setTag(modelEvent.getDate()+"-"+modelEvent.getDay());
+            ((View) rowView.findViewById(R.id.event_item_info)).setVisibility(View.INVISIBLE);
         }
         
 
         if(position %2 == 0) {
-            rowView.setBackgroundColor(context.getResources().getColor(R.color.module_row_even));
+            rowView.setBackgroundColor(context.getResources().getColor(R.color.event_row_even));
         } else {
-            rowView.setBackgroundColor(context.getResources().getColor(R.color.module_row_odd));
+            rowView.setBackgroundColor(context.getResources().getColor(R.color.event_row_odd));
         }
 
         return rowView;

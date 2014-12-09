@@ -62,7 +62,7 @@ public class FragmentTimetableDay extends Fragment {
     }
 
     public void onResume() {
-        getActivity().setTitle(R.string.app_name);
+        getActivity().setTitle(dayName);
         super.onResume();
     }
 
@@ -81,8 +81,8 @@ public class FragmentTimetableDay extends Fragment {
                              Bundle savedInstanceState) {
         View timetable = inflater.inflate(R.layout.fragment_timetable_day, container, false);
 
-        TextView dayTextView = (TextView) timetable.findViewById(R.id.day_name);
-        dayTextView.setText(dayName);
+        //TextView dayTextView = (TextView) timetable.findViewById(R.id.day_name);
+        //dayTextView.setText(dayName);
 
         HashMap<String,String> request = new HashMap<String, String>();
         request.put("method","timetable");
@@ -195,7 +195,7 @@ public class FragmentTimetableDay extends Fragment {
         }
     }
     public class EventDialog extends DialogFragment{
-       public EventDialog(){
+        public EventDialog(){
         }
         @Override
         public Dialog onCreateDialog(Bundle savedInstantState){
