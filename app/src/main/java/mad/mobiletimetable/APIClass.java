@@ -239,10 +239,78 @@ public class APIClass extends APIClassBase {
         return response.toString();
     }
 
+    private JSONArray removeElementFromJSONArray(JSONArray jsonArray, int position){
+        JSONArray list = new JSONArray();
+        int arrayLength = jsonArray.length();
+        if (jsonArray != null) {
+            for (int i = 0;i < arrayLength;i++) {
+                //Excluding the item at position
+                if (i != position) {
+                    try {
+                        list.put(jsonArray.get(i));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    private JSONObject removeElementGenericGetAll(HashMap<String,String> requestMap, String id, String name){
+        requestMap.put("action","getall");
+        String originalString = fetchFromStorage(requestMap);
+        Log.d("API Class","Getall Pre-update | "+originalString);
+        JSONObject original = new JSONObject();
+        JSONObject response = new JSONObject();
+        JSONArray newArray = new JSONArray();
+        int position = -1;
+        try {
+            original = new JSONObject(originalString);
+            JSONArray originalArray = original.getJSONArray(name);
+            for(int i = 0; i < originalArray.length();i++){
+                JSONObject arrayElement = (JSONObject) originalArray.get(i);
+                if(arrayElement.get("ID").toString()==id){
+                    position = i;
+                    break;
+                }
+            }
+            if(position>0) {
+                newArray = removeElementFromJSONArray(originalArray, position);
+            }
+            response.put(name,newArray);
+            response.put("status","OK");
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        Log.d("API Class","Getall Post-update | "+response.toString());
+        return response;
+    }
+
     private void performGenericDelete(HashMap<String,String> requestMap){
-        Log.d("API Class","Deleting a "+requestMap.get("method"));
-        String fileName = getFileName(requestMap);
-        context.deleteFile(fileName);
+        String method = requestMap.get("method");
+        JSONObject updatedGetAll = new JSONObject();
+        Log.d("API Class","Deleting a "+method);
+        // Get the id to delete
+        String entryID = null;
+        String arrayName = null;
+        if(method.equals("module")){
+            entryID = requestMap.get("moduleid");
+            arrayName = "modules";
+        } else if (method.equals("timetable")){
+            entryID = requestMap.get("eventid");
+            arrayName = "events";
+        }
+        updatedGetAll = removeElementGenericGetAll(requestMap,entryID,arrayName);
+        // Delete the id's get responses
+        String dirPath = context.getFilesDir()+"/"+method+"/get";
+        File getFile = new File(dirPath,entryID);
+        getFile.delete();
+        // Delete the id from the methods getall response
+        HashMap<String,String> getRequest = new HashMap<String, String>();
+        getRequest.put("method",method);
+        getRequest.put("action", "getall");
+        saveToStorage(getRequest,updatedGetAll.toString());
     }
 
     private void performGenericEdit(HashMap<String,String> requestMap){
