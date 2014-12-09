@@ -260,43 +260,25 @@ public class FragmentAddToTimetable extends Fragment{
         dates=resources.getStringArray(R.array.Date);
 
         //Duration and Time String arrays
-        durations= new String[9];
-        times= new String[4*18];
+        durations= new String[11];
+        times = new String[11];
 
         int test=1;
 
-        int count=0;
-        for (int i=0;i<9;i++){
-
-            int index=i+1;
-
+        for (int i=0;i<11;i++){
             if(i==0){
-                durations[count]=Integer.toString(index)+" period";
-                count++;
+                durations[i]=Integer.toString(i+1)+" period";
             }
-            else{
-                durations[count]=Integer.toString(index)+" periods";
-                count++;
+            else {
+                durations[i] = Integer.toString(i + 1) + " periods";
             }
-
         }
-        count=0;
+        int count=0;
+        //time
+        for (int i=8;i<=18;i++){
+            times[count]=format(i)+":00";
 
-        //time every 15 minutes
-        for (int i=0;i<18;i++){
-            int time=i+6;
-            for (int j=0;j<4;j++){
-                if(j==0){
-                    times[count]=format(time)+":"+format(0);
-                    count++;
-                }
-                else{
-                    times[count]=format(time)+":"+format(j*15);
-                    count++;
-                }
-
-            }
-
+            count++;
         }
 
         //Find Number Picker elements
@@ -314,6 +296,19 @@ public class FragmentAddToTimetable extends Fragment{
         timePicker.setWrapSelectorWheel(false);
         timePicker.setDisplayedValues(times);
         timePicker.setValue(0);
+        timePicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                 @Override
+                 //needs a final look at
+                 public void onValueChange(NumberPicker timePicker, int i, int i2) {
+                     Log.d("times","Value was: " + Integer.toString(i) + " is now: " + Integer.toString(i2));
+                     durationPicker.setMaxValue(durations.length-1-i2);
+                     durationPicker.setMinValue(0);
+                     durationPicker.setWrapSelectorWheel(false);
+                     durationPicker.setDisplayedValues(durations);
+                     durationPicker.setValue(0);
+                 }
+             }
+        );
 
         //Set durationPicker attributes
         durationPicker.setMinValue(0);
