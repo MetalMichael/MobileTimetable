@@ -16,6 +16,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -101,6 +103,88 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
         return urlBuilder.toString();
     }
 
+    protected int getFileID(HashMap<String,String> requestMap) {
+        Log.d("API Class","Getting File ID for "+requestMap.toString());
+        if(requestMap.containsKey("moduleid")){
+            return Integer.parseInt(requestMap.get("moduleid"));
+        } else if(requestMap.containsKey("eventid")){
+            return Integer.parseInt(requestMap.get("eventid"));
+        }
+        Log.d("API Class","*----File ID----*");
+        int id = 1;
+        String dirPath = getDirPath(requestMap);
+        Log.d("API Class","Looking in "+dirPath);
+        File dir = new File(dirPath);
+        File dirFiles[] = dir.listFiles();
+        if(dirFiles!=null) {
+            Log.d("API Class","Found "+dirFiles.length+" files for "+requestMap.get("method"));
+            Log.d("API Class","----------");
+            for (int i = 0; i < dirFiles.length; i++) {
+                Log.d("API Class",dirFiles[i].getName());
+                int tempid = Integer.parseInt(dirFiles[i].getName().trim());
+                if (tempid >= id) {
+                    id = tempid + 1;
+                }
+            }
+            Log.d("API Class","----------");
+        }
+        Log.d("API Class","ID is "+Integer.toString(id));
+        Log.d("API Class","*-----------------*");
+        return id;
+    }
+
+    protected String makeFileName(HashMap<String,String> requestMap){
+        String fileName = "";
+        Log.d("APIBaseClass","Making name for "+requestMap.toString());
+        if(requestMap.get("action").equals("getall")) {
+            fileName = "all";
+        } else if(requestMap.containsKey("moduleid")){
+            fileName = requestMap.get("moduleid");
+        } else if(requestMap.containsKey("eventid")){
+            fileName = requestMap.get("eventid");
+        } else {
+            fileName = Integer.toString(getFileID(requestMap));
+        }
+        return fileName;
+    }
+
+    protected String getDirPath(HashMap<String,String> requestMap){
+        String action = requestMap.get("action");
+        if(action.equals("edit")){
+            action = "get";
+        }
+        String userFolder = requestMap.get("auth");
+        if(userFolder==null){
+            userFolder = "local";
+        }
+        return context.getFilesDir()+"/"+userFolder+"/"+requestMap.get("method")+"/"+action;
+    }
+
+    // Save successful request result to local storage
+    protected String saveToStorage(HashMap<String,String> requestMap, String result){
+        String dirPath = getDirPath(requestMap);
+        String fileName = makeFileName(requestMap);
+        Log.d("API Class","Saving to "+dirPath+"/"+fileName);
+        Log.d("API Class","Saving result "+result);
+        try {
+            File resultFile = new File(dirPath, fileName);
+            resultFile.getParentFile().mkdirs();
+            if(resultFile.getParentFile().exists()) {
+                resultFile.createNewFile();
+                // Save cached result
+                FileOutputStream fos = null;
+                fos = new FileOutputStream(resultFile);
+                fos.write(result.getBytes());
+                fos.close();
+            }
+        } catch (Exception e){
+            // We have a permissions problem or the app directory doesn't exist
+            e.printStackTrace();
+        }
+        Log.d("API Class","Save Finished "+result);
+        return fileName;
+    }
+
     @Override
     protected JSONObject doInBackground(HashMap<String,String>... params) {
         JSONObject result = new JSONObject();
@@ -112,7 +196,7 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
             if (!auth.equals("")) {
                 requestMap.put("auth", auth);
             }
-            // check the network status
+            // Check the network status
             ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
             Boolean networked = (networkInfo != null && networkInfo.isConnected());
@@ -131,11 +215,14 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
                     return new JSONObject();
                 }
 
-                //Handle errors
+                // Handle errors
                 if (!result.has("status")) {
                     Toast.makeText(context, "Invalid API Response", Toast.LENGTH_LONG).show();
                     return new JSONObject();
                 }
+
+                // Save the response locally
+                saveToStorage(requestMap,requestResult);
             } else {
                 String localRequest = localHandler(requestMap);
                 if(!localRequest.equals("")) {

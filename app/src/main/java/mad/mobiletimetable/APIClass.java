@@ -40,52 +40,6 @@ public class APIClass extends APIClassBase {
         this.activity = activity;
     }
 
-    private int getFileID(HashMap<String,String> requestMap) {
-        Log.d("API Class","Getting File ID for "+requestMap.toString());
-        if(requestMap.containsKey("moduleid")){
-            return Integer.parseInt(requestMap.get("moduleid"));
-        } else if(requestMap.containsKey("eventid")){
-            return Integer.parseInt(requestMap.get("eventid"));
-        }
-        Log.d("API Class","*----File ID----*");
-        int id = 1;
-        String dirPath = getDirPath(requestMap);
-        Log.d("API Class","Looking in "+dirPath);
-        File dir = new File(dirPath);
-        File dirFiles[] = dir.listFiles();
-        if(dirFiles!=null) {
-            Log.d("API Class","Found "+dirFiles.length+" files for "+requestMap.get("method"));
-            Log.d("API Class","----------");
-            for (int i = 0; i < dirFiles.length; i++) {
-                Log.d("API Class",dirFiles[i].getName());
-                int tempid = Integer.parseInt(dirFiles[i].getName().trim());
-                if (tempid >= id) {
-                    id = tempid + 1;
-                }
-            }
-            Log.d("API Class","----------");
-        }
-        Log.d("API Class","ID is "+Integer.toString(id));
-        Log.d("API Class","*-----------------*");
-        return id;
-    }
-
-    private String makeFileName(HashMap<String,String> requestMap){
-        String fileName = "";
-        if(requestMap.get("action").equals("getall")){
-            fileName = "all";
-        } else if(requestMap.get("action").equals("edit")){
-            if(requestMap.get("method").equals("module")){
-                fileName = requestMap.get("moduleid");
-            } else {
-                fileName = requestMap.get("eventid");
-            }
-        } else {
-            fileName = Integer.toString(getFileID(requestMap));
-        }
-        return fileName;
-    }
-
     private String getFileName (HashMap<String,String> requestMap){
         String fileName = "";
         if(requestMap.get("action").equals("getall")) {
@@ -98,18 +52,6 @@ public class APIClass extends APIClassBase {
             }
         }
         return fileName;
-    }
-
-    private String getDirPath(HashMap<String,String> requestMap){
-        String action = requestMap.get("action");
-        if(action.equals("edit")){
-            action = "get";
-        }
-        String userFolder = requestMap.get("auth");
-        if(userFolder==null){
-            userFolder = "local";
-        }
-        return context.getFilesDir()+"/"+userFolder+"/"+requestMap.get("method")+"/"+action;
     }
 
     // Check local storage for result of request if connection unavailable
@@ -136,31 +78,6 @@ public class APIClass extends APIClassBase {
         }
         Log.d("API Class","Fetched from Storage");
         return result;
-    }
-
-    // Save successful request result to local storage
-    private String saveToStorage(HashMap<String,String> requestMap, String result){
-        String dirPath = getDirPath(requestMap);
-        String fileName = makeFileName(requestMap);
-        Log.d("API Class","Saving to "+dirPath+"/"+fileName);
-        Log.d("API Class","Saving result "+result);
-        try {
-            File resultFile = new File(dirPath, fileName);
-            resultFile.getParentFile().mkdirs();
-            if(resultFile.getParentFile().exists()) {
-                resultFile.createNewFile();
-                // Save cached result
-                FileOutputStream fos = null;
-                fos = new FileOutputStream(resultFile);
-                fos.write(result.getBytes());
-                fos.close();
-            }
-        } catch (Exception e){
-            // We have a permissions problem or the app directory doesn't exist
-            e.printStackTrace();
-        }
-        Log.d("API Class","Save Finished "+result);
-        return fileName;
     }
 
     private JSONObject appendToArray(String arrayName, JSONObject newElement, HashMap<String,String> requestMap){
@@ -263,9 +180,8 @@ public class APIClass extends APIClassBase {
         if(method.equals("module")){
             id = "moduleid";
         }
-        Log.d("API Class","Adding a "+method);
-        HashMap<String,String> getRequest = new HashMap<String, String>();
-        getRequest.put("method",method);
+        Log.d("API Class","Adding "+requestMap.toString());
+        HashMap<String,String> getRequest = new HashMap<String, String>(requestMap);
         getRequest.put("action", "getall");
         String formattedResponse = null;
         Log.d("API Class",">Getall updating<");
@@ -312,7 +228,6 @@ public class APIClass extends APIClassBase {
         return list;
     }
 
-    // TODO Look into why this isn't working - in this function specifically
     private JSONObject removeElementGenericGetAll(HashMap<String,String> requestMap, String id, String name){
         requestMap.put("action","getall");
         String originalString = fetchFromStorage(requestMap);
@@ -362,6 +277,7 @@ public class APIClass extends APIClassBase {
         // Delete the id's get responses
         String dirPath = context.getFilesDir()+"/"+method+"/get";
         File getFile = new File(dirPath,entryID);
+        Log.d("API Class","DELETING GET FILE "+getFile.toString());
         getFile.delete();
         // Delete the id from the methods getall response
         HashMap<String,String> getRequest = new HashMap<String, String>();
