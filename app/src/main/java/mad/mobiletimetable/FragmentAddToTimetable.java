@@ -260,12 +260,12 @@ public class FragmentAddToTimetable extends Fragment{
         dates=resources.getStringArray(R.array.Date);
 
         //Duration and Time String arrays
-        durations= new String[11];
-        times = new String[11];
+        durations= new String[14];
+        times = new String[14];
 
         int test=1;
 
-        for (int i=0;i<11;i++){
+        for (int i=0;i<14;i++){
             if(i==0){
                 durations[i]=Integer.toString(i+1)+" period";
             }
@@ -275,7 +275,7 @@ public class FragmentAddToTimetable extends Fragment{
         }
         int count=0;
         //time
-        for (int i=8;i<=18;i++){
+        for (int i=8;i<=21;i++){
             times[count]=format(i)+":00";
 
             count++;

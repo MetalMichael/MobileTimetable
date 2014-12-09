@@ -99,8 +99,8 @@ public class FragmentTimetableDay extends Fragment {
             }
             try {
                 int counter = 0;
-                final String[] times = {"8:00","9:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00"};
-                for(int i = 0; i < 11; i++) {
+                final String[] times = {"8:00","9:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00"};
+                for(int i = 0; i < 14; i++) {
                     if(events.size()>0 && counter < events.size()) {
                             Log.d("Date", events.get(counter).getDate());
                             Log.d("time", times[i]);
