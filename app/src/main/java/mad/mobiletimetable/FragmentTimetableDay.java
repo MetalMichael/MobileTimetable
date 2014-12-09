@@ -1,6 +1,10 @@
 package mad.mobiletimetable;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -97,7 +101,9 @@ public class FragmentTimetableDay extends Fragment {
                 //Intent intent = new Intent(getActivity(), ActivityEditModule.class);
                 //intent.putExtra("moduleid", (String)view.getTag());
                 //startActivity(intent);
+
                 String info = (String)view.getTag();
+                displayDialog(info);
                 if(info.contains("-")){
                     Log.d("made it", "Add");
                 }else{
@@ -110,7 +116,13 @@ public class FragmentTimetableDay extends Fragment {
 
         return timetable;
     }
-
+    public void displayDialog(String info){
+        Bundle args = new Bundle();
+        args.putString("Id", info);
+        DialogFragment newfragment = new EventDialog();
+        newfragment.setArguments(args);
+        newfragment.show(getFragmentManager(), "events");
+    }
     class Callback implements OnTaskCompleted{
         @Override
         public void onTaskCompleted(JSONObject result) {
@@ -176,6 +188,46 @@ public class FragmentTimetableDay extends Fragment {
 
             mAdapter.clear();
             mAdapter.addAll(completeEvents);
+        }
+    }
+    public static class EventDialog extends DialogFragment{
+       public EventDialog(){
+        }
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstantState){
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            Bundle mArgs = getArguments();
+            String info = mArgs.getString("Id");
+            if(!info.contains("-")){
+            builder.setMessage(info)
+                   .setPositiveButton("Edit", new DialogInterface.OnClickListener() {
+                       @Override
+                       public void onClick(DialogInterface dialog, int which) {
+                           // go to edit activity
+                       }
+                   })
+                   .setNegativeButton("DELETE",new DialogInterface.OnClickListener() {
+                       @Override
+                       public void onClick(DialogInterface dialog, int which) {
+                           // Delete Activity
+                       }
+                   });}
+            else{
+                builder.setMessage("Would you like to add an event here?")
+                       .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                           @Override
+                           public void onClick(DialogInterface dialog, int which) {
+
+                           }
+                       })
+                       .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                           @Override
+                           public void onClick(DialogInterface dialog, int which) {
+
+                           }
+                       });
+            }
+            return builder.create();
         }
     }
 
