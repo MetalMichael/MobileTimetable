@@ -2,17 +2,22 @@ package mad.mobiletimetable;
 
 import android.app.ActivityManager;
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.*;
 import android.os.Process;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
-import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -65,11 +70,62 @@ public class ServiceNotifications extends IntentService {
                     e.printStackTrace();
                     return;
                 }
-                if(status == "OK") {
-                    //
+                if(status.equals("OK")) {
+                    try {
+                        JSONArray jsonEvents = response.getJSONArray("events");
+                        ArrayList<ModelEvent> events = new ArrayList<ModelEvent>();
+                        for(int i = 0; i < jsonEvents.length(); i++) {
+                            events.add(new ModelEvent((JSONObject)jsonEvents.get(i)));
+                        }
+                        if(events.size() > 0) {
+                            processEvents(events);
+                        } else {
+                        }
+                    } catch(JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
                 mServiceHandler.sendMessageDelayed(Message.obtain(), 60*1000);
             }
+        }
+
+        private void processEvents(ArrayList<ModelEvent> events) {
+            ModelEvent event;
+            String title;
+            String detail;
+            if(events.size() == 1) {
+                //Simple Notification
+                event = events.get(0);
+                title = "Event Starting Soon";
+                detail = "(" + event.getDate() + ")" + event.getModule().getTitle() + " - " +
+                        event.getModule().getCode() + " is starting soon";
+            } else {
+                //Multiple Events Notification
+                title = "Upcoming Events";
+                detail = Integer.toString(events.size()) + " Events Starting Soon";
+            }
+
+            NotificationCompat.Builder mBuilder =
+                    new NotificationCompat.Builder(getApplicationContext())
+                            .setSmallIcon(R.drawable.ic_activity_add_to_timetable)
+                            .setContentTitle(title)
+                            .setContentText(detail);
+
+            Intent resultIntent = new Intent(getApplicationContext(), ActivityAddToTimetable.class);
+
+            //Build back stack
+            TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+            stackBuilder.addParentStack(ActivityAddToTimetable.class);
+            stackBuilder.addNextIntent(resultIntent);
+            PendingIntent resultPendingIntent =
+                    stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+            mBuilder.setContentIntent(resultPendingIntent);
+
+            NotificationManager mNotificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            mNotificationManager.notify(0, mBuilder.build());
+
         }
 
         public void handleMessage(Message msg) {
@@ -83,7 +139,7 @@ public class ServiceNotifications extends IntentService {
 
             api = new APIClassBase(getApplicationContext(), new Callback());
 
-            //request.put("notificationtime", pref.getString("notification_time", "never"));
+            request.put("notificationtime", Integer.toString(pref.getInt("notification_time", 15)));
             api.execute(request);
         }
     }
