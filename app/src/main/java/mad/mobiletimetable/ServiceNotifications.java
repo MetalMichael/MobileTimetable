@@ -139,7 +139,7 @@ public class ServiceNotifications extends IntentService {
 
             api = new APIClassBase(getApplicationContext(), new Callback());
 
-            request.put("notificationtime", Integer.toString(pref.getInt("notification_time", 15)));
+            request.put("notificationtime", pref.getString("notification_time", ""));
             api.execute(request);
         }
     }
