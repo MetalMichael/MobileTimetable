@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -38,6 +39,25 @@ public class APIClass extends APIClassBase {
     public APIClass(Activity activity, OnTaskCompleted listener) {
         super(activity.getApplicationContext(), listener);
         this.activity = activity;
+    }
+
+    private void saveLocalRequest(HashMap<String,String> requestMap){
+        String dirPath = context.getFilesDir()+"/"+requestMap.get("auth")+"/localRequests";
+        try {
+            File resultFile = new File(dirPath, "requestsToPush"+requestMap.hashCode());
+            resultFile.getParentFile().mkdirs();
+            if(resultFile.getParentFile().exists()) {
+                resultFile.createNewFile();
+                // Save cached result
+                FileOutputStream fos = new FileOutputStream(resultFile, true);
+                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                oos.writeObject(requestMap);
+                oos.close();
+            }
+        } catch (Exception e){
+            // We have a permissions problem or the app directory doesn't exist
+            e.printStackTrace();
+        }
     }
 
     private String getFileName (HashMap<String,String> requestMap){
@@ -277,7 +297,6 @@ public class APIClass extends APIClassBase {
         // Delete the id's get responses
         String dirPath = context.getFilesDir()+"/"+method+"/get";
         File getFile = new File(dirPath,entryID);
-        Log.d("API Class","DELETING GET FILE "+getFile.toString());
         getFile.delete();
         // Delete the id from the methods getall response
         HashMap<String,String> getRequest = new HashMap<String, String>();
@@ -304,14 +323,17 @@ public class APIClass extends APIClassBase {
         Log.d("API Class","localHandler Called for "+method+" "+action);
         if(method.equals("module")||method.equals("timetable")){
             if(action.equals("add")){
+                saveLocalRequest(requestMap);
                 result = performGenericAdd(requestMap);
             } else if(action.equals("get")){
                 result = fetchFromStorage(requestMap).toString();
             } else if(action.equals("getall")){
                 result = fetchFromStorage(requestMap).toString();
             } else if(action.equals("edit")){
+                saveLocalRequest(requestMap);
                 result = performGenericEdit(requestMap);
             } else if(action.equals("delete")){
+                saveLocalRequest(requestMap);
                 performGenericDelete(requestMap);
             }
         }

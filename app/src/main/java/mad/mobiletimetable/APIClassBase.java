@@ -15,14 +15,19 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -67,9 +72,9 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
         BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
         String line = "";
         String result = "";
-        while((line = bufferedReader.readLine()) != null)
+        while((line = bufferedReader.readLine()) != null) {
             result += line;
-
+        }
         inputStream.close();
         return result;
 
@@ -101,6 +106,43 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
         // Chop off last &
         urlBuilder.setLength(urlBuilder.length()-1);
         return urlBuilder.toString();
+    }
+
+    private ArrayList<HashMap<String,String>> checkStoredRequests(String userAuth){
+        String dirPath = context.getFilesDir()+"/"+userAuth+"/localRequests";
+        ArrayList<HashMap<String,String>> storedRequests = new ArrayList<HashMap<String,String>>();
+        File resultsDir = new File(dirPath);
+        if(resultsDir.exists()) {
+            File[] requestFiles = resultsDir.listFiles();
+            if(requestFiles != null){
+                for(File request : requestFiles){
+                    try {
+                        FileInputStream fis = new FileInputStream(request);
+                        ObjectInputStream ois = new ObjectInputStream(fis);
+                        storedRequests.add((HashMap<String, String>) ois.readObject());
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    request.delete();
+                }
+            }
+        }
+        return storedRequests;
+    }
+
+    private void handleStoredRequests(String userAuth){
+        ArrayList<HashMap<String,String>> storedRequests = checkStoredRequests(userAuth);
+        if(storedRequests.size()>0){
+            class Callback implements OnTaskCompleted{
+                @Override
+                public void onTaskCompleted(JSONObject result) {
+                    Log.d("APIBaseClass","Stored request pushed | "+result.toString());
+                }
+            }
+            for(HashMap<String,String> request : storedRequests){
+                new APIClassBase(context,new Callback()).execute(request);
+            }
+        }
     }
 
     protected int getFileID(HashMap<String,String> requestMap) {
@@ -172,8 +214,7 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
             if(resultFile.getParentFile().exists()) {
                 resultFile.createNewFile();
                 // Save cached result
-                FileOutputStream fos = null;
-                fos = new FileOutputStream(resultFile);
+                FileOutputStream fos = new FileOutputStream(resultFile);
                 fos.write(result.getBytes());
                 fos.close();
             }
@@ -202,6 +243,8 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
             Boolean networked = (networkInfo != null && networkInfo.isConnected());
             Boolean authedOrAuthing = (!auth.equals("")||requestMap.get("method").equals("user"));
             if (networked && authedOrAuthing) {
+                // Connected, check for stored requests to push
+                handleStoredRequests(auth);
                 // Connected, make request
                 String url = buildURL(requestMap);
                 Log.d("APIClassBase", "Making a Request to: " + url);
@@ -274,7 +317,7 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
                     }
                 }
             } catch (JSONException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }
         if(result!=null) {
