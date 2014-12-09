@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -197,13 +198,16 @@ public class FragmentTimetableDay extends Fragment {
         public Dialog onCreateDialog(Bundle savedInstantState){
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             Bundle mArgs = getArguments();
-            String info = mArgs.getString("Id");
+            final String info = mArgs.getString("Id");
             if(!info.contains("-")){
             builder.setMessage(info)
                    .setPositiveButton("Edit", new DialogInterface.OnClickListener() {
                        @Override
                        public void onClick(DialogInterface dialog, int which) {
                            // go to edit activity
+                           Intent intent = new Intent(getActivity(), ActivityAddToTimetable.class);
+                           intent.putExtra("edit", info);
+                           startActivity(intent);
                        }
                    })
                    .setNegativeButton("DELETE",new DialogInterface.OnClickListener() {
@@ -217,7 +221,9 @@ public class FragmentTimetableDay extends Fragment {
                        .setPositiveButton("Create", new DialogInterface.OnClickListener() {
                            @Override
                            public void onClick(DialogInterface dialog, int which) {
-
+                               Intent intent = new Intent(getActivity(), ActivityAddToTimetable.class);
+                               intent.putExtra("add", info);
+                               startActivity(intent);
                            }
                        })
                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

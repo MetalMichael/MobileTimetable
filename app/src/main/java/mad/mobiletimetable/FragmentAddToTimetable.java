@@ -8,6 +8,7 @@
 package mad.mobiletimetable;
 
 //Context and Resources for finding predefined values
+import android.content.Intent;
 import android.content.res.Resources;
 import android.content.Context;
 
@@ -51,6 +52,7 @@ public class FragmentAddToTimetable extends Fragment{
     // TODO: Rename parameter arguments, choose names that match
 
     // TODO: Rename and change types of parameters
+    private boolean edit, add;
     private View root;
     private String[] roomTypes,dates,times,durations;
     private APIClass api;
@@ -72,6 +74,26 @@ public class FragmentAddToTimetable extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Intent intent = getActivity().getIntent();
+
+        if(intent.hasExtra("edit")){
+            edit = true;
+            add = false;
+            //load the timetable ID
+            Toast.makeText(getActivity(), "Edit", Toast.LENGTH_LONG).show();
+        }
+        else if(intent.hasExtra("add")){
+            add = true;
+            edit = false;
+            //ensure the day and time are stored and can be used
+            Toast.makeText(getActivity(), "Add", Toast.LENGTH_LONG).show();
+        }else{
+            add = false;
+            edit = false;
+            //without loading
+            Toast.makeText(getActivity(), "Standard", Toast.LENGTH_LONG).show();
+        }
 
     }
     /*
