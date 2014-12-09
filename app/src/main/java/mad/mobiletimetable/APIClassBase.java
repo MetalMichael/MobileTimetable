@@ -108,22 +108,10 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
         String auth = context.getSharedPreferences("MyAuthFile", 0).getString("Auth","");
         // Make sure we have the method and action, throw error if we don't
         if(requestMap.containsKey("method") && requestMap.containsKey("action")) {
-        /*
-            // if unauthenticated and a non-user method, handle actions locally
-            if(auth.equals("") && !requestMap.get("method").equals("user")) {
-                if(requestMap.get("action").equals("add")) {
-                    // swap map action to get, ready for saving
-                    requestMap.put("action", "get");
-                    if (requestMap.get("method").equals("module")) {
-                        // format module response string to save
-                        formatModuleAdd(requestMap);
-                    } else if (requestMap.get("method").equals("timetable")) {
-                        // format timetable response string to save
-                        formatTimetableAdd(requestMap);
-                    }
-                }
+            // Get auth if authenticated user
+            if (!auth.equals("")) {
+                requestMap.put("auth", auth);
             }
-        */
             // check the network status
             ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -131,10 +119,6 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
             Boolean authedOrAuthing = (!auth.equals("")||requestMap.get("method").equals("user"));
             if (networked && authedOrAuthing) {
                 // Connected, make request
-                // Get auth if authenticated user
-                if (!auth.equals("")) {
-                    requestMap.put("auth", auth);
-                }
                 String url = buildURL(requestMap);
                 Log.d("APIClassBase", "Making a Request to: " + url);
                 String requestResult = GET(url);
