@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<!-- Preferences for unauthorised users only -->
+    <mad.mobiletimetable.LogoutBox
+        android:key="login"
+        android:title="Login"
+        android:dialogMessage="Are you sure?" />
+</PreferenceScreen>

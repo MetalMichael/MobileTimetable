@@ -91,14 +91,19 @@ public class ActivitySettings extends PreferenceActivity {
 
         // Add 'general' preferences.
         addPreferencesFromResource(R.xml.pref_general);
-
-        // Setting listeners for each preference
-        findPreference("change_password").setOnPreferenceChangeListener(UserListener);
-        findPreference("change_password").setDefaultValue("");
-        findPreference("logout").setOnPreferenceChangeListener(UserListener);
-        findPreference("display_picture").setOnPreferenceChangeListener(UserListener);
-
         bindPreferenceSummaryToValue(findPreference("notification_time"));
+        SharedPreferences auth = getSharedPreferences(PREFS_NAME, 0);
+        if(auth.getString("Auth","").equals("")) {
+            addPreferencesFromResource(R.xml.pref_not_auth);
+            findPreference("login").setOnPreferenceChangeListener(UserListener);
+        } else {
+            // Setting listeners for each preference
+            addPreferencesFromResource(R.xml.pref_auth);
+            findPreference("change_password").setOnPreferenceChangeListener(UserListener);
+            findPreference("change_password").setDefaultValue("");
+            findPreference("logout").setOnPreferenceChangeListener(UserListener);
+            findPreference("display_picture").setOnPreferenceChangeListener(UserListener);
+        }
 
     }
 
@@ -245,6 +250,14 @@ public class ActivitySettings extends PreferenceActivity {
                 Intent intent = new Intent(ActivitySettings.this, ActivityLogin.class);
                 startActivity(intent);
 
+            } else if(preference.getTitle().equals("Login")) {
+                SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.clear();
+                editor.commit();
+
+                Intent intent = new Intent(ActivitySettings.this, ActivityLogin.class);
+                startActivity(intent);
             }
             return true;
         }
