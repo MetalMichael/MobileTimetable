@@ -20,7 +20,18 @@ public class ModelEvent {
     private ModelModule module;
     private String location;
     private String lessonType;
-    
+
+    public ModelEvent(int ID, int ModuleID, int Duration, int Day, Date Time, ModelModule Module, String Location, String LessonType){
+        id = ID;
+        moduleId = ModuleID;
+        duration = Duration;
+        day = Day;
+        time = Time;
+        module = Module;
+        location = Location;
+        lessonType = LessonType;
+    }
+
     public ModelEvent(int day, Date time) {
         id = -1;    //can't be null
         moduleId = -1;  //can't be null
@@ -76,4 +87,13 @@ public class ModelEvent {
     public String getLocation() { return location; }
 
     public String getLessonType() { return lessonType; }
+
+    public void changeTime (String Time){
+        try {
+            SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+            time = df.parse(Time);
+        } catch(ParseException e) {
+            e.printStackTrace();
+        }
+    }
 }

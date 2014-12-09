@@ -99,14 +99,22 @@ public class FragmentTimetableDay extends Fragment {
             }
             try {
                 int counter = 0;
+                int durationCounter = 0;
                 final String[] times = {"8:00","9:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00"};
                 for(int i = 0; i < 14; i++) {
                     if(events.size()>0 && counter < events.size()) {
-                            Log.d("Date", events.get(counter).getDate());
-                            Log.d("time", times[i]);
-                            if (events.get(counter).getDate().equals(times[i])) {
-                                completeEvents.add(events.get(counter));
-                                counter++;
+                            if ((events.get(counter).getDate().equals(times[i])) || (durationCounter>0)){
+                                ModelEvent currentEvent = new ModelEvent(events.get(counter).getId(),events.get(counter).getModuleId(),events.get(counter).getDuration(),events.get(counter).getDay(),events.get(counter).getTime(),events.get(counter).getModule(),events.get(counter).getLocation(),events.get(counter).getLessonType());
+                                completeEvents.add(currentEvent);
+                                if(events.get(counter).getDuration()-1 == durationCounter) {
+                                    completeEvents.get(i).changeTime(times[i]);
+                                    durationCounter++;
+                                    counter++;
+                                    durationCounter = 0;
+                                }else{
+                                    completeEvents.get(i).changeTime(times[i]);
+                                    durationCounter++;
+                                }
 
                             } else {
                                 SimpleDateFormat df = new SimpleDateFormat("HH:mm");
