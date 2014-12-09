@@ -46,6 +46,7 @@ import org.json.JSONObject;
 
 //Java Standard Library
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class FragmentAddToTimetable extends Fragment{
@@ -55,8 +56,11 @@ public class FragmentAddToTimetable extends Fragment{
     private boolean edit, add;
     private View root;
     private String[] roomTypes,dates,times,durations;
-    private APIClass api;
-    private ModelEvent event;
+    private APIClass api, apiEdit;
+    private ModelEvent event, eventEdit;
+
+    private String day,time ;
+
     private boolean active = true;
     private AdapterModules mAdapter;
     private ArrayList<String> moduleNameArray =new ArrayList<String>();
@@ -81,13 +85,26 @@ public class FragmentAddToTimetable extends Fragment{
             edit = true;
             add = false;
             //load the timetable ID
-            Toast.makeText(getActivity(), "Edit", Toast.LENGTH_LONG).show();
+            String ID = intent.getStringExtra("edit");
+            HashMap<String, String> request = new HashMap<String, String>();
+            request.put("method", "timetable");
+            request.put("action", "get");
+            request.put("eventid", ID);
+            apiEdit = new APIClass(getActivity(), new Callback());
+            apiEdit.execute(request);
+            Toast.makeText(getActivity(), "Edit ID: "+ID, Toast.LENGTH_LONG).show();
         }
         else if(intent.hasExtra("add")){
             add = true;
             edit = false;
+            String temp = intent.getStringExtra("add");
+            String[] parts = temp.split("-");
+            time = parts[0];
+            day = parts[1];
             //ensure the day and time are stored and can be used
-            Toast.makeText(getActivity(), "Add", Toast.LENGTH_LONG).show();
+
+            Toast.makeText(getActivity(), "Add, Time: "+time+" Day: "+day, Toast.LENGTH_LONG).show();
+
         }else{
             add = false;
             edit = false;
@@ -102,6 +119,25 @@ public class FragmentAddToTimetable extends Fragment{
     *   Find Inputs and using APIClass create values needed for JSON query
     *
      */
+    private class Callback implements OnTaskCompleted {
+        @Override
+        public void onTaskCompleted(JSONObject result) {
+            if (!active) return;
+            if(!result.has("event")) {
+                getActivity().finish();
+                return;
+            }
+            try {
+                JSONObject eventInfo = result.getJSONObject("event");
+                eventEdit = new ModelEvent(eventInfo);
+            } catch(JSONException e) {
+                e.printStackTrace();
+            }
+
+            loadEdit();
+        }
+    }
+
     public View MakeRequest(View v) {
 
         //Number Picker set
@@ -353,6 +389,11 @@ public class FragmentAddToTimetable extends Fragment{
         ModuleChoiceView.setAdapter(adapter1);
         roomTypeSpinner.setAdapter(adapter2);
 
+        if (add ==true){
+            loadAdd(times);
+        }
+
+
         //return View
         return root;
     }
@@ -400,5 +441,24 @@ public class FragmentAddToTimetable extends Fragment{
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
-
+    private void loadEdit(){
+        if(!active) return;
+        //apply changes here
+    }
+    private void loadAdd(String[] times){
+        //apply changes
+        int index = -1;
+        //gets index of time
+        for (int i=0; i<times.length; i++ ){
+            Log.d("time", time);
+            Log.d("times", times[i]);
+            if (times[i].equals(time)){
+                index = i;
+            }
+        }
+        dayPicker.setValue(Integer.parseInt(day));
+        timePicker.setValue(index);
+        durationPicker.setMaxValue(durationPicker.getMaxValue()-index-1);
+        durationPicker.setWrapSelectorWheel(false);
+    }
 }
