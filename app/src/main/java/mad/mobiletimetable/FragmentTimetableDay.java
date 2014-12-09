@@ -101,18 +101,18 @@ public class FragmentTimetableDay extends Fragment {
                 int counter = 0;
                 final String[] times = {"8:00","9:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00"};
                 for(int i = 0; i < 11; i++) {
-                    if(events.size()>0) {
-                        Log.d("Date", events.get(counter).getDate());
-                        Log.d("time", times[i]);
-                        if (events.get(counter).getDate() == times[i]) {
-                            completeEvents.add(events.get(counter));
-                            counter++;
+                    if(events.size()>0 && counter < events.size()) {
+                            Log.d("Date", events.get(counter).getDate());
+                            Log.d("time", times[i]);
+                            if (events.get(counter).getDate().equals(times[i])) {
+                                completeEvents.add(events.get(counter));
+                                counter++;
 
-                        } else {
-                            SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-                            completeEvents.add(new ModelEvent(day, df.parse(times[i])));
+                            } else {
+                                SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+                                completeEvents.add(new ModelEvent(day, df.parse(times[i])));
 
-                        }
+                            }
                     }else{
                         SimpleDateFormat df = new SimpleDateFormat("HH:mm");
                         completeEvents.add(new ModelEvent(day, df.parse(times[i])));
