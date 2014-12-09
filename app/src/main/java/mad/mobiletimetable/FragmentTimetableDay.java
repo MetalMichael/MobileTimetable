@@ -47,13 +47,18 @@ public class FragmentTimetableDay extends Fragment {
         // Required empty public constructor
     }
 
+    public void onResume() {
+        getActivity().setTitle(R.string.app_name);
+        super.onResume();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //mDayName = getArguments().getString(ARG_PARAM1);
         day = getArguments().getInt(ARG_DAY_NUM);
-        String[] dayNames = {"Monday","Tuesday","Wednesday","Thursday","Friday"};   //sort out XML format
+        String[] dayNames = getResources().getStringArray(R.array.Date);
         dayName = dayNames[day];
     }
 
