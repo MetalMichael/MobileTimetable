@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -120,9 +121,11 @@ public class FragmentTimetableDay extends Fragment {
     public void displayDialog(String info){
         Bundle args = new Bundle();
         args.putString("Id", info);
+        FragmentManager fragmentManager = getFragmentManager();
         DialogFragment newfragment = new EventDialog();
         newfragment.setArguments(args);
-        newfragment.show(getFragmentManager(), "events");
+
+        newfragment.show(fragmentManager, "events");
     }
     class Callback implements OnTaskCompleted{
         @Override
@@ -218,7 +221,9 @@ public class FragmentTimetableDay extends Fragment {
                            request.put("action","delete");
                            request.put("eventid", info);
                            new APIClass(getActivity(), new Callback()).execute(request);
+                           getActivity().finish();                           ;
                            startActivity(getActivity().getIntent());
+
                        }
                    });}
             else{
@@ -228,6 +233,7 @@ public class FragmentTimetableDay extends Fragment {
                            public void onClick(DialogInterface dialog, int which) {
                                Intent intent = new Intent(getActivity(), ActivityAddToTimetable.class);
                                intent.putExtra("add", info);
+
                                startActivity(intent);
                            }
                        })
