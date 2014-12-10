@@ -4,11 +4,11 @@
     <string name="app_name">Mobile Timetable</string>
 
     <string-array name="drawer_items">
+        <item></item>
         <item>Timetable</item>
         <item>Modules</item>
         <item>Add To Timetable</item>
         <item>Settings</item>
-
     </string-array>
 
     <string name="create">Create</string>

@@ -18,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.Toast;
 import android.graphics.Bitmap;
 import org.json.JSONException;
@@ -197,12 +198,15 @@ public class ActivitySettings extends PreferenceActivity {
                 outputStream.close();
                 Toast.makeText(getApplicationContext(), "Image saved!", Toast.LENGTH_SHORT).show();
 
+                // Update drawer
+                ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
+                String[] mDrawItems = getResources().getStringArray(R.array.drawer_items);
+                mDrawerList.setAdapter(new AdapterDrawer(getApplicationContext(),mDrawItems));
+
             } catch (Exception e) {
                 Toast.makeText(getApplicationContext(), "Image upload failed!", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
-
             }
-
         } else {
             Toast.makeText(getApplicationContext(),"No image saved.",Toast.LENGTH_SHORT ).show();
 

@@ -105,9 +105,12 @@ public class ActivityMain extends FragmentActivity
                 frag = new FragmentTimetable();
                 break;
             case 1:
-                frag = new FragmentModules();
+                frag = new FragmentTimetable();
                 break;
             case 2:
+                frag = new FragmentModules();
+                break;
+            case 3:
                 intent = new Intent(this, ActivityAddToTimetable.class);
                 this.startActivity(intent);
                 break;
