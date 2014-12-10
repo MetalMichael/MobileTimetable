@@ -49,6 +49,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+
+
+
+
 
 public class FragmentAddToTimetable extends Fragment{
     // TODO: Rename parameter arguments, choose names that match
@@ -298,26 +304,40 @@ public class FragmentAddToTimetable extends Fragment{
         }
         return output;
     }
-    public void checkEvent(String day){
-        HashMap<String, String> request = new HashMap<String, String>();
-        request.put("method", "timetable");
-        request.put("action", "getall");
-        request.put("day" , day);
 
-        api = new APIClass(getActivity(), new CheckEvent());
-        api.execute(request);
+    public void checkEvent(final String day){
+        new Thread(new Runnable() {
+            public void run(){
+
+                HashMap<String, String> request = new HashMap<String, String>();
+                request.put("method", "timetable");
+                request.put("action", "getall");
+                request.put("day" , day);
+
+                api = new APIClass(getActivity(), new CheckEvent());
+                api.execute(request);
+
+
+
+          }
+        }).start();
 
     }
+
     private class CheckEvent implements OnTaskCompleted {
         @Override
         public void onTaskCompleted(JSONObject result) {
+
+            clashEventsDuration =new ArrayList<String>();
+            clashEventsTime =new ArrayList<String>();
+
+            SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
 
             if(result.length()!=0) {
 
                 try{
                     JSONArray jsonEvents = result.getJSONArray("events");
-                    clashEventsDuration =new ArrayList<String>();
-                    clashEventsTime =new ArrayList<String>();
+
                     /*
                     *   Loop adding json query results into moduleNameArray and mAdapter
                     *   outside of loop
@@ -326,7 +346,9 @@ public class FragmentAddToTimetable extends Fragment{
                     for (int i = 0; i < jsonEvents.length(); i++) {
                         ModelEvent mod = new ModelEvent((JSONObject) jsonEvents.get(i));
                         clashEventsDuration.add(Integer.toString(mod.getDuration()));
-                        clashEventsTime.add(mod.getDate());
+                        String time=df.format(mod.getTime());
+                        clashEventsTime.add(time);
+
                     }
 
                 }
@@ -349,62 +371,30 @@ public class FragmentAddToTimetable extends Fragment{
             if(check){
                 return true;
             }
-
-
         }
         return false;
     }
     public boolean clash(String actualTime,String timeCheck,String actualDur,String durCheck){
 
-        int acTime=Integer.parseInt(actualTime.substring(0,2));
+        int acTime=Integer.parseInt(actualTime.substring(0,1));
         int acDur=Integer.parseInt(actualDur);
 
-        int chkTime=Integer.parseInt(timeCheck.substring(0,2));
+        int chkTime=Integer.parseInt(timeCheck.substring(0,1));
         int chkDur=Integer.parseInt(durCheck);
 
 
-        //      First Side
-        if(acTime >= chkTime && (acTime+acDur) < chkTime ){
-            if(acTime<=chkTime+chkDur){
-                return true; //time falls inbetween
-            }
-            else if ( (acTime+acDur)<=chkTime+chkDur ){
-                return true; //time falls inbetween
-            }
-            else{
-                return false; //not sure
-            }
-        }
-        //Time being injected starts after or at same time
-        else if( (acTime + acDur) >= chkTime) {
+        boolean check = (acTime <= chkTime && acTime+acDur >= chkTime);
 
-            if ( ( acTime + acDur ) <= chkTime+chkDur ){
-                return true;
-            }
+        boolean check2 = (chkTime <= acTime && chkTime+chkDur >= acTime);
 
+        boolean check3 = (chkTime<= acTime && chkTime+chkDur >= acTime+acDur);
+
+        boolean check4 = (acTime<= chkTime && acTime+acDur >= chkDur+chkDur);
+
+        if(check || check2 || check3 || check4){
+            return true;
         }
 
-        //      Second Side
-        if(chkTime >= acTime && (chkTime+chkDur) < acTime ){
-
-            if(chkTime<=acTime+acDur){
-                return true; //time falls inbetween
-            }
-            else if ( (chkTime+chkDur)<=acDur+acTime ){
-                return true; //time falls inbetween
-            }
-            else{
-                return false; //not sure
-            }
-        }
-        //Time being injected starts after or at same time
-        else if( (chkTime + chkDur) >= acTime) {
-
-            if ( ( chkTime+ chkDur ) <= acTime+acDur ){
-                return true;
-            }
-
-        }
         return false;
     }
     @Override
@@ -437,6 +427,7 @@ public class FragmentAddToTimetable extends Fragment{
                 String time = times[time_selector.getValue()] + ":00";
                 String duration = Integer.toString(duration_selector.getValue() + 1);
 
+
                 checkEvent(day);
 
                 boolean checkIsClash = checkAll(time, duration, clashEventsTime, clashEventsDuration);
@@ -449,8 +440,7 @@ public class FragmentAddToTimetable extends Fragment{
                     MakeRequest(v);
                 }
             }
-
-            });
+        });
 
 
         //Fragment Title
