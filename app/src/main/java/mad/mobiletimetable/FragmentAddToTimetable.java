@@ -69,6 +69,11 @@ public class FragmentAddToTimetable extends Fragment{
     private ArrayList<String> moduleIdArray =new ArrayList<String>();
     private ArrayAdapter<String> adapter1,adapter2,adapter3;
 
+    private ArrayList<String> clashEventsDuration =new ArrayList<String>();
+    private ArrayList<String> clashEventsTime =new ArrayList<String>();
+
+    private boolean noClash=true;
+
 
     private NumberPicker timePicker,dayPicker,durationPicker;
     private OnFragmentInteractionListener mListener;
@@ -182,7 +187,7 @@ public class FragmentAddToTimetable extends Fragment{
 
         //Check is all Inputs are filled in
         if( !day.isEmpty() && !duration.isEmpty() && !time.isEmpty() && !selectedRoom.isEmpty()
-                && getIndex(selectedModule)!=-1 && !selectedType.isEmpty() ) {
+                && getIndex(selectedModule)!=-1 && !selectedType.isEmpty()  && clashEventsDuration.size()==0 ) {
 
             HashMap<String, String> request = new HashMap<String, String>();
 
@@ -298,8 +303,126 @@ public class FragmentAddToTimetable extends Fragment{
         }
         return output;
     }
+/*
+    public void loadModules(){
+        //Request code to create event
+        HashMap<String, String> request = new HashMap<String, String>();
+        request.put("method", "module");
+        request.put("action", "getall");
+        api = new APIClass(getActivity(), new ModuleCallback());
+        api.execute(request);
+
+    }
+    */
+    public void checkEvent(String day){
+        HashMap<String, String> request = new HashMap<String, String>();
+        request.put("method", "timetable");
+        request.put("action", "getall");
+        request.put("day" , day);
+
+        api = new APIClass(getActivity(), new CheckEvent());
+        api.execute(request);
+
+    }
+    private class CheckEvent implements OnTaskCompleted {
+        @Override
+        public void onTaskCompleted(JSONObject result) {
+
+            if(result.length()!=0) {
+
+                try{
+                    JSONArray jsonEvents = result.getJSONArray("events");
+                    clashEventsDuration =new ArrayList<String>();
+                    clashEventsTime =new ArrayList<String>();
+                    /*
+                    *   Loop adding json query results into moduleNameArray and mAdapter
+                    *   outside of loop
+                     */
+
+                    for (int i = 0; i < jsonEvents.length(); i++) {
+                        ModelEvent mod = new ModelEvent((JSONObject) jsonEvents.get(i));
+                        clashEventsDuration.add(Integer.toString(mod.getDuration()));
+                        clashEventsTime.add(mod.getDate());
+                    }
+
+                }
+                catch(JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    public boolean checkAll(String t1,String t2,ArrayList<String> t3,ArrayList<String> t4){
+        String actualTime=t1;
+        String actualDuration=t2;
+        for (int i=0;i<t3.size();i++){
+
+            String timeCheck=t3.get(i);
+            String durationCheck=t4.get(i);
+
+            boolean check=clash(actualTime,timeCheck,actualDuration,durationCheck);
+
+            if(check){
+                return true;
+            }
 
 
+        }
+        return false;
+    }
+    public boolean clash(String actualTime,String timeCheck,String actualDur,String durCheck){
+
+        int acTime=Integer.parseInt(actualTime.substring(0,2));
+        int acDur=Integer.parseInt(actualDur);
+
+        int chkTime=Integer.parseInt(timeCheck.substring(0,2));
+        int chkDur=Integer.parseInt(durCheck);
+
+
+        //      First Side
+        if(acTime >= chkTime && (acTime+acDur) < chkTime ){
+            if(acTime<=chkTime+chkDur){
+                return true; //time falls inbetween
+            }
+            else if ( (acTime+acDur)<=chkTime+chkDur ){
+                return true; //time falls inbetween
+            }
+            else{
+                return false; //not sure
+            }
+        }
+        //Time being injected starts after or at same time
+        else if( (acTime + acDur) >= chkTime) {
+
+            if ( ( acTime + acDur ) <= chkTime+chkDur ){
+                return true;
+            }
+
+        }
+
+        //      Second Side
+        if(chkTime >= acTime && (chkTime+chkDur) < acTime ){
+
+            if(chkTime<=acTime+acDur){
+                return true; //time falls inbetween
+            }
+            else if ( (chkTime+chkDur)<=acDur+acTime ){
+                return true; //time falls inbetween
+            }
+            else{
+                return false; //not sure
+            }
+        }
+        //Time being injected starts after or at same time
+        else if( (chkTime + chkDur) >= acTime) {
+
+            if ( ( chkTime+ chkDur ) <= acTime+acDur ){
+                return true;
+            }
+
+        }
+        return false;
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -313,13 +436,33 @@ public class FragmentAddToTimetable extends Fragment{
         Button mButton = (Button) root.findViewById(R.id.add_new);
         mButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                MakeRequest(v);
+                NumberPicker day_selector = (NumberPicker) root.findViewById(R.id.DAY);
+                NumberPicker time_selector = (NumberPicker) root.findViewById(R.id.Time);
+                NumberPicker duration_selector = (NumberPicker) root.findViewById(R.id.Duration);
+
+
+                String day = Integer.toString(day_selector.getValue() + 1);
+                String time = times[time_selector.getValue()] + ":00";
+                String duration = Integer.toString(duration_selector.getValue() + 1);
+
+                checkEvent(day);
+
+                boolean checkIsClash = checkAll(time, duration, clashEventsTime, clashEventsDuration);
+
+                if (clashEventsDuration.size() > 0 && checkIsClash) {
+                    Toast.makeText(getActivity(), "Clash Select different time", Toast.LENGTH_LONG).show();
+                    return;
+                } else {
+                    //Make request if no clashes
+                    MakeRequest(v);
+                }
             }
-        });
+
+            });
 
 
         //Fragment Title
-
+        //loadModules()
         if(add || !(add &&edit)) {
             getActivity().setTitle("Add Event");
         }else{
