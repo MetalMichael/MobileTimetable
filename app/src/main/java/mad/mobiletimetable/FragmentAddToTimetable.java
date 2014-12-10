@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.NumberPicker;
 
@@ -57,13 +58,15 @@ public class FragmentAddToTimetable extends Fragment{
     private View root;
     private String[] roomTypes,dates,times,durations;
     private APIClass api, apiEdit;
-    private ModelEvent event, eventEdit;
+    private ModelEvent event;
+    private String ModId;
 
     private String day,time ;
 
     private boolean active = true;
     private AdapterModules mAdapter;
     private ArrayList<String> moduleNameArray =new ArrayList<String>();
+    private ArrayList<String> moduleIdArray =new ArrayList<String>();
     private ArrayAdapter<String> adapter1,adapter2,adapter3;
 
 
@@ -74,6 +77,9 @@ public class FragmentAddToTimetable extends Fragment{
     private Spinner ModuleChoiceView;
     private EditText roomView;
 
+    public void idArray(ArrayList<String> id){
+        this.moduleIdArray = id;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -129,12 +135,14 @@ public class FragmentAddToTimetable extends Fragment{
             }
             try {
                 JSONObject eventInfo = result.getJSONObject("event");
-                eventEdit = new ModelEvent(eventInfo);
+                ModelEvent eventEdit = new ModelEvent(eventInfo);
+                        //ModelEvent eventEdit = (ModelEvent)(result.get("event"));
+                loadEdit(eventEdit);
             } catch(JSONException e) {
                 e.printStackTrace();
             }
 
-            loadEdit();
+
         }
     }
 
@@ -212,6 +220,7 @@ public class FragmentAddToTimetable extends Fragment{
     }
 
     private class ModuleCallback implements OnTaskCompleted {
+
         @Override
         public void onTaskCompleted(JSONObject result) {
 
@@ -232,7 +241,10 @@ public class FragmentAddToTimetable extends Fragment{
                         ModelModule mod=new ModelModule((JSONObject)jsonModules.get(i));
                         modules.add(mod);
                         moduleNameArray.add(mod.getTitle());
+                        moduleIdArray.add(Integer.toString(mod.getId()));
+                        Log.d("ModIdSize", Integer.toString(moduleIdArray.size()));
                     }
+                    idArray(moduleIdArray);
                     Log.d("FragmentModules", "Modules Found");
 
 
@@ -251,6 +263,7 @@ public class FragmentAddToTimetable extends Fragment{
                 roomTypeSpinner.setAdapter(adapter2);
 
             }
+
         }
     }
 
@@ -388,7 +401,18 @@ public class FragmentAddToTimetable extends Fragment{
 
         ModuleChoiceView.setAdapter(adapter1);
         roomTypeSpinner.setAdapter(adapter2);
-
+        if(edit) {
+            //module choice
+            Log.d("ag",Integer.toString(moduleIdArray.size()));
+            int moduleIndex = -1;
+            for (int i=0; i<moduleIdArray.size(); i++ ){
+                Log.d("aogfosautgfhpisautgpiwsaug",(String)moduleIdArray.get(i));
+                if (((String)moduleIdArray.get(i)).equals(ModId)){
+                    moduleIndex = i;
+                }
+            }
+            ModuleChoiceView.setSelection(moduleIndex);
+        }
         if (add ==true){
             loadAdd(times);
         }
@@ -441,17 +465,35 @@ public class FragmentAddToTimetable extends Fragment{
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
-    private void loadEdit(){
+    private void loadEdit(ModelEvent eventEdit){
         if(!active) return;
+        Toast.makeText(getActivity(), "loadEdit" , Toast.LENGTH_LONG).show();
+        Toast.makeText(getActivity(), eventEdit.getDate(), Toast.LENGTH_LONG).show();
         //apply changes here
+        day = Integer.toString(eventEdit.getDay());
+        time = eventEdit.getDate();
+        //String moduleTitle = storedModule.getTitle();
+        String room = eventEdit.getLocation();
+        String lessonType = eventEdit.getLessonType();
+        int dur = eventEdit.getDuration();
+        ModId = Integer.toString(eventEdit.getModuleId());
+        int lessonIndex = findIndex(roomTypes, lessonType);
+        int durationIndex = dur -1;
+
+        //room
+        ((TextView) root.findViewById(R.id.completeRoom)).setText(room);
+        //type
+        roomTypeSpinner.setSelection(lessonIndex);
+        //day and time
+        loadAdd(times);
+        //duration
+        durationPicker.setValue(durationIndex);
     }
     private void loadAdd(String[] times){
         //apply changes
         int index = -1;
         //gets index of time
         for (int i=0; i<times.length; i++ ){
-            Log.d("time", time);
-            Log.d("times", times[i]);
             if (times[i].equals(time)){
                 index = i;
             }
@@ -460,5 +502,24 @@ public class FragmentAddToTimetable extends Fragment{
         timePicker.setValue(index);
         durationPicker.setMaxValue(durationPicker.getMaxValue()-index);
         durationPicker.setWrapSelectorWheel(false);
+    }
+    private int findIndex(String[] a, String b){
+        for (int i=0; i<a.length; i++ ){
+            if (a[i].equals(b)){
+                return i;
+            }
+        }
+        return -1;
+    }
+    private int findIndex(ArrayList<String> a, String b){
+        Log.d("length", Integer.toString(a.size()));
+        for (int i=0; i<a.size(); i++ ){
+            Log.d("aogfosautgfhpisautgpiwsaug",(String)a.get(i));
+            if (((String)a.get(i)).equals(b)){
+
+                return i;
+            }
+        }
+        return -1;
     }
 }
