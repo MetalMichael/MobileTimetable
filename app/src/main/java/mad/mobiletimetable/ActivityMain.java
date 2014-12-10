@@ -25,6 +25,7 @@ public class ActivityMain extends FragmentActivity
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private String[] mDrawItems;
+    private boolean drawerOpen = false;
     
     //Start with no fragment loaded
     private int selectedIndex = 99;
@@ -33,8 +34,6 @@ public class ActivityMain extends FragmentActivity
     public void onFragmentInteraction(Uri uri) {
 
     }
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,12 +70,14 @@ public class ActivityMain extends FragmentActivity
                 R.string.navigation_drawer_close  /* "close drawer" description for accessibility */
         ) {
             public void onDrawerClosed(View view) {
-                getActionBar().setTitle(mTitle);
+                drawerOpen = false;
+                setTitle(mTitle, false);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(mDrawerTitle);
+                drawerOpen = true;
+                setTitle(mDrawerTitle, false);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
@@ -146,11 +147,21 @@ public class ActivityMain extends FragmentActivity
 
     @Override
     public void setTitle(CharSequence title) {
-        mTitle = title;
-        ActionBar ab = getActionBar();
-        ab.setDisplayShowTitleEnabled(false);
-        super.setTitle(mTitle);
-        ab.setDisplayShowTitleEnabled(true);
+        setTitle(title, true);
+    }
+
+    private void setTitle(CharSequence title, boolean setTitle) {
+        if(setTitle) {
+            mTitle = title;
+        }
+        if(!drawerOpen || !setTitle) {
+            ActionBar ab = getActionBar();
+            super.setTitle(title);
+            ab.setDisplayShowTitleEnabled(false);
+            super.setTitle(mTitle);
+            ab.setTitle(title);
+            ab.setDisplayShowTitleEnabled(true);
+        }
     }
 
     @Override

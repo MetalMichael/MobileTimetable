@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -100,7 +100,7 @@ public class FragmentTimetable extends Fragment {
             mViewPager = (ViewPager) view.findViewById(R.id.pager);
             collectionPagerAdapter = new CollectionPagerAdapter(getFragmentManager());
             mViewPager.setAdapter(collectionPagerAdapter);
-            mViewPager.setCurrentItem(getToday()*collectionPagerAdapter.LOOPS_COUNT/2);
+            mViewPager.setCurrentItem(getToday()+collectionPagerAdapter.LOOPS_COUNT/2);
         }
     }
 
@@ -110,7 +110,7 @@ public class FragmentTimetable extends Fragment {
     }
 
 
-    public class CollectionPagerAdapter extends FragmentPagerAdapter {
+    public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
         //Must be even
         public int LOOPS_COUNT = 100;
         private int ACTUAL_TOTAL = 5;
@@ -121,7 +121,7 @@ public class FragmentTimetable extends Fragment {
         }
 
         @Override
-        public android.support.v4.app.Fragment getItem(int i) {
+        public Fragment getItem(int i) {
             return FragmentTimetableDay.newInstance(i % ACTUAL_TOTAL);
         }
 
@@ -132,6 +132,7 @@ public class FragmentTimetable extends Fragment {
 
         @Override
         public void setPrimaryItem(ViewGroup container, int position, Object object) {
+            Log.d("FragmentTimetable", "Setting Day: " + dayNames[position % ACTUAL_TOTAL]);
             getActivity().setTitle(dayNames[position % ACTUAL_TOTAL]);
             super.setPrimaryItem(container, position % ACTUAL_TOTAL, object);
         }

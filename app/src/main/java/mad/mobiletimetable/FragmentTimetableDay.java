@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +33,6 @@ public class FragmentTimetableDay extends Fragment {
 
 
     private AdapterTimetable mAdapter;
-    private EnhancedListView mListView;
 
 
     // TODO: Rename parameter arguments, choose names that match
