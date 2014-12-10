@@ -85,6 +85,14 @@ public class FragmentAddToTimetable extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        /////////////////////////////////////////////////////////////////////////////////////////////move to top
+        //Request code to create event
+        HashMap<String, String> request = new HashMap<String, String>();
+        request.put("method", "module");
+        request.put("action", "getall");
+        api = new APIClass(getActivity(), new ModuleCallback());
+        api.execute(request);
+
         Intent intent = getActivity().getIntent();
 
         if(intent.hasExtra("edit")){
@@ -92,12 +100,12 @@ public class FragmentAddToTimetable extends Fragment{
             add = false;
             //load the timetable ID
             String ID = intent.getStringExtra("edit");
-            HashMap<String, String> request = new HashMap<String, String>();
-            request.put("method", "timetable");
-            request.put("action", "get");
-            request.put("eventid", ID);
+            HashMap<String, String> request2 = new HashMap<String, String>();
+            request2.put("method", "timetable");
+            request2.put("action", "get");
+            request2.put("eventid", ID);
             apiEdit = new APIClass(getActivity(), new Callback());
-            apiEdit.execute(request);
+            apiEdit.execute(request2);
             Toast.makeText(getActivity(), "Edit ID: "+ID, Toast.LENGTH_LONG).show();
         }
         else if(intent.hasExtra("add")){
@@ -309,15 +317,14 @@ public class FragmentAddToTimetable extends Fragment{
             }
         });
 
-        //Request code to create event
-        HashMap<String, String> request = new HashMap<String, String>();
-        request.put("method", "module");
-        request.put("action", "getall");
-        api = new APIClass(getActivity(), new ModuleCallback());
-        api.execute(request);
 
         //Fragment Title
-        getActivity().setTitle("Add Event");
+
+        if(add || !(add &&edit)) {
+            getActivity().setTitle("Add Event");
+        }else{
+            getActivity().setTitle("Edit Event");
+        }
 
         //set context for Actiity Fragment
         Context c = getActivity().getApplicationContext();
