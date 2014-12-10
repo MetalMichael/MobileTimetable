@@ -1,9 +1,11 @@
 package mad.mobiletimetable;
 
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,6 +19,10 @@ import java.util.Calendar;
 public class FragmentTimetable extends Fragment {
 
     private FragmentTimetableDay currentFragment;
+    private CollectionPagerAdapter collectionPagerAdapter;
+    private ViewPager mViewPager;
+
+    private String[] dayNames;
 
     public FragmentTimetable() {
     }
@@ -25,7 +31,8 @@ public class FragmentTimetable extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true); //allows menu
-        //TODO: Initiate API Requests etc.
+
+        dayNames = getResources().getStringArray(R.array.Date);
     }
 
     @Override
@@ -50,8 +57,7 @@ public class FragmentTimetable extends Fragment {
         super.onCreate(savedInstanceState);
 
         //Check to see if we're in the tablet landscape viokkkew
-        View timetable = inflater.inflate(R.layout.fragment_timetable, container, false);
-        return timetable;
+        return inflater.inflate(R.layout.fragment_timetable, container, false);
     }
     //for day changes
     public class GlobalInt {
@@ -108,8 +114,8 @@ public class FragmentTimetable extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //API
 
+        //Tablet View
         if(view.findViewById(R.id.fullTimetable) != null) {
 
             int[] dayFragments = {
@@ -124,27 +130,10 @@ public class FragmentTimetable extends Fragment {
             }
 
         } else {
-        final GlobalInt global = new GlobalInt();
-        addDayFragment(global.returnDay(),R.id.dayFragment);
-        View myView = view.findViewById(R.id.dayFragment);
 
-        myView.setOnTouchListener(new OnSwipeListener(getActivity()) {
-            @Override
-            public void onSwipeLeft() {
-                // Load day - 1
-                Log.d("Resulting Request", "right");
-                addDayFragment(global.increment(),R.id.dayFragment);
-                //View myView = getActivity().findViewById(R.id.dayFragment);
-            }
-
-            @Override
-            public void onSwipeRight() {
-                // Load day + 1
-                Log.d("Resulting Request", "left");
-                addDayFragment(global.decrement(),R.id.dayFragment);
-                //View myView = getActivity().findViewById(R.id.dayFragment);
-            }
-        });
+            mViewPager = (ViewPager) view.findViewById(R.id.pager);
+            collectionPagerAdapter = new CollectionPagerAdapter(getFragmentManager());
+            mViewPager.setAdapter(collectionPagerAdapter);
         }
     }
 
@@ -153,4 +142,26 @@ public class FragmentTimetable extends Fragment {
         getFragmentManager().beginTransaction().replace(dayID, currentFragment).commit();
     }
 
+
+    public class CollectionPagerAdapter extends FragmentPagerAdapter {
+        public CollectionPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public android.support.v4.app.Fragment getItem(int i) {
+            return FragmentTimetableDay.newInstance(i);
+        }
+
+        @Override
+        public int getCount() {
+            return 5;
+        }
+
+        @Override
+        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+            getActivity().setTitle(dayNames[position]);
+            super.setPrimaryItem(container, position, object);
+        }
+    }
 }

@@ -3,13 +3,13 @@ package mad.mobiletimetable;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +43,6 @@ public class FragmentTimetableDay extends Fragment {
 
     // TODO: Rename and change types of parameters
     private int day;
-    private String dayName;
 
     private OnFragmentInteractionListener mListener;
 
@@ -61,19 +60,12 @@ public class FragmentTimetableDay extends Fragment {
         // Required empty public constructor
     }
 
-    public void onResume() {
-        getActivity().setTitle(dayName);
-        super.onResume();
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //mDayName = getArguments().getString(ARG_PARAM1);
         day = getArguments().getInt(ARG_DAY_NUM);
-        String[] dayNames = getResources().getStringArray(R.array.Date);
-        dayName = dayNames[day];
     }
 
     @Override
@@ -194,39 +186,41 @@ public class FragmentTimetableDay extends Fragment {
             mAdapter.addAll(completeEvents);
         }
     }
-    public class EventDialog extends DialogFragment{
+    public class EventDialog extends DialogFragment {
         public EventDialog(){
         }
+
         @Override
         public Dialog onCreateDialog(Bundle savedInstantState){
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             Bundle mArgs = getArguments();
             final String info = mArgs.getString("Id");
-            if(!info.contains("-")){
-            builder.setMessage(info)
-                   .setPositiveButton("Edit", new DialogInterface.OnClickListener() {
-                       @Override
-                       public void onClick(DialogInterface dialog, int which) {
-                           // go to edit activity
-                           Intent intent = new Intent(getActivity(), ActivityAddToTimetable.class);
-                           intent.putExtra("edit", info);
-                           startActivity(intent);
-                       }
-                   })
-                   .setNegativeButton("DELETE",new DialogInterface.OnClickListener() {
-                       @Override
-                       public void onClick(DialogInterface dialog, int which) {
-                           HashMap<String,String> request = new HashMap<String, String>();
-                           request.put("method","timetable");
-                           request.put("action","delete");
-                           request.put("eventid", info);
-                           new APIClass(getActivity(), new Callback()).execute(request);
-                           getActivity().finish();                           ;
-                           startActivity(getActivity().getIntent());
+            if(!info.contains("-")) {
+                builder.setMessage(info)
+                        .setPositiveButton("Edit", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // go to edit activity
+                                Intent intent = new Intent(getActivity(), ActivityAddToTimetable.class);
+                                intent.putExtra("edit", info);
+                                startActivity(intent);
+                            }
+                        })
+                        .setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                HashMap<String, String> request = new HashMap<String, String>();
+                                request.put("method", "timetable");
+                                request.put("action", "delete");
+                                request.put("eventid", info);
+                                new APIClass(getActivity(), new Callback()).execute(request);
+                                getActivity().finish();
+                                ;
+                                startActivity(getActivity().getIntent());
 
-                       }
-                   });}
-            else{
+                            }
+                        });
+            } else{
                 builder.setMessage("Would you like to add an event here?")
                        .setPositiveButton("Create", new DialogInterface.OnClickListener() {
                            @Override
