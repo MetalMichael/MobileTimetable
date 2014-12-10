@@ -49,6 +49,9 @@
         <item>Friday</item>
     </string-array>
 
+    <string name="Add_Event">Add Event</string>
+    <string name="Edit_Event">Edit Event</string>
+    <string name="Update_Event">Update Event</string>
 
     <string name="modules">Modules</string>
     <string name="action_add_module">Add Module</string>

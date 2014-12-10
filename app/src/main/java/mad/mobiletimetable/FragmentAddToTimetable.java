@@ -55,14 +55,11 @@ public class FragmentAddToTimetable extends Fragment{
 
     // TODO: Rename and change types of parameters
     private boolean edit, add;
-    private boolean moduleLoaded = false;
-    private boolean eventLoaded = false;
 
     private View root;
     private String[] roomTypes,dates,times,durations;
     private APIClass api, apiEdit;
     private ModelEvent event;
-    private ModelEvent eventModule;
 
     private String day,time ;
 
@@ -83,7 +80,6 @@ public class FragmentAddToTimetable extends Fragment{
 
     private Spinner roomTypeSpinner;
     private Spinner ModuleChoiceView;
-    private EditText roomView;
 
     public void idArray(ArrayList<String> id){
         this.moduleIdArray = id;
@@ -148,8 +144,6 @@ public class FragmentAddToTimetable extends Fragment{
 
                 JSONObject eventInfo = result.getJSONObject("event");
                 final ModelEvent eventEdit = new ModelEvent(eventInfo);
-                        //ModelEvent eventEdit = (ModelEvent)(result.get("event"));
-                store(eventEdit);
                 loadEdit(eventEdit);
             } catch(JSONException e) {
                 e.printStackTrace();
@@ -157,11 +151,6 @@ public class FragmentAddToTimetable extends Fragment{
 
 
         }
-    }
-    public void store(ModelEvent eventEdit){
-
-        this.eventModule = new ModelEvent(eventEdit.getId(),eventEdit.getModuleId(),eventEdit.getDuration(),eventEdit.getDay(),eventEdit.getTime(),eventEdit.getModule(),eventEdit.getLocation(),eventEdit.getLessonType());
-        Log.d("IMPORTANT MADE EVENT MODULE","true");
     }
     public View MakeRequest(View v) {
 
@@ -309,17 +298,6 @@ public class FragmentAddToTimetable extends Fragment{
         }
         return output;
     }
-/*
-    public void loadModules(){
-        //Request code to create event
-        HashMap<String, String> request = new HashMap<String, String>();
-        request.put("method", "module");
-        request.put("action", "getall");
-        api = new APIClass(getActivity(), new ModuleCallback());
-        api.execute(request);
-
-    }
-    */
     public void checkEvent(String day){
         HashMap<String, String> request = new HashMap<String, String>();
         request.put("method", "timetable");
@@ -439,7 +417,15 @@ public class FragmentAddToTimetable extends Fragment{
 
 
         //Button to make new Event
+
         Button mButton = (Button) root.findViewById(R.id.add_new);
+        if(edit){
+            mButton.setText(R.string.Update_Event);
+        }else if(add){
+            mButton.setText(R.string.Add_Event);
+        }else{
+            mButton.setText(R.string.Add_Event);
+        }
         mButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 NumberPicker day_selector = (NumberPicker) root.findViewById(R.id.DAY);
@@ -469,10 +455,12 @@ public class FragmentAddToTimetable extends Fragment{
 
         //Fragment Title
         //loadModules()
-        if(add || !(add &&edit)) {
-            getActivity().setTitle("Add Event");
+        if(add) {
+            getActivity().setTitle(R.string.Add_Event);
+        }else if (edit){
+            getActivity().setTitle(R.string.Edit_Event);
         }else{
-            getActivity().setTitle("Edit Event");
+            getActivity().setTitle(R.string.Add_Event);
         }
 
         //set context for Actiity Fragment
