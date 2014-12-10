@@ -1,5 +1,6 @@
 package mad.mobiletimetable;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -33,10 +34,14 @@ public class ActivityMain extends FragmentActivity
 
     }
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getActionBar();
 
         //Service
         ServiceNotifications.ensureRunning(this.getApplicationContext());
@@ -142,7 +147,10 @@ public class ActivityMain extends FragmentActivity
     @Override
     public void setTitle(CharSequence title) {
         mTitle = title;
-        getActionBar().setTitle(mTitle);
+        ActionBar ab = getActionBar();
+        ab.setDisplayShowTitleEnabled(false);
+        super.setTitle(mTitle);
+        ab.setDisplayShowTitleEnabled(true);
     }
 
     @Override

@@ -59,55 +59,22 @@ public class FragmentTimetable extends Fragment {
         //Check to see if we're in the tablet landscape viokkkew
         return inflater.inflate(R.layout.fragment_timetable, container, false);
     }
-    //for day changes
-    public class GlobalInt {
-        public int dayOfWeek = 0;
-        public int day;
-        public void GlobalInt() {
-            Calendar c = Calendar.getInstance();
-            this.dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-            switch (this.dayOfWeek) {
-                case Calendar.SUNDAY:
-                    this.day = 0;
-                    break;
-                case Calendar.MONDAY:
-                    this.day = 0;
-                    break;
-                case Calendar.TUESDAY:
-                    this.day = 1;
-                    break;
-                case Calendar.WEDNESDAY:
-                    this.day = 2;
-                    break;
-                case Calendar.THURSDAY:
-                    this.day = 3;
-                    break;
-                case Calendar.FRIDAY:
-                    this.day = 4;
-                    break;
-                case Calendar.SATURDAY:
-                    this.day = 0;
-                    break;
-            }
-            Log.d("Construct",String.valueOf(this.day));
-        }
-        public int returnDay() {
-            Log.d("returnDay",String.valueOf(this.day));
-            return this.day;
-        }
-        public int increment(){
-            this.day ++;
-            if(this.day >4){
-                this.day = 0;
-            }
-            return this.day;
-        }
-        public int decrement(){
-            this.day --;
-            if(this.day <0){
-                this.day = 4;
-            }
-            return this.day;
+
+    private int getToday() {
+        Calendar c = Calendar.getInstance();
+        int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+        int day;
+        switch (dayOfWeek) {
+            case Calendar.TUESDAY:
+                return 1;
+            case Calendar.WEDNESDAY:
+                return 2;
+            case Calendar.THURSDAY:
+                return 3;
+            case Calendar.FRIDAY:
+                return 4;
+            default:
+                return 0;
         }
     }
 
@@ -130,10 +97,10 @@ public class FragmentTimetable extends Fragment {
             }
 
         } else {
-
             mViewPager = (ViewPager) view.findViewById(R.id.pager);
             collectionPagerAdapter = new CollectionPagerAdapter(getFragmentManager());
             mViewPager.setAdapter(collectionPagerAdapter);
+            mViewPager.setCurrentItem(getToday());
         }
     }
 
