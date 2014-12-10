@@ -100,7 +100,7 @@ public class FragmentTimetable extends Fragment {
             mViewPager = (ViewPager) view.findViewById(R.id.pager);
             collectionPagerAdapter = new CollectionPagerAdapter(getFragmentManager());
             mViewPager.setAdapter(collectionPagerAdapter);
-            mViewPager.setCurrentItem(getToday());
+            mViewPager.setCurrentItem(getToday()*collectionPagerAdapter.LOOPS_COUNT/2);
         }
     }
 
@@ -111,24 +111,29 @@ public class FragmentTimetable extends Fragment {
 
 
     public class CollectionPagerAdapter extends FragmentPagerAdapter {
+        //Must be even
+        public int LOOPS_COUNT = 100;
+        private int ACTUAL_TOTAL = 5;
+
+
         public CollectionPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public android.support.v4.app.Fragment getItem(int i) {
-            return FragmentTimetableDay.newInstance(i);
+            return FragmentTimetableDay.newInstance(i % ACTUAL_TOTAL);
         }
 
         @Override
         public int getCount() {
-            return 5;
+            return ACTUAL_TOTAL * LOOPS_COUNT;
         }
 
         @Override
         public void setPrimaryItem(ViewGroup container, int position, Object object) {
-            getActivity().setTitle(dayNames[position]);
-            super.setPrimaryItem(container, position, object);
+            getActivity().setTitle(dayNames[position % ACTUAL_TOTAL]);
+            super.setPrimaryItem(container, position % ACTUAL_TOTAL, object);
         }
     }
 }
