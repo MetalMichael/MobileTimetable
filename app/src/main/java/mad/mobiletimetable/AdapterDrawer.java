@@ -43,7 +43,6 @@ public class AdapterDrawer extends ArrayAdapter<String> {
         {
             e.printStackTrace();
         }
-        Log.d("AdapterDrawer","Picture for "+auth+" | "+b.toString());
         return b;
     }
 
