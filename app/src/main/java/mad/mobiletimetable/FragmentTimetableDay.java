@@ -213,7 +213,6 @@ public class FragmentTimetableDay extends Fragment {
                                 request.put("eventid", info);
                                 new APIClass(getActivity(), new Callback()).execute(request);
                                 getActivity().finish();
-                                ;
                                 startActivity(getActivity().getIntent());
 
                             }

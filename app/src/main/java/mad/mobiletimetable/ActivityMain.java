@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -34,7 +35,13 @@ public class ActivityMain extends FragmentActivity
     public void onFragmentInteraction(Uri uri) {
 
     }
-
+    @Override
+    protected void onRestart(){
+        finish();
+        startActivity(getIntent());
+        Log.d("Restart","Restarted");
+        super.onRestart();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
