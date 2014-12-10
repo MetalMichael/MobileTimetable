@@ -458,7 +458,7 @@ public class FragmentAddToTimetable extends Fragment{
         }
         dayPicker.setValue(Integer.parseInt(day));
         timePicker.setValue(index);
-        durationPicker.setMaxValue(durationPicker.getMaxValue()-index-1);
+        durationPicker.setMaxValue(durationPicker.getMaxValue()-index);
         durationPicker.setWrapSelectorWheel(false);
     }
 }
