@@ -170,6 +170,14 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
                     Toast.makeText(getActivity(), "Edited", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getActivity(), "Created", Toast.LENGTH_LONG).show();
+                    try {
+                        int moduleId = result.getInt("moduleid");
+                        Intent intent = new Intent();
+                        intent.putExtra("moduleid", moduleId);
+                        getActivity().setResult(1, intent);
+                    } catch(JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
                 getActivity().finish();
             }
