@@ -70,6 +70,7 @@ public class FragmentAddToTimetable extends Fragment{
     private String day,time,eventID ;
 
     private boolean active = true;
+    private boolean changedItem = false;
     private AdapterModules mAdapter;
     private ArrayList<String> moduleNameArray =new ArrayList<String>();
     private ArrayList<String> moduleIdArray =new ArrayList<String>();
@@ -116,6 +117,7 @@ public class FragmentAddToTimetable extends Fragment{
             apiEdit = new APIClass(getActivity(), new Callback());
             apiEdit.execute(request2);
             eventID=ID;
+            changedItem = false;
         }
         else if(intent.hasExtra("add")){
             add = true;
@@ -315,23 +317,27 @@ public class FragmentAddToTimetable extends Fragment{
         return output;
     }
 
-    public void checkEvent(final String day){
+    public void checkEvent(final String day, View v){
 
-
+                Log.d("checkEvent", "here 1");
                 HashMap<String, String> request = new HashMap<String, String>();
                 request.put("method", "timetable");
                 request.put("action", "getall");
                 request.put("day" , day);
-
-                api = new APIClass(getActivity(), new CheckEvent());
+        Log.d("checkEvent", "here 2");
+                api = new APIClass(getActivity(), new CheckEvent(v));
                 api.execute(request);
 
     }
 
     private class CheckEvent implements OnTaskCompleted {
+        public View v;
+        private  CheckEvent(View v){
+            this.v = v;
+        }
         @Override
         public void onTaskCompleted(JSONObject result) {
-
+            Log.d("checkEvent", "here 3");
             clashEventsDuration =new ArrayList<String>();
             clashEventsTime =new ArrayList<String>();
 
@@ -359,10 +365,13 @@ public class FragmentAddToTimetable extends Fragment{
                 catch(JSONException e) {
                     e.printStackTrace();
                 }
+                Log.d("checkEvent", "here 4");
+                buttonclick(v);
             }
         }
     }
     public boolean checkAll(String t1,String t2,ArrayList<String> t3,ArrayList<String> t4){
+        Log.d("checkEvent", "here 5");
         String actualTime=t1;
         String actualDuration=t2;
         for (int i=0;i<t3.size();i++){
@@ -370,17 +379,15 @@ public class FragmentAddToTimetable extends Fragment{
             String timeCheck=t3.get(i);
             String durationCheck=t4.get(i);
 
-            boolean check=clash(actualTime,timeCheck,actualDuration,durationCheck);
-
-            if(check){
+            if(clash(actualTime,timeCheck,actualDuration,durationCheck)){
                 return true;
             }
         }
         return false;
     }
     public boolean clash(String actualTime,String timeCheck,String actualDur,String durCheck){
-
-        Toast.makeText(getActivity(), "Checking...", Toast.LENGTH_LONG).show();
+        Log.d("checkEvent", "here 6");
+        //OToast.makeText(getActivity(), "Checking...", Toast.LENGTH_LONG).show();
 
         int acTime=Integer.parseInt(actualTime.substring(0,2));
         int acDur=Integer.parseInt(actualDur);
@@ -389,16 +396,32 @@ public class FragmentAddToTimetable extends Fragment{
         int chkTime=Integer.parseInt(timeCheck.substring(0,2));
         int chkDur=Integer.parseInt(durCheck);
 
+        int startAc = acTime;
+        int endAc = acTime+acDur;
+        int startCh = chkTime;
+        int endCh = chkTime+chkDur;
 
-        boolean check = (acTime <= chkTime && acTime+acDur > chkTime);
+        boolean check1 = ((endAc > startCh)&&(endAc <=endCh));
+        boolean check2 = ((startAc >= startCh)&&(startAc < endCh));
+        boolean check3 = ((startAc <= startCh)&&(endAc >= endCh));
+
+        Log.d("checksssss",check1+" "+check2+" "+check3);
+        Log.d("checksssss",Integer.toString(startAc));
+        Log.d("checksssss",Integer.toString(endAc));
+        Log.d("checksssss",Integer.toString(startCh));
+        Log.d("checksssss",Integer.toString(endCh));
+
+
+/*
+        boolean check1 = (acTime <= chkTime && acTime+acDur > chkTime);
 
         boolean check2 = (chkTime <= acTime && chkTime+chkDur > acTime);
 
         boolean check3 = (chkTime <= acTime && chkTime+chkDur >= acTime+acDur);
 
         boolean check4 = (acTime <= chkTime && acTime+acDur > chkDur+chkDur);
-
-        if(check || check2 || check3 || check4){
+*/
+        if(check1 || check2 || check3){
             return true;
         }
 
@@ -426,26 +449,11 @@ public class FragmentAddToTimetable extends Fragment{
         mButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 NumberPicker day_selector = (NumberPicker) root.findViewById(R.id.DAY);
-                NumberPicker time_selector = (NumberPicker) root.findViewById(R.id.Time);
-                NumberPicker duration_selector = (NumberPicker) root.findViewById(R.id.Duration);
-
-
                 String day = Integer.toString(day_selector.getValue() + 1);
-                String time = times[time_selector.getValue()] + ":00";
-                String duration = Integer.toString(duration_selector.getValue() + 1);
+                checkEvent(day,v);
 
+                //checkAll(time, duration, clashEventsTime, clashEventsDuration)//
 
-               /* checkEvent(day);
-
-                boolean checkIsClash = checkAll(time, duration, clashEventsTime, clashEventsDuration);
-
-                if (checkIsClash) {
-                    Toast.makeText(getActivity(), "Clash Select different time", Toast.LENGTH_LONG).show();
-                }
-                else {*/
-                    //Make request if no clashes
-                    MakeRequest(v);
-                ///}
             }
         });
 
@@ -518,8 +526,26 @@ public class FragmentAddToTimetable extends Fragment{
                      durationPicker.setWrapSelectorWheel(false);
                      durationPicker.setDisplayedValues(durations);
                      durationPicker.setValue(0);
+                     changedItem = true;
                  }
+
              }
+        );
+        durationPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+             @Override
+             //needs a final look at
+             public void onValueChange(NumberPicker durationPicker, int i, int i2) {
+                 changedItem = true;
+             }
+         }
+        );
+        dayPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+             @Override
+             //needs a final look at
+             public void onValueChange(NumberPicker dayPicker, int i, int i2) {
+                 changedItem = true;
+             }
+         }
         );
 
         //Set durationPicker attributes
@@ -550,12 +576,26 @@ public class FragmentAddToTimetable extends Fragment{
         if (add ==true){
             loadAdd(times);
         }
-
-
-        //return View
+                //return View
         return root;
     }
+    public void buttonclick(View v) {
+        NumberPicker time_selector = (NumberPicker) root.findViewById(R.id.Time);
+        NumberPicker duration_selector = (NumberPicker) root.findViewById(R.id.Duration);
+        String time = times[time_selector.getValue()] + ":00";
+        String duration = Integer.toString(duration_selector.getValue() + 1);
+        if (!edit || changedItem) {//no changes - clashes done need to be checked
 
+            //pulls info on the selected day
+            if (checkAll(time, duration, clashEventsTime, clashEventsDuration)) {
+                Toast.makeText(getActivity(), "Clash Select different time", Toast.LENGTH_LONG).show();
+            } else {
+                MakeRequest(v);
+            }
+        } else {
+            MakeRequest(v);
+        }
+    }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -602,22 +642,17 @@ public class FragmentAddToTimetable extends Fragment{
     private void loadEdit(ModelEvent eventEdit){
         if(!active) return;
         //apply changes here
-        day = Integer.toString(eventEdit.getDay());
+        day = Integer.toString(eventEdit.getDay()-2);
         time = eventEdit.getDate();
         //String moduleTitle = storedModule.getTitle();
         String room = eventEdit.getLocation();
         String lessonType = eventEdit.getLessonType();
         int dur = eventEdit.getDuration();
-        //int lessonIndex = findIndex(roomTypes, lessonType);
+        int lessonIndex = findIndex(roomTypes, lessonType);
         int durationIndex = dur -1;
-        //ModId = Integer.toString(eventEdit.getModuleId());
-        //room
         ((TextView) root.findViewById(R.id.completeRoom)).setText(room);
-        //type
-        //roomTypeSpinner.setSelection(lessonIndex);
-        //day and time
+        roomTypeSpinner.setSelection(lessonIndex);
         loadAdd(times);
-        //duration
         durationPicker.setValue(durationIndex);
         loadEditModules(eventEdit);
     }
