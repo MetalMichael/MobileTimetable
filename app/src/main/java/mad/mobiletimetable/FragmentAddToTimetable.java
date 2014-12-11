@@ -67,7 +67,7 @@ public class FragmentAddToTimetable extends Fragment{
     private APIClass api, apiEdit;
     private ModelEvent event;
 
-    private String day,time ;
+    private String day,time,eventID ;
 
     private boolean active = true;
     private AdapterModules mAdapter;
@@ -115,6 +115,7 @@ public class FragmentAddToTimetable extends Fragment{
             request2.put("eventid", ID);
             apiEdit = new APIClass(getActivity(), new Callback());
             apiEdit.execute(request2);
+            eventID=ID;
         }
         else if(intent.hasExtra("add")){
             add = true;
@@ -192,7 +193,12 @@ public class FragmentAddToTimetable extends Fragment{
 
             //Create Request and fill
             request.put("method", "timetable");
-            request.put("action", "add");
+            if(!edit){
+                request.put("action", "add");
+            }else{
+                request.put("action", "edit");
+                request.put("eventid", eventID);
+            }
             request.put("moduleid", Integer.toString(mAdapter.getItem(getIndex(selectedModule)).getId()));
             request.put("day", day);
             request.put("time", time);
@@ -203,6 +209,7 @@ public class FragmentAddToTimetable extends Fragment{
 
             api = new APIClass(getActivity(), new CreateEventCallback());
             api.execute(request);
+            getActivity().finish(); //closes
         }
 
         else{
@@ -221,17 +228,16 @@ public class FragmentAddToTimetable extends Fragment{
                 status = result.getString("status");
             } catch(JSONException e) {
                 e.printStackTrace();
-                return;
             }
 
-            if(status.equals("OK")) {
+            /*if(status.equals("OK")) {
                 if (edit) {
                     Toast.makeText(getActivity(), "Updated", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getActivity(), "Added to Timetable", Toast.LENGTH_LONG).show();
                 }
 
-            }
+            }*/
         }
     }
 
@@ -429,17 +435,17 @@ public class FragmentAddToTimetable extends Fragment{
                 String duration = Integer.toString(duration_selector.getValue() + 1);
 
 
-                checkEvent(day);
+               /* checkEvent(day);
 
                 boolean checkIsClash = checkAll(time, duration, clashEventsTime, clashEventsDuration);
 
                 if (checkIsClash) {
                     Toast.makeText(getActivity(), "Clash Select different time", Toast.LENGTH_LONG).show();
                 }
-                else {
+                else {*/
                     //Make request if no clashes
                     MakeRequest(v);
-                }
+                ///}
             }
         });
 
