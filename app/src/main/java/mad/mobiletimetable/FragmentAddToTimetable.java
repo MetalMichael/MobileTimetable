@@ -186,7 +186,7 @@ public class FragmentAddToTimetable extends Fragment{
 
         //Check is all Inputs are filled in
         if( !day.isEmpty() && !duration.isEmpty() && !time.isEmpty() && !selectedRoom.isEmpty()
-                && getIndex(selectedModule)!=-1 && !selectedType.isEmpty()  && clashEventsDuration.size()==0 ) {
+                && getIndex(selectedModule)!=-1 && !selectedType.isEmpty() ) {
 
             HashMap<String, String> request = new HashMap<String, String>();
 
@@ -216,17 +216,21 @@ public class FragmentAddToTimetable extends Fragment{
         @Override
         public void onTaskCompleted(JSONObject result) {
             if(!active) return;
-
-            if(!result.has("module")) {
-                Toast.makeText(getActivity(), "Added to Timetable", Toast.LENGTH_LONG).show();
-            }
+            String status;
             try {
-                JSONObject eventID = result.getJSONObject("module");
-                event = new ModelEvent(eventID);
-                Toast.makeText(getActivity(), "Added to Timetable: " +event.getModule().toString(), Toast.LENGTH_LONG).show();
-
+                status = result.getString("status");
             } catch(JSONException e) {
                 e.printStackTrace();
+                return;
+            }
+
+            if(status.equals("OK")) {
+                if (edit) {
+                    Toast.makeText(getActivity(), "Updated", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getActivity(), "Added to Timetable", Toast.LENGTH_LONG).show();
+                }
+
             }
         }
     }
@@ -306,8 +310,7 @@ public class FragmentAddToTimetable extends Fragment{
     }
 
     public void checkEvent(final String day){
-        new Thread(new Runnable() {
-            public void run(){
+
 
                 HashMap<String, String> request = new HashMap<String, String>();
                 request.put("method", "timetable");
@@ -316,11 +319,6 @@ public class FragmentAddToTimetable extends Fragment{
 
                 api = new APIClass(getActivity(), new CheckEvent());
                 api.execute(request);
-
-
-
-          }
-        }).start();
 
     }
 
@@ -376,20 +374,23 @@ public class FragmentAddToTimetable extends Fragment{
     }
     public boolean clash(String actualTime,String timeCheck,String actualDur,String durCheck){
 
-        int acTime=Integer.parseInt(actualTime.substring(0,1));
+        Toast.makeText(getActivity(), "Checking...", Toast.LENGTH_LONG).show();
+
+        int acTime=Integer.parseInt(actualTime.substring(0,2));
         int acDur=Integer.parseInt(actualDur);
 
-        int chkTime=Integer.parseInt(timeCheck.substring(0,1));
+
+        int chkTime=Integer.parseInt(timeCheck.substring(0,2));
         int chkDur=Integer.parseInt(durCheck);
 
 
-        boolean check = (acTime <= chkTime && acTime+acDur >= chkTime);
+        boolean check = (acTime <= chkTime && acTime+acDur > chkTime);
 
-        boolean check2 = (chkTime <= acTime && chkTime+chkDur >= acTime);
+        boolean check2 = (chkTime <= acTime && chkTime+chkDur > acTime);
 
-        boolean check3 = (chkTime<= acTime && chkTime+chkDur >= acTime+acDur);
+        boolean check3 = (chkTime <= acTime && chkTime+chkDur >= acTime+acDur);
 
-        boolean check4 = (acTime<= chkTime && acTime+acDur >= chkDur+chkDur);
+        boolean check4 = (acTime <= chkTime && acTime+acDur > chkDur+chkDur);
 
         if(check || check2 || check3 || check4){
             return true;
@@ -432,10 +433,10 @@ public class FragmentAddToTimetable extends Fragment{
 
                 boolean checkIsClash = checkAll(time, duration, clashEventsTime, clashEventsDuration);
 
-                if (clashEventsDuration.size() > 0 && checkIsClash) {
+                if (checkIsClash) {
                     Toast.makeText(getActivity(), "Clash Select different time", Toast.LENGTH_LONG).show();
-                    return;
-                } else {
+                }
+                else {
                     //Make request if no clashes
                     MakeRequest(v);
                 }
