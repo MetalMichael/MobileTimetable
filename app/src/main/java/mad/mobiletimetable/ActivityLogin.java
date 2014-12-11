@@ -40,6 +40,13 @@ public class ActivityLogin extends Activity{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Clear Day
+        SharedPreferences pref = getSharedPreferences("day", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.remove("day");
+        Log.d("Main", "ResetDay");
+
         SharedPreferences authCheck = getSharedPreferences(PREFS_NAME, 0);
         if(authCheck.getString("Auth", "").equals("")) {
             FragmentManager fragmentManager = getFragmentManager();

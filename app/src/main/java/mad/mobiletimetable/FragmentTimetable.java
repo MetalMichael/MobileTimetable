@@ -1,6 +1,8 @@
 package mad.mobiletimetable;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -97,11 +99,37 @@ public class FragmentTimetable extends Fragment {
             }
 
         } else {
+            SharedPreferences pref = getActivity().getSharedPreferences("day", Activity.MODE_PRIVATE);
+
+            Log.d("FT", Integer.toString(pref.getInt("day", -1)));
+
             mViewPager = (ViewPager) view.findViewById(R.id.pager);
+            mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                    updateCurrentPage(position);
+                }
+
+                @Override
+                public void onPageSelected(int i) {
+                    updateCurrentPage(i);
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int i) {
+
+                }
+            });
             collectionPagerAdapter = new CollectionPagerAdapter(getFragmentManager());
             mViewPager.setAdapter(collectionPagerAdapter);
-            mViewPager.setCurrentItem(getToday()+collectionPagerAdapter.LOOPS_COUNT/2);
+            mViewPager.setCurrentItem(pref.getInt("day", getToday() + collectionPagerAdapter.LOOPS_COUNT/2));
         }
+    }
+
+    public void updateCurrentPage(int page) {
+        SharedPreferences pref = getActivity().getSharedPreferences("day", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt("day", page).commit();
     }
 
     private void addDayFragment(int day, int dayID){
