@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -95,7 +96,8 @@ public class FragmentTimetableDay extends Fragment {
                 //startActivity(intent);
 
                 String info = (String)view.getTag();
-                displayDialog(info);
+                String title = ((TextView)view.findViewById(R.id.event_title)).getText().toString();
+                displayDialog(info, title);
                 if(info.contains("-")){
                     Log.d("made it", "Add");
                 }else{
@@ -108,9 +110,10 @@ public class FragmentTimetableDay extends Fragment {
 
         return timetable;
     }
-    public void displayDialog(String info){
+    public void displayDialog(String info, String title){
         Bundle args = new Bundle();
         args.putString("Id", info);
+        args.putString("Title", title);
         FragmentManager fragmentManager = getFragmentManager();
         DialogFragment newfragment = new EventDialog();
         newfragment.setArguments(args);
@@ -193,8 +196,9 @@ public class FragmentTimetableDay extends Fragment {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             Bundle mArgs = getArguments();
             final String info = mArgs.getString("Id");
+            final String title = mArgs.getString("Title");
             if(!info.contains("-")) {
-                builder.setMessage(info)
+                builder.setMessage(title)
                         .setPositiveButton("Edit", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
