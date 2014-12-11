@@ -8,6 +8,9 @@
 package mad.mobiletimetable;
 
 //Context and Resources for finding predefined values
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.content.Context;
@@ -16,6 +19,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 //Android Logging to terminal
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
 //Widgets for View
@@ -269,12 +273,33 @@ public class FragmentAddToTimetable extends Fragment{
                     *   Loop adding json query results into moduleNameArray and mAdapter
                     *   outside of loop
                      */
-                    for(int i = 0; i < jsonModules.length(); i++) {
-                        ModelModule mod=new ModelModule((JSONObject)jsonModules.get(i));
-                        modules.add(mod);
-                        moduleNameArray.add(mod.getTitle());
-                        moduleIdArray.add(Integer.toString(mod.getId()));
-                        Log.d("ModIdSize", Integer.toString(moduleIdArray.size()));
+                    if(jsonModules.length() > 0) {
+                        for (int i = 0; i < jsonModules.length(); i++) {
+                            ModelModule mod = new ModelModule((JSONObject) jsonModules.get(i));
+                            modules.add(mod);
+                            moduleNameArray.add(mod.getTitle());
+                            moduleIdArray.add(Integer.toString(mod.getId()));
+                            Log.d("ModIdSize", Integer.toString(moduleIdArray.size()));
+                        }
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setMessage("There are currently no Modules.\nYou cannot create an event without an associated Module.\nWould you like to create one now?")
+                            .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // go to edit activity
+                                    Intent intent = new Intent(getActivity(), ActivityEditModule.class);
+                                    startActivityForResult(intent, 1);
+                                }
+                            })
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.show();
                     }
                     moduleNameArray.add("Create Module...");
                     moduleIdArray.add("-1");
@@ -300,7 +325,7 @@ public class FragmentAddToTimetable extends Fragment{
                     @Override
                     public void onItemSelected(AdapterView<?> parentView, View selectedItemView,
                                                int position, long id) {
-                        if (position == moduleNameArray.size() - 1) {
+                        if (position == moduleNameArray.size() - 1 && moduleNameArray.size() > 1) {
                             Intent intent = new Intent(getActivity(), ActivityEditModule.class);
                             getActivity().startActivityForResult(intent, 1);
                         }
@@ -602,9 +627,14 @@ public class FragmentAddToTimetable extends Fragment{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        int moduleId = data.getIntExtra("moduleid", 0);
+        int moduleId;
+        if(data != null && data.hasExtra("moduleid")) {
+             moduleId = data.getIntExtra("moduleid", 0);
 
-        if(moduleId == 0) return;
+            if (moduleId == 0) return;
+        } else {
+            return;
+        }
 
         HashMap<String, String> request = new HashMap<String, String>();
         request.put("method", "module");
