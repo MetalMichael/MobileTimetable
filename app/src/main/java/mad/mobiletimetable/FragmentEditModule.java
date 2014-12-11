@@ -142,7 +142,6 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
         }
 
         //Fields
-        //TODO: Validation
         request.put("moduletitle",
                 ((TextView)view.findViewById(R.id.module_title)).getText().toString());
         request.put("modulecode",
@@ -195,7 +194,7 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
         ((TextView)v2.findViewById(R.id.module_code)).setText(module.getCode());
         ((TextView)v2.findViewById(R.id.module_lecturer)).setText(module.getLecturer());
 
-        ((Button)v2.findViewById(R.id.module_create)).setText(R.string.edit);
+        ((Button)v2.findViewById(R.id.module_create)).setText(R.string.edit_label);
 
         view.removeAllViews();
         view.addView(v2);

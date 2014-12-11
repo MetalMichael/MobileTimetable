@@ -97,7 +97,7 @@ public class ServiceNotifications extends IntentService {
                 //Simple Notification
                 event = events.get(0);
                 title = "Event Starting Soon";
-                detail = "(" + event.getDate() + ")" + event.getModule().getTitle() + " - " +
+                detail = "(" + event.getDate() + ") " + event.getModule().getTitle() + " - " +
                         event.getModule().getCode() + " is starting soon";
             } else {
                 //Multiple Events Notification

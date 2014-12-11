@@ -91,7 +91,7 @@ public class ActivityMain extends FragmentActivity
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         if (savedInstanceState == null) {
-            selectItem(0);
+            selectItem(1);
         }
     }
 
@@ -109,8 +109,9 @@ public class ActivityMain extends FragmentActivity
 
         switch(position) {
             case 0:
-                frag = new FragmentTimetable();
-                break;
+                mDrawerList.setItemChecked(position, false);
+                mDrawerList.setItemChecked(selectedIndex, true);
+                return;
             case 1:
                 frag = new FragmentTimetable();
                 break;

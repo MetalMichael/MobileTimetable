@@ -13,6 +13,7 @@
 
     <string name="create">Create</string>
     <string name="edit">Edit</string>
+    <string name="edit_label">Update</string>
     <string name="delete">Delete</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
