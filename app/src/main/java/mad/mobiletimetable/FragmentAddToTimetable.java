@@ -8,6 +8,9 @@
 package mad.mobiletimetable;
 
 //Context and Resources for finding predefined values
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.content.Context;
@@ -16,9 +19,11 @@ import android.content.Context;
 import android.os.Bundle;
 
 //Android Logging to terminal
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
 //Widgets for View
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -244,6 +249,14 @@ public class FragmentAddToTimetable extends Fragment{
     }
 
     private class ModuleCallback implements OnTaskCompleted {
+        public ModuleCallback() {
+
+        }
+
+        private int moduleId = 0;
+        public ModuleCallback(int moduleId) {
+            this.moduleId = moduleId;
+        }
 
         @Override
         public void onTaskCompleted(JSONObject result) {
@@ -253,7 +266,8 @@ public class FragmentAddToTimetable extends Fragment{
                 ArrayList<ModelModule> modules = new ArrayList<ModelModule>();
 
                 mAdapter = new AdapterModules(getActivity(), new ArrayList<ModelModule>());
-
+                moduleNameArray = new ArrayList<String>();
+                moduleIdArray = new ArrayList<String>();
                 try{
                     JSONArray jsonModules = result.getJSONArray("modules");
 
@@ -261,13 +275,36 @@ public class FragmentAddToTimetable extends Fragment{
                     *   Loop adding json query results into moduleNameArray and mAdapter
                     *   outside of loop
                      */
-                    for(int i = 0; i < jsonModules.length(); i++) {
-                        ModelModule mod=new ModelModule((JSONObject)jsonModules.get(i));
-                        modules.add(mod);
-                        moduleNameArray.add(mod.getTitle());
-                        moduleIdArray.add(Integer.toString(mod.getId()));
-                        Log.d("ModIdSize", Integer.toString(moduleIdArray.size()));
+                    if(jsonModules.length() > 0) {
+                        for (int i = 0; i < jsonModules.length(); i++) {
+                            ModelModule mod = new ModelModule((JSONObject) jsonModules.get(i));
+                            modules.add(mod);
+                            moduleNameArray.add(mod.getTitle());
+                            moduleIdArray.add(Integer.toString(mod.getId()));
+                            Log.d("ModIdSize", Integer.toString(moduleIdArray.size()));
+                        }
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setMessage("There are currently no Modules.\nYou cannot create an event without an associated Module.\nWould you like to create one now?")
+                            .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // go to edit activity
+                                    Intent intent = new Intent(getActivity(), ActivityEditModule.class);
+                                    startActivityForResult(intent, 1);
+                                }
+                            })
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.show();
                     }
+                    moduleNameArray.add("Create Module...");
+                    moduleIdArray.add("-1");
                     idArray(moduleIdArray);
                     Log.d("FragmentModules", "Modules Found");
 
@@ -283,8 +320,29 @@ public class FragmentAddToTimetable extends Fragment{
                 mAdapter.addAll(modules);
 
                 //Update adapters
+                ModuleChoiceView = (Spinner) root.findViewById(R.id.completeModule);
+                adapter1 = new ArrayAdapter<String> (getActivity(), R.layout.spinner_item, moduleNameArray);
                 ModuleChoiceView.setAdapter(adapter1);
-                roomTypeSpinner.setAdapter(adapter2);
+                ModuleChoiceView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parentView, View selectedItemView,
+                                               int position, long id) {
+                        if (position == moduleNameArray.size() - 1 && moduleNameArray.size() > 1) {
+                            Intent intent = new Intent(getActivity(), ActivityEditModule.class);
+                            getActivity().startActivityForResult(intent, 1);
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parentView) {
+
+                    }
+                });
+
+                if(moduleId != 0) {
+                    int id = getIndex(moduleId);
+                    ModuleChoiceView.setSelection(id);
+                }
 
                 //loadEditModules(eventModule);
 
@@ -298,6 +356,18 @@ public class FragmentAddToTimetable extends Fragment{
         ArrayList<ModelModule> arrayList=mAdapter.getModulesArrayList();
         for (int i=0;i<arrayList.size();i++){
             if(arrayList.get(i).getTitle().equals(name)){
+                return i;
+            }
+        }
+        //if nothing return -1
+        return -1;
+    }
+
+    //return index of Module Name
+    private int getIndex(int id){
+        ArrayList<ModelModule> arrayList=mAdapter.getModulesArrayList();
+        for (int i=0;i<arrayList.size();i++){
+            if(arrayList.get(i).getId() == id){
                 return i;
             }
         }
@@ -507,7 +577,6 @@ public class FragmentAddToTimetable extends Fragment{
         dayPicker = (NumberPicker) root.findViewById(R.id.DAY);
 
         //Find Spinner elements
-        ModuleChoiceView = (Spinner) root.findViewById(R.id.completeModule);
         roomTypeSpinner = (Spinner) root.findViewById(R.id.completeType);
 
         //Set timePicker attributes
@@ -563,10 +632,8 @@ public class FragmentAddToTimetable extends Fragment{
         dayPicker.setValue(0);
 
         //Populate adapters with modules and rooms
-        adapter1 = new ArrayAdapter<String> (c, R.layout.spinner_item, moduleNameArray);
         adapter2 = new ArrayAdapter<String> (c, R.layout.spinner_item,roomTypes);
 
-        ModuleChoiceView.setAdapter(adapter1);
         roomTypeSpinner.setAdapter(adapter2);
         if(edit) {
             //module choice
@@ -595,6 +662,26 @@ public class FragmentAddToTimetable extends Fragment{
         } else {
             MakeRequest(v);
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        int moduleId;
+        if(data != null && data.hasExtra("moduleid")) {
+             moduleId = data.getIntExtra("moduleid", 0);
+
+            if (moduleId == 0) return;
+        } else {
+            return;
+        }
+
+        HashMap<String, String> request = new HashMap<String, String>();
+        request.put("method", "module");
+        request.put("action", "getall");
+        api = new APIClass(getActivity(), new ModuleCallback(moduleId));
+        api.execute(request);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
