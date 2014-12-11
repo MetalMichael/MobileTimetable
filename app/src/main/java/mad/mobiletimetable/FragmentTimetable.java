@@ -101,8 +101,6 @@ public class FragmentTimetable extends Fragment {
         } else {
             SharedPreferences pref = getActivity().getSharedPreferences("day", Activity.MODE_PRIVATE);
 
-            Log.d("FT", Integer.toString(pref.getInt("day", -1)));
-
             mViewPager = (ViewPager) view.findViewById(R.id.pager);
             mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override
