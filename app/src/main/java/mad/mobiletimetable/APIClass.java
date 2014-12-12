@@ -41,11 +41,14 @@ public class APIClass extends APIClassBase {
         this.activity = activity;
     }
 
+    // Saves a local request to be later handled when a networked request is made
     private void saveLocalRequest(HashMap<String,String> requestMap){
         String dirPath = context.getFilesDir()+"/"+requestMap.get("auth")+"/localRequests";
         try {
             File resultFile = new File(dirPath, "requestsToPush"+requestMap.hashCode());
+            // Attempts to make directory structure for the file
             resultFile.getParentFile().mkdirs();
+            // Check attempt was successful, perform operation if it was
             if(resultFile.getParentFile().exists()) {
                 resultFile.createNewFile();
                 // Save cached result
@@ -60,6 +63,8 @@ public class APIClass extends APIClassBase {
         }
     }
 
+    // Extracts filename from request
+    // Uses an ID, unless the action is getall where then it uses 'all'
     private String getFileName (HashMap<String,String> requestMap){
         String fileName = "";
         if(requestMap.get("action").equals("getall")) {
@@ -100,19 +105,27 @@ public class APIClass extends APIClassBase {
         return result;
     }
 
+    // Appends newElement to JSONArray arrayName in requestMap's response file
     private JSONObject appendToArray(String arrayName, JSONObject newElement, HashMap<String,String> requestMap){
         JSONObject response = new JSONObject();
+        // This will only occur for getall responses
+        // Corrects action if not getall
         requestMap.put("action","getall");
         Log.d("API Class","*----Appending----*");
+        // Fetch response that we're updating
         String previousGetAll = fetchFromStorage(requestMap);
         Log.d("API Class","Append Previous "+previousGetAll);
         try {
             JSONArray elements = new JSONArray();
+            // If a previous getall file existed, get the previous elements
+            // in arrayName from it, to add to
             if(previousGetAll != ""){
                 JSONObject previous = new JSONObject(previousGetAll);
                 elements = previous.getJSONArray(arrayName);
             }
+            // Push new element to the array
             elements.put(newElement);
+            // Overwrite the array in the response with the new updated one
             response.put(arrayName,elements);
             response.put("status","OK");
         } catch (JSONException e) {
@@ -150,6 +163,10 @@ public class APIClass extends APIClassBase {
         }
         return response;
     }
+
+    // Format a module add string into a module getall string response
+    // Uses formatModuleGet to create response for newly added module
+    // And then adds that to the getall response
     private JSONObject formatModuleGetAll(HashMap<String,String> requestMap){
         JSONObject newModule = formatModuleGet(requestMap,false);
         return appendToArray("modules",newModule,requestMap);
@@ -189,11 +206,17 @@ public class APIClass extends APIClassBase {
         return response;
     }
 
+    // Format a module add string into a timetable getall string response
+    // Uses formatTimetableGet to create response for newly added event
+    // And then adds that to the getall response
     private JSONObject formatTimetableGetAll(HashMap<String,String> requestMap){
         JSONObject newEvent = formatTimetableGet(requestMap,false);
         return appendToArray("events",newEvent,requestMap);
     }
 
+    // Handles any add request for either module or timetable
+    // Returns the suitable response string for an add request
+    // Returns : {'{eventid||moduleid)':id,'status','OK'} formed string
     private String performGenericAdd(HashMap<String,String> requestMap){
         String method = requestMap.get("method");
         String id = "eventid";
@@ -279,6 +302,7 @@ public class APIClass extends APIClassBase {
         return response;
     }
 
+    // Handles any delete request for either module or timetable
     private void performGenericDelete(HashMap<String,String> requestMap){
         String method = requestMap.get("method");
         JSONObject updatedGetAll = new JSONObject();
@@ -305,6 +329,11 @@ public class APIClass extends APIClassBase {
         saveToStorage(getRequest,updatedGetAll.toString());
     }
 
+    // Handles any edit request for either module or timetable
+    // Uses performGenericDelete to delete existing responses
+    // Then uses performGenericAdd to add newly updated responses
+    // Returns the suitable response string for an edit request
+    // Returns : {'{eventid||moduleid)':id,'status','OK'} formed string
     private String performGenericEdit(HashMap<String,String> requestMap){
         Log.d("API Class","Editing a "+requestMap.get("method"));
         Log.d("API Class","Edit Request "+requestMap.toString());
@@ -315,6 +344,7 @@ public class APIClass extends APIClassBase {
         return response;
     }
 
+    // Decides on what function to use based on the request
     @Override
     protected String localHandler(HashMap<String,String> requestMap){
         String result = "";
@@ -341,6 +371,7 @@ public class APIClass extends APIClassBase {
         return result;
     }
 
+    // Passes the user back to the login activity if an authentication error occurs
     @Override
     protected void handlePermissionError() {
         Intent intent = new Intent(context, ActivityLogin.class);
