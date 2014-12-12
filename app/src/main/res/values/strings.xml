@@ -72,5 +72,10 @@
     <string name="add_event">Add Event</string>
     <string name="add_no_modules_alert">There are currently no Modules.\nYou cannot create an event without an associated Module.\nWould you like to create one now?</string>
 
+    <string name="notification_soon">Event Starting Soon</string>
+    <string name="event_starting_soon">is starting soon</string>
+    <string name="upcoming_events">Upcoming Events</string>
+    <string name="events_starting_soon">Events Starting Soon</string>
+
 
 </resources>

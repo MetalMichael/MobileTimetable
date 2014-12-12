@@ -102,13 +102,13 @@ public class ServiceNotifications extends IntentService {
             if(events.size() == 1) {
                 //Simple Notification
                 event = events.get(0);
-                title = "Event Starting Soon";
+                title = getResources().getString(R.string.notification_soon);
                 detail = "(" + event.getDate() + ") " + event.getModule().getTitle() + " - " +
-                        event.getModule().getCode() + " is starting soon";
+                        event.getModule().getCode() + " " + getResources().getString(R.string.event_starting_soon);
             } else {
                 //Multiple Events Notification
-                title = "Upcoming Events";
-                detail = Integer.toString(events.size()) + " Events Starting Soon";
+                title = getResources().getString(R.string.upcoming_events);
+                detail = Integer.toString(events.size()) + " " + getResources().getString(R.string.events_starting_soon);
             }
 
             //Build notification
