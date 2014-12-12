@@ -194,7 +194,7 @@ public class FragmentAddToTimetable extends Fragment{
 
         //Check is all Inputs are filled in
         if( !day.isEmpty() && !duration.isEmpty() && !time.isEmpty() && !selectedRoom.isEmpty()
-                && getIndex(selectedModule)!=-1 && !selectedType.isEmpty() ) {
+                && getIndex(selectedModule)!=-1 && !selectedType.isEmpty() && selectedRoom.length()<=10) {
 
             HashMap<String, String> request = new HashMap<String, String>();
 
@@ -218,7 +218,9 @@ public class FragmentAddToTimetable extends Fragment{
             api.execute(request);
             getActivity().finish(); //closes
         }
-
+        else if(selectedRoom.length()>10){
+            Toast.makeText(getActivity(), "Room Name is too long", Toast.LENGTH_LONG).show();
+        }
         else{
             Toast.makeText(getActivity(), "Please fill in all inputs", Toast.LENGTH_LONG).show();
         }
