@@ -236,15 +236,6 @@ public class FragmentAddToTimetable extends Fragment{
             } catch(JSONException e) {
                 e.printStackTrace();
             }
-
-            /*if(status.equals("OK")) {
-                if (edit) {
-                    Toast.makeText(getActivity(), "Updated", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getActivity(), "Added to Timetable", Toast.LENGTH_LONG).show();
-                }
-
-            }*/
         }
     }
 
@@ -470,27 +461,11 @@ public class FragmentAddToTimetable extends Fragment{
         int endAc = acTime+acDur;
         int startCh = chkTime;
         int endCh = chkTime+chkDur;
-
+        //checks all posibilites of conflicts
         boolean check1 = ((endAc > startCh)&&(endAc <=endCh));
         boolean check2 = ((startAc >= startCh)&&(startAc < endCh));
         boolean check3 = ((startAc <= startCh)&&(endAc >= endCh));
 
-        Log.d("checksssss",check1+" "+check2+" "+check3);
-        Log.d("checksssss",Integer.toString(startAc));
-        Log.d("checksssss",Integer.toString(endAc));
-        Log.d("checksssss",Integer.toString(startCh));
-        Log.d("checksssss",Integer.toString(endCh));
-
-
-/*
-        boolean check1 = (acTime <= chkTime && acTime+acDur > chkTime);
-
-        boolean check2 = (chkTime <= acTime && chkTime+chkDur > acTime);
-
-        boolean check3 = (chkTime <= acTime && chkTime+chkDur >= acTime+acDur);
-
-        boolean check4 = (acTime <= chkTime && acTime+acDur > chkDur+chkDur);
-*/
         if(check1 || check2 || check3){
             return true;
         }
@@ -520,16 +495,12 @@ public class FragmentAddToTimetable extends Fragment{
             public void onClick(View v) {
                 NumberPicker day_selector = (NumberPicker) root.findViewById(R.id.DAY);
                 String day = Integer.toString(day_selector.getValue() + 1);
-                checkEvent(day,v);
-
-                //checkAll(time, duration, clashEventsTime, clashEventsDuration)//
-
+                checkEvent(day,v);  //loads events for this day - passes to functions to handle.
             }
         });
 
 
         //Fragment Title
-        //loadModules()
         if(add) {
             getActivity().setTitle(R.string.Add_Event);
         }else if (edit){
@@ -600,6 +571,7 @@ public class FragmentAddToTimetable extends Fragment{
 
              }
         );
+        //currently redundant.  for clashes with edited events
         durationPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
              @Override
              //needs a final look at
@@ -608,6 +580,7 @@ public class FragmentAddToTimetable extends Fragment{
              }
          }
         );
+        //currently redundant.  for clashes with edited events
         dayPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
              @Override
              //needs a final look at
@@ -646,13 +619,12 @@ public class FragmentAddToTimetable extends Fragment{
                 //return View
         return root;
     }
-    public void buttonclick(View v) {
+    public void buttonclick(View v) {//function to handle the clashes
         NumberPicker time_selector = (NumberPicker) root.findViewById(R.id.Time);
         NumberPicker duration_selector = (NumberPicker) root.findViewById(R.id.Duration);
         String time = times[time_selector.getValue()] + ":00";
         String duration = Integer.toString(duration_selector.getValue() + 1);
-        if (!edit || changedItem) {//no changes - clashes done need to be checked
-
+        if (!edit) {//if edit then we ignore clashes - current Limitation
             //pulls info on the selected day
             if (checkAll(time, duration, clashEventsTime, clashEventsDuration)) {
                 Toast.makeText(getActivity(), "Clash Select different time", Toast.LENGTH_LONG).show();
@@ -726,7 +698,7 @@ public class FragmentAddToTimetable extends Fragment{
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
-    private void loadEdit(ModelEvent eventEdit){
+    private void loadEdit(ModelEvent eventEdit){//inserts data into correct locations when Edit is passed to here.
         if(!active) return;
         //apply changes here
         day = Integer.toString(eventEdit.getDay()-2);
@@ -748,7 +720,6 @@ public class FragmentAddToTimetable extends Fragment{
         Log.d("ag",Integer.toString(moduleIdArray.size()));
         int moduleIndex = -1;
         for (int i=0; i<moduleIdArray.size(); i++ ){
-            Log.d("aogfosautgfhpisautgpiwsaug",(String)moduleIdArray.get(i));
             if (((String)moduleIdArray.get(i)).equals(ModId)){
                 moduleIndex = i;
             }
@@ -757,7 +728,7 @@ public class FragmentAddToTimetable extends Fragment{
         Log.d("Mod index",Integer.toString(moduleIndex));
         ModuleChoiceView.setSelection(moduleIndex);
     }
-    private void loadAdd(String[] times){
+    private void loadAdd(String[] times){   //inserts time and day appropriately on add/edit
         //apply changes
         int index = -1;
         //gets index of time
@@ -782,7 +753,6 @@ public class FragmentAddToTimetable extends Fragment{
     private int findIndex(ArrayList<String> a, String b){
         Log.d("length", Integer.toString(a.size()));
         for (int i=0; i<a.size(); i++ ){
-            Log.d("aogfosautgfhpisautgpiwsaug",(String)a.get(i));
             if (((String)a.get(i)).equals(b)){
 
                 return i;
