@@ -37,6 +37,7 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
     protected Context context;
     private OnTaskCompleted listener;
 
+    // Set context and callback (listener)
     public APIClassBase(Context context, OnTaskCompleted listener) {
         this.context = context;
         this.listener = listener;
@@ -108,6 +109,8 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
         return urlBuilder.toString();
     }
 
+    // Gets arrayList of requests that are yet to be pushed
+    // Deletes the stored requests once they're retrieved
     private ArrayList<HashMap<String,String>> checkStoredRequests(String userAuth){
         String dirPath = context.getFilesDir()+"/"+userAuth+"/localRequests";
         ArrayList<HashMap<String,String>> storedRequests = new ArrayList<HashMap<String,String>>();
@@ -130,6 +133,7 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
         return storedRequests;
     }
 
+    // Looks for stored requests and pushes them to the server
     private void handleStoredRequests(String userAuth){
         ArrayList<HashMap<String,String>> storedRequests = checkStoredRequests(userAuth);
         if(storedRequests.size()>0){
@@ -145,6 +149,7 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
         }
     }
 
+    // Makes a file ID based on local storage for the method/action combination in the request
     protected int getFileID(HashMap<String,String> requestMap) {
         Log.d("API Class","Getting File ID for "+requestMap.toString());
         if(requestMap.containsKey("moduleid")){
@@ -175,9 +180,13 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
         return id;
     }
 
+    // Decides on filename for the request
     protected String makeFileName(HashMap<String,String> requestMap){
         String fileName = "";
         Log.d("APIBaseClass","Making name for "+requestMap.toString());
+        // If the request is a getall, the file will be called all
+        // If the request already has an ID, use that as the filename
+        // Else make a new ID for it from the local files for the method/action combination
         if(requestMap.get("action").equals("getall")) {
             fileName = "all";
         } else if(requestMap.containsKey("moduleid")){
@@ -190,6 +199,7 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
         return fileName;
     }
 
+    // Handles local directory routing
     protected String getDirPath(HashMap<String,String> requestMap){
         String action = requestMap.get("action");
         if(action.equals("edit")){
@@ -206,11 +216,12 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
     protected String saveToStorage(HashMap<String,String> requestMap, String result){
         String dirPath = getDirPath(requestMap);
         String fileName = makeFileName(requestMap);
-        Log.d("API Class","Saving to "+dirPath+"/"+fileName);
         Log.d("API Class","Saving result "+result);
         try {
             File resultFile = new File(dirPath, fileName);
+            // Make the directory structure for the file
             resultFile.getParentFile().mkdirs();
+            // Check the directory structure was made successfully
             if(resultFile.getParentFile().exists()) {
                 resultFile.createNewFile();
                 // Save cached result
@@ -241,9 +252,11 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
             ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
             Boolean networked = (networkInfo != null && networkInfo.isConnected());
+            // Check authorisation
             Boolean authedOrAuthing = (!auth.equals("")||requestMap.get("method").equals("user"));
+            // If we have network and we're authorised, use network request/response
             if (networked && authedOrAuthing) {
-                // Connected, check for stored requests to push
+                // Connected, check for stored requests to push, and push if found
                 handleStoredRequests(auth);
                 // Connected, make request
                 String url = buildURL(requestMap);
@@ -299,7 +312,9 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
 
     @Override
     protected void onPostExecute(JSONObject result) {
+        // Get and check authorisation
         String auth = context.getSharedPreferences("MyAuthFile", 0).getString("Auth","");
+        // If authorised, check for errors
         if(!auth.equals("")) {
             try {
                 String status = result.getString("status");
@@ -320,6 +335,7 @@ public class APIClassBase extends AsyncTask<HashMap<String,String>, Integer, JSO
                 e.printStackTrace();
             }
         }
+        // If we have a result, handler it with the provided callback
         if(result!=null) {
             Log.d("API Result", result.toString());
             listener.onTaskCompleted(result);
