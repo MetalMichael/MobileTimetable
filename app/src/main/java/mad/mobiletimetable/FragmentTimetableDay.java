@@ -110,15 +110,52 @@ public class FragmentTimetableDay extends Fragment {
 
         return timetable;
     }
-    public void displayDialog(String info, String title){
-        Bundle args = new Bundle();
-        args.putString("Id", info);
-        args.putString("Title", title);
-        FragmentManager fragmentManager = getFragmentManager();
-        DialogFragment newfragment = new EventDialog();
-        newfragment.setArguments(args);
+    public void displayDialog(final String info, String title){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        if(!info.contains("-")) {
+            builder.setMessage(title)
+                    .setPositiveButton("Edit", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // go to edit activity
+                            Intent intent = new Intent(getActivity(), ActivityAddToTimetable.class);
+                            intent.putExtra("edit", info);
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            HashMap<String, String> request = new HashMap<String, String>();
+                            request.put("method", "timetable");
+                            request.put("action", "delete");
+                            request.put("eventid", info);
+                            new APIClass(getActivity(), new Callback()).execute(request);
+                            getActivity().finish();
+                            startActivity(getActivity().getIntent());
 
-        newfragment.show(fragmentManager, "events");
+                        }
+                    });
+        } else{
+            builder.setMessage("Would you like to add an event here?")
+                    .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(getActivity(), ActivityAddToTimetable.class);
+                            intent.putExtra("add", info);
+
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+        }
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
     class Callback implements OnTaskCompleted{
         @Override
@@ -173,61 +210,6 @@ public class FragmentTimetableDay extends Fragment {
 
             mAdapter.clear();
             mAdapter.addAll(completeEvents);
-        }
-    }
-    public class EventDialog extends DialogFragment {
-        public EventDialog(){
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstantState){
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            Bundle mArgs = getArguments();
-            final String info = mArgs.getString("Id");
-            final String title = mArgs.getString("Title");
-            if(!info.contains("-")) {
-                builder.setMessage(title)
-                        .setPositiveButton("Edit", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                // go to edit activity
-                                Intent intent = new Intent(getActivity(), ActivityAddToTimetable.class);
-                                intent.putExtra("edit", info);
-                                startActivity(intent);
-                            }
-                        })
-                        .setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                HashMap<String, String> request = new HashMap<String, String>();
-                                request.put("method", "timetable");
-                                request.put("action", "delete");
-                                request.put("eventid", info);
-                                new APIClass(getActivity(), new Callback()).execute(request);
-                                getActivity().finish();
-                                startActivity(getActivity().getIntent());
-
-                            }
-                        });
-            } else{
-                builder.setMessage("Would you like to add an event here?")
-                       .setPositiveButton("Create", new DialogInterface.OnClickListener() {
-                           @Override
-                           public void onClick(DialogInterface dialog, int which) {
-                               Intent intent = new Intent(getActivity(), ActivityAddToTimetable.class);
-                               intent.putExtra("add", info);
-
-                               startActivity(intent);
-                           }
-                       })
-                       .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                           @Override
-                           public void onClick(DialogInterface dialog, int which) {
-
-                           }
-                       });
-            }
-            return builder.create();
         }
     }
 
