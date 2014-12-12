@@ -62,7 +62,7 @@ public class FragmentTimetable extends Fragment {
         return inflater.inflate(R.layout.fragment_timetable, container, false);
     }
 
-    private int getToday() {
+    private int getToday() {    //gets the current day
         Calendar c = Calendar.getInstance();
         int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
         int day;
@@ -98,7 +98,7 @@ public class FragmentTimetable extends Fragment {
                 addDayFragment(i,dayFragments[i]);
             }
 
-        } else {
+        } else {    //phone view
             SharedPreferences pref = getActivity().getSharedPreferences("day", Activity.MODE_PRIVATE);
 
             mViewPager = (ViewPager) view.findViewById(R.id.pager);

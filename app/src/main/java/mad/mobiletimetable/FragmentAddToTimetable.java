@@ -136,7 +136,7 @@ public class FragmentAddToTimetable extends Fragment{
         }else{
             add = false;
             edit = false;
-            //without loading
+            //loaded via menu or "plus sign" and NOT with time slot selection.
         }
 
     }
@@ -146,7 +146,7 @@ public class FragmentAddToTimetable extends Fragment{
     *   Find Inputs and using APIClass create values needed for JSON query
     *
      */
-    private class Callback implements OnTaskCompleted {
+    private class Callback implements OnTaskCompleted { //stored event details
         @Override
         public void onTaskCompleted(JSONObject result) {
             if (!active) return;
@@ -155,7 +155,6 @@ public class FragmentAddToTimetable extends Fragment{
                 return;
             }
             try {
-
                 JSONObject eventInfo = result.getJSONObject("event");
                 final ModelEvent eventEdit = new ModelEvent(eventInfo);
                 loadEdit(eventEdit);
@@ -241,7 +240,7 @@ public class FragmentAddToTimetable extends Fragment{
         }
     }
 
-    private class ModuleCallback implements OnTaskCompleted {
+    private class ModuleCallback implements OnTaskCompleted {   //stores module information
         public ModuleCallback() {
 
         }
@@ -380,7 +379,7 @@ public class FragmentAddToTimetable extends Fragment{
         return output;
     }
 
-    public void checkEvent(final String day, View v){
+    public void checkEvent(final String day, View v){   //requests all events on the selected day
 
                 Log.d("checkEvent", "here 1");
                 HashMap<String, String> request = new HashMap<String, String>();
@@ -437,7 +436,7 @@ public class FragmentAddToTimetable extends Fragment{
         Log.d("checkEvent", "here 5");
         String actualTime=t1;
         String actualDuration=t2;
-        for (int i=0;i<t3.size();i++){
+        for (int i=0;i<t3.size();i++){//go through all events and check for clash
 
             String timeCheck=t3.get(i);
             String durationCheck=t4.get(i);
@@ -451,27 +450,21 @@ public class FragmentAddToTimetable extends Fragment{
     public boolean clash(String actualTime,String timeCheck,String actualDur,String durCheck){
         Log.d("checkEvent", "here 6");
         //OToast.makeText(getActivity(), "Checking...", Toast.LENGTH_LONG).show();
-
         int acTime=Integer.parseInt(actualTime.substring(0,2));
         int acDur=Integer.parseInt(actualDur);
-
-
         int chkTime=Integer.parseInt(timeCheck.substring(0,2));
         int chkDur=Integer.parseInt(durCheck);
-
         int startAc = acTime;
         int endAc = acTime+acDur;
         int startCh = chkTime;
         int endCh = chkTime+chkDur;
-        //checks all posibilites of conflicts
+        //checks all possibilities of conflicts
         boolean check1 = ((endAc > startCh)&&(endAc <=endCh));
         boolean check2 = ((startAc >= startCh)&&(startAc < endCh));
         boolean check3 = ((startAc <= startCh)&&(endAc >= endCh));
-
         if(check1 || check2 || check3){
             return true;
         }
-
         return false;
     }
     @Override
@@ -486,7 +479,7 @@ public class FragmentAddToTimetable extends Fragment{
         //Button to make new Event
 
         Button mButton = (Button) root.findViewById(R.id.add_new);
-        if(edit){
+        if(edit){   //display correct button name
             mButton.setText(R.string.Update_Event);
         }else if(add){
             mButton.setText(R.string.Add_Event);
@@ -503,7 +496,7 @@ public class FragmentAddToTimetable extends Fragment{
 
 
         //Fragment Title
-        if(add) {
+        if(add) {//display correct title
             getActivity().setTitle(R.string.Add_Event);
         }else if (edit){
             getActivity().setTitle(R.string.Edit_Event);
@@ -527,7 +520,7 @@ public class FragmentAddToTimetable extends Fragment{
         times = new String[14];
 
         int test=1;
-
+        //populates period array
         for (int i=0;i<14;i++){
             if(i==0){
                 durations[i]=Integer.toString(i+1)+" period";
@@ -537,7 +530,7 @@ public class FragmentAddToTimetable extends Fragment{
             }
         }
         int count=0;
-        //time
+        //populates time array
         for (int i=8;i<=21;i++){
             times[count]=format(i)+":00";
 

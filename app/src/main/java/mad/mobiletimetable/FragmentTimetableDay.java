@@ -142,19 +142,8 @@ public class FragmentTimetableDay extends Fragment {
                 int counter = 0;
                 int durationCounter = 0;
                 final String[] times = {"08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00"};
-                for(int i = 0; i < 14; i++) {
-
-
-
-                    if(events.size()>0 && counter < events.size()) {
-
-                        Log.d("i", Integer.toString(i));
-                        Log.d("events time", events.get(counter).getDate());
-                        Log.d("turns times", times[i]);
-                        Log.d("duration counter", Integer.toString(durationCounter));
-
-
-
+                for(int i = 0; i < 14; i++) {//loop to place events in timetable
+                    if(events.size()>0 && counter < events.size()) {// if an event exists place it, else place an empty event
                         if ((events.get(counter).getDate().equals(times[i])) || (durationCounter>0)){
                             ModelEvent currentEvent = new ModelEvent(events.get(counter).getId(),events.get(counter).getModuleId(),events.get(counter).getDuration(),events.get(counter).getDay(),events.get(counter).getTime(),events.get(counter).getModule(),events.get(counter).getLocation(),events.get(counter).getLessonType());
                             completeEvents.add(currentEvent);
@@ -170,7 +159,6 @@ public class FragmentTimetableDay extends Fragment {
                         } else {
                             SimpleDateFormat df = new SimpleDateFormat("HH:mm");
                             completeEvents.add(new ModelEvent(day, df.parse(times[i])));
-                            Log.d("skipped", "skippy");
                         }
                     }else{
                         SimpleDateFormat df = new SimpleDateFormat("HH:mm");
