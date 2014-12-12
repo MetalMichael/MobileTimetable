@@ -436,8 +436,9 @@ public class FragmentAddToTimetable extends Fragment{
                     e.printStackTrace();
                 }
                 Log.d("checkEvent", "here 4");
-                buttonclick(v);
+
             }
+            buttonclick(v);
         }
     }
     public boolean checkAll(String t1,String t2,ArrayList<String> t3,ArrayList<String> t4){
