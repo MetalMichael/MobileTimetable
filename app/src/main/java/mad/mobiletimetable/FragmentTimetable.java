@@ -120,7 +120,7 @@ public class FragmentTimetable extends Fragment {
             });
             collectionPagerAdapter = new CollectionPagerAdapter(getFragmentManager());
             mViewPager.setAdapter(collectionPagerAdapter);
-            mViewPager.setCurrentItem(pref.getInt("day", getToday() + collectionPagerAdapter.LOOPS_COUNT/2));
+            mViewPager.setCurrentItem(pref.getInt("day", getToday() + collectionPagerAdapter.LOOPS_COUNT/2) -1);
         }
     }
 
