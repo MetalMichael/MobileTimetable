@@ -1,8 +1,6 @@
 package mad.mobiletimetable;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -23,6 +21,10 @@ import java.util.HashMap;
 
 import de.timroes.android.listview.EnhancedListView;
 
+/**
+ * Created by Michael on 30/11/2014.
+ */
+
 public class FragmentModules extends Fragment {
 
     private AdapterModules mAdapter;
@@ -35,16 +37,20 @@ public class FragmentModules extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //Make sure we display an options menu
         setHasOptionsMenu(true);
     }
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        //Create our options menu with add module button
         inflater.inflate(R.menu.modules, menu);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
+        //Find out which item was selected
         switch(item.getItemId()) {
             case R.id.action_new_module:
+                //Start activity to add a new module
                 Intent intent = new Intent(getActivity(), ActivityEditModule.class);
                 startActivity(intent);
                 return true;
@@ -55,8 +61,11 @@ public class FragmentModules extends Fragment {
 
     @Override
     public void onResume() {
+        //Set the title
         getActivity().setTitle(R.string.modules);
 
+
+        //Refresh the icons
         //Send API request
         HashMap<String, String> request = new HashMap<String, String>();
         request.put("method", "module");
@@ -69,6 +78,7 @@ public class FragmentModules extends Fragment {
 
     @Override
     public void onDestroy() {
+        //Ensure we're not responding to any old requests
         active = false;
         if(api != null) {
             api.cancel(true);
@@ -78,6 +88,7 @@ public class FragmentModules extends Fragment {
 
     @Override
     public void onStop() {
+        //Discard "deleted" items
         if(mListView != null) {
             mListView.discardUndo();
         }
@@ -88,21 +99,27 @@ public class FragmentModules extends Fragment {
         @Override
         public void onTaskCompleted(JSONObject result) {
             if(result.has("modules")) {
+                //Extract modules info
                 ArrayList<ModelModule> modules = new ArrayList<ModelModule>();
                 try{
+                    //Get module info from JSON String
                     JSONArray jsonModules = result.getJSONArray("modules");
+                    //For each JSON Module
                     for(int i = 0; i < jsonModules.length(); i++) {
+                        //Create a new model and store it
                         modules.add(new ModelModule((JSONObject)jsonModules.get(i)));
                     }
                 } catch(JSONException e) {
                     e.printStackTrace();
                 }
+                //Empty list and add new modules
                 mAdapter.clear();
                 mAdapter.addAll(modules);
             }
         }
     }
 
+    //Permanently delete a module (and events)
     public void deleteItem(ModelModule module) {
         //Send API request
         HashMap<String, String> request = new HashMap<String, String>();
@@ -125,35 +142,41 @@ public class FragmentModules extends Fragment {
         // Inflate the layout for this fragment
         mListView = (EnhancedListView) inflater.inflate(R.layout.fragment_modules, container, false);
 
+        //Create Modules Adapter with empty data set
         mAdapter = new AdapterModules(getActivity(), new ArrayList<ModelModule>());
-
         mListView.setAdapter(mAdapter);
 
-        mListView.setDismissCallback(new de.timroes.android.listview.EnhancedListView.OnDismissCallback() {
+        //Set what happens for delete and undo
+        mListView.setDismissCallback(new EnhancedListView.OnDismissCallback() {
             @Override
             public EnhancedListView.Undoable onDismiss(EnhancedListView listView, final int position) {
+                //The deleted item
                 final ModelModule item = mAdapter.getItem(position);
+                //Remove from list
                 mAdapter.remove(position);
                 return new EnhancedListView.Undoable() {
                     @Override
                     public void undo() {
+                        //Put the item back in our list
                         mAdapter.insert(position, item);
                     }
 
                     @Override
                     public String getTitle() {
+                        //Tell the user what was deleted
                         return "Deleted '" + item.getCode() + "'";
                     }
 
                     @Override
                     public void discard() {
+                        //Permanently delete item
                         deleteItem(item);
                     }
                 };
             }
         });
 
-        // Show toast message on click and long click on list items.
+        // Go to edit activity when item has been clicked on
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -163,20 +186,19 @@ public class FragmentModules extends Fragment {
             }
         });
 
+        //Tell the listView which part to swipe
         mListView.setSwipingLayout(R.id.swiping_layout);
 
-        SharedPreferences prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
-
+        //Set the style of undo (stacking)
         EnhancedListView.UndoStyle style = EnhancedListView.UndoStyle.MULTILEVEL_POPUP;
         mListView.setUndoStyle(style);
 
+        //Enable swipe to delete
         mListView.enableSwipeToDismiss();
 
-        // Set the swipe direction
+        //Set the swipe direction
         EnhancedListView.SwipeDirection direction = EnhancedListView.SwipeDirection.BOTH;
         mListView.setSwipeDirection(direction);
-
-        mListView.setSwipingLayout(R.id.swiping_layout);
 
         return mListView;
     }

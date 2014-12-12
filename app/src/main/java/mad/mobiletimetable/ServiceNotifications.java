@@ -55,15 +55,18 @@ public class ServiceNotifications extends IntentService {
         public ServiceHandler(Looper looper) {
             super(looper);
 
+            //Get Notifications from API
             request = new HashMap<String, String>();
             request.put("method", "api");
             request.put("action", "getnotifications");
+
             pref = getSharedPreferences("MyAuthFile", 0);
         }
 
         private class Callback implements OnTaskCompleted {
             public void onTaskCompleted(JSONObject response) {
                 String status;
+                //Get API Response Status
                 try {
                     status = response.getString("status");
                 } catch(JSONException e) {
@@ -72,19 +75,21 @@ public class ServiceNotifications extends IntentService {
                 }
                 if(status.equals("OK")) {
                     try {
+                        //Load events
                         JSONArray jsonEvents = response.getJSONArray("events");
                         ArrayList<ModelEvent> events = new ArrayList<ModelEvent>();
                         for(int i = 0; i < jsonEvents.length(); i++) {
                             events.add(new ModelEvent((JSONObject)jsonEvents.get(i)));
                         }
+                        //If we have events, process them
                         if(events.size() > 0) {
                             processEvents(events);
-                        } else {
                         }
                     } catch(JSONException e) {
                         e.printStackTrace();
                     }
                 }
+                //Start again in 1 minute
                 mServiceHandler.sendMessageDelayed(Message.obtain(), 60*1000);
             }
         }
@@ -93,6 +98,7 @@ public class ServiceNotifications extends IntentService {
             ModelEvent event;
             String title;
             String detail;
+            String day;
             if(events.size() == 1) {
                 //Simple Notification
                 event = events.get(0);
@@ -105,25 +111,32 @@ public class ServiceNotifications extends IntentService {
                 detail = Integer.toString(events.size()) + " Events Starting Soon";
             }
 
+            //Build notification
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(getApplicationContext())
                             .setSmallIcon(R.drawable.ic_activity_add_to_timetable)
                             .setContentTitle(title)
-                            .setContentText(detail);
+                            .setContentText(detail)
+                            .setAutoCancel(true);
 
-            Intent resultIntent = new Intent(getApplicationContext(), ActivityAddToTimetable.class);
+            //Build what happens when we click on the notification
+            Intent resultIntent = new Intent(getApplicationContext(), ActivityMain.class);
 
             //Build back stack
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
-            stackBuilder.addParentStack(ActivityAddToTimetable.class);
+            //stackBuilder.addParentStack(ActivityAddToTimetable.class);
             stackBuilder.addNextIntent(resultIntent);
             PendingIntent resultPendingIntent =
                     stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            //Set intent
             mBuilder.setContentIntent(resultPendingIntent);
 
+            //Get notification service
             NotificationManager mNotificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
+            //Send our notification
             mNotificationManager.notify(0, mBuilder.build());
 
         }
@@ -133,12 +146,14 @@ public class ServiceNotifications extends IntentService {
         }
 
         private void checkNotifications() {
+            //If API is already running, do nothing
             if(api != null && api.getStatus() == AsyncTask.Status.RUNNING) {
                 return;
             }
 
+            //Send API Request
             api = new APIClassBase(getApplicationContext(), new Callback());
-
+            //Set our preference for when we want notifications
             request.put("notificationtime", pref.getString("notification_time", ""));
             api.execute(request);
         }
@@ -155,6 +170,7 @@ public class ServiceNotifications extends IntentService {
 
     @Override
     public void onCreate() {
+        //Run on background thread
         HandlerThread thread = new HandlerThread("ServiceStartArguments",
                 Process.THREAD_PRIORITY_BACKGROUND);
         thread.start();
@@ -166,11 +182,12 @@ public class ServiceNotifications extends IntentService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mServiceHandler.sendMessage(Message.obtain());
-
+        //Ensure it runs continuously
         return START_STICKY;
     }
 
     @Override
+    //Not using binding
     public IBinder onBind(Intent intent) {
         return null;
     }

@@ -245,7 +245,9 @@ public class FragmentAddToTimetable extends Fragment{
 
         }
 
+        /* Added by Michael */
         private int moduleId = 0;
+        //If initialised with a module ID, store it and use it later
         public ModuleCallback(int moduleId) {
             this.moduleId = moduleId;
         }
@@ -276,17 +278,21 @@ public class FragmentAddToTimetable extends Fragment{
                             Log.d("ModIdSize", Integer.toString(moduleIdArray.size()));
                         }
                     } else {
+                        /* Added by Michael */
+                        //Alert the user that there are no Modules
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setMessage("There are currently no Modules.\nYou cannot create an event without an associated Module.\nWould you like to create one now?")
-                            .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                        builder.setMessage(getActivity().getResources().getString(R.string.add_no_modules_alert))
+                            .setPositiveButton(getActivity().getResources().getString(R.string.create),
+                                    new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    // go to edit activity
+                                    // Create a new module, and return it
                                     Intent intent = new Intent(getActivity(), ActivityEditModule.class);
                                     startActivityForResult(intent, 1);
                                 }
                             })
-                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            .setNegativeButton(getActivity().getResources().getString(R.string.cancel),
+                                    new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.cancel();
@@ -295,8 +301,11 @@ public class FragmentAddToTimetable extends Fragment{
                         AlertDialog alertDialog = builder.create();
                         alertDialog.show();
                     }
+                    //Add dummy to allow user to create module
                     moduleNameArray.add("Create Module...");
                     moduleIdArray.add("-1");
+                    /* End Michael */
+
                     idArray(moduleIdArray);
                     Log.d("FragmentModules", "Modules Found");
 
@@ -331,12 +340,11 @@ public class FragmentAddToTimetable extends Fragment{
                     }
                 });
 
+                //If we have a Module ID, set it as selected
                 if(moduleId != 0) {
                     int id = getIndex(moduleId);
                     ModuleChoiceView.setSelection(id);
                 }
-
-                //loadEditModules(eventModule);
 
             }
 
@@ -355,7 +363,7 @@ public class FragmentAddToTimetable extends Fragment{
         return -1;
     }
 
-    //return index of Module Name
+    //return index of Module ID
     private int getIndex(int id){
         ArrayList<ModelModule> arrayList=mAdapter.getModulesArrayList();
         for (int i=0;i<arrayList.size();i++){
@@ -631,24 +639,31 @@ public class FragmentAddToTimetable extends Fragment{
         }
     }
 
+    /* Added by Michael */
+    //Once a module has been created, update the modules list, and select the new item
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        int moduleId;
-        if(data != null && data.hasExtra("moduleid")) {
-             moduleId = data.getIntExtra("moduleid", 0);
+        //Code 1 = add module. Should be stored as constant
+        if(requestCode == 1 && resultCode == 1) {
+            int moduleId;
+            //Try and get the created Module ID
+            if (data != null && data.hasExtra("moduleid")) {
+                moduleId = data.getIntExtra("moduleid", 0);
 
-            if (moduleId == 0) return;
-        } else {
-            return;
+                if (moduleId == 0) return;
+            } else {
+                return;
+            }
+
+            //Update the modules list
+            HashMap<String, String> request = new HashMap<String, String>();
+            request.put("method", "module");
+            request.put("action", "getall");
+            api = new APIClass(getActivity(), new ModuleCallback(moduleId));
+            api.execute(request);
         }
-
-        HashMap<String, String> request = new HashMap<String, String>();
-        request.put("method", "module");
-        request.put("action", "getall");
-        api = new APIClass(getActivity(), new ModuleCallback(moduleId));
-        api.execute(request);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

@@ -19,6 +19,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+/**
+ * Created by Michael on 13/11/2014.
+ */
 
 public class ActivityMain extends FragmentActivity
         implements FragmentTimetableDay.OnFragmentInteractionListener, FragmentAddToTimetable.OnFragmentInteractionListener {
@@ -49,8 +52,6 @@ public class ActivityMain extends FragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        getActionBar();
 
         //Service
         ServiceNotifications.ensureRunning(this.getApplicationContext());
@@ -104,40 +105,54 @@ public class ActivityMain extends FragmentActivity
         super.onResume();
     }
 
+    //Drawer item selected
     private void selectItem(int position) {
+        //If the item is already selected, do nothing
         if(selectedIndex == position) return;
 
         Fragment frag = null;
         Intent intent;
 
         switch(position) {
+            //Display Picture
             case 0:
+                //Unset it as checked
                 mDrawerList.setItemChecked(position, false);
+                //Select the previous item as checked
                 mDrawerList.setItemChecked(selectedIndex, true);
+                //Do nothing
                 return;
+            //Timetable
             case 1:
                 frag = new FragmentTimetable();
                 break;
+            //Modules
             case 2:
                 frag = new FragmentModules();
                 break;
+            //Add To Timetable
             case 3:
                 intent = new Intent(this, ActivityAddToTimetable.class);
                 this.startActivity(intent);
                 break;
+            //Settings
             default:
                 intent = new Intent(this, ActivitySettings.class);
                 this.startActivity(intent);
         }
         if(frag != null) {
+            //Store active fragment position
             selectedIndex = position;
 
+            //Load fragment
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_frame, frag)
                     .commit();
+
+            //Make sure the item is checked
             mDrawerList.setItemChecked(position, true);
         }
-
+        //Close the drawer
         mDrawerLayout.closeDrawer(mDrawerList);
     }
 
@@ -151,6 +166,7 @@ public class ActivityMain extends FragmentActivity
         return super.onOptionsItemSelected(item);
     }
 
+    //If the back button is clicked when the drawer is open, close the drawer and nothing else.
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == KeyEvent.KEYCODE_BACK && drawerOpen) {
@@ -160,7 +176,7 @@ public class ActivityMain extends FragmentActivity
         return super.onKeyDown(keyCode, event);
     }
 
-    /* The click listner for ListView in the navigation drawer */
+    /* The click listener for ListView in the navigation drawer */
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -168,11 +184,13 @@ public class ActivityMain extends FragmentActivity
         }
     }
 
+    //Handle this ourselves (below)
     @Override
     public void setTitle(CharSequence title) {
         setTitle(title, true);
     }
 
+    //Handles changing/storing the title, and allowing it to be swapped out when the drawer is open
     private void setTitle(CharSequence title, boolean setTitle) {
         if(setTitle) {
             mTitle = title;

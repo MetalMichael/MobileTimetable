@@ -10,6 +10,8 @@ import android.content.Intent;
 public class ServiceReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        //This receives broadcasts (e.g phone booting).
+        //Ensure our service is running
         ServiceNotifications.ensureRunning(context);
     }
 }

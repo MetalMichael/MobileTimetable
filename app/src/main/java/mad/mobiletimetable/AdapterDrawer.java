@@ -72,18 +72,22 @@ public class AdapterDrawer extends ArrayAdapter<String> {
                 }
                 ((ImageView) convertView.findViewById(R.id.drawer_item_image)).getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
                 break;
+            //Timetable
             case 1:
                 ((ImageView)convertView.findViewById(R.id.drawer_item_image))
                         .setImageResource(R.drawable.ic_activity_timetable);
                 break;
+            //Modules
             case 2:
                 ((ImageView)convertView.findViewById(R.id.drawer_item_image))
                         .setImageResource(R.drawable.ic_activity_modules);
                 break;
+            //Add To Timetable
             case 3:
                 ((ImageView)convertView.findViewById(R.id.drawer_item_image))
                         .setImageResource(R.drawable.ic_activity_add_to_timetable);
                 break;
+            //Settings
             default:
                 ((ImageView)convertView.findViewById(R.id.drawer_item_image))
                         .setImageResource(R.drawable.ic_activity_settings);

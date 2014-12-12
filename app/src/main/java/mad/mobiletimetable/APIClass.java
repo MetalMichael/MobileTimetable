@@ -31,7 +31,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 /**
- * Created by M on 28/11/2014.
+ * Created by Matt on 28/11/2014.
  */
 public class APIClass extends APIClassBase {
     private Activity activity;

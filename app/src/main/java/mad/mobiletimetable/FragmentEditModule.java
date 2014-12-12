@@ -37,6 +37,7 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
 
         //Editing existing module
         if(intent.hasExtra("moduleid")) {
+            //Store the fact we're editing
             edit = true;
             Log.d("FragmentEditModule", "Editing Module");
 
@@ -45,7 +46,7 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
             request.put("method", "module");
             request.put("action", "get");
             request.put("moduleid", intent.getStringExtra("moduleid"));
-            api = new APIClass(getActivity(), new Callback());
+            api = new APIClass(getActivity(), new EditCallback());
             api.execute(request);
         } else {
             //Creating new module
@@ -57,6 +58,7 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
 
     @Override
     public void onResume() {
+        //Set the title if we're editing
         if(edit) {
             setEditTitle();
         }
@@ -68,24 +70,51 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
     }
 
 
-    private class Callback implements OnTaskCompleted {
+    private class EditCallback implements OnTaskCompleted {
         @Override
         public void onTaskCompleted(JSONObject result) {
+            //If the fragment has been destroyed, do nothing
             if(!active) return;
 
+            //If there was a problem getting the info
             if(!result.has("module")) {
                 getActivity().finish();
                 return;
             }
             try {
+                //Extract the info and load it into a model
                 JSONObject moduleInfo = result.getJSONObject("module");
                 module = new ModelModule(moduleInfo);
             } catch(JSONException e) {
                 e.printStackTrace();
             }
 
+            //Set the info in the form
             loadEdit();
         }
+    }
+
+    private void loadEdit() {
+        //If the fragment has been destroyed, do nothing
+        if(!active) return;
+
+        //Get the view
+        View v2 = getMainView();
+
+        //Set Title
+        ((TextView)v2.findViewById(R.id.module_title)).setText(module.getTitle());
+        //Set Code
+        ((TextView)v2.findViewById(R.id.module_code)).setText(module.getCode());
+        //Set Lecturer
+        ((TextView)v2.findViewById(R.id.module_lecturer)).setText(module.getLecturer());
+
+        //Set the button to say update, rather than create
+        ((Button)v2.findViewById(R.id.module_create)).setText(R.string.edit_label);
+
+        //Remove loading spinner
+        view.removeAllViews();
+        //Add our view
+        view.addView(v2);
     }
 
 
@@ -95,6 +124,8 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
                              Bundle savedInstanceState) {
 
         this.inflater = inflater;
+
+        //Create frame layout that matches parent height and width
         view = new FrameLayout(getActivity());
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
@@ -106,22 +137,23 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
         //Show loading screen for edit
         if(edit) {
             v2 = inflater.inflate(R.layout.loading, view, false);
-        } else {
-            v2 = getMainView();
-        }
-
-        if(edit) {
             Log.v("FragmentEditModule", "Editing");
         } else {
+            v2 = getMainView();
             Log.v("FragmentEditModule", "Creating");
         }
+
+        //Return main view
         view.addView(v2);
         return view;
     }
 
+    //Get the main view, with the input boxes, and tell the button what to do
     private View getMainView() {
+        //Inflate view
         View mainView = inflater.inflate(R.layout.fragment_edit_module, view, false);
 
+        //Set Button Action
         Button button = (Button) mainView.findViewById(R.id.module_create);
         button.setOnClickListener(this);
 
@@ -130,10 +162,12 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
 
     @Override
     public void onClick(View v) {
+        //Send API Request
         api = new APIClass(getActivity(), new CreateEditCallback());
 
         HashMap<String, String> request = new HashMap<String, String>();
         request.put("method", "module");
+        //Change action and add moduleID if editing
         if(edit) {
             request.put("action", "edit");
             request.put("moduleid", Integer.toString(module.getId()));
@@ -155,8 +189,10 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
     private class CreateEditCallback implements OnTaskCompleted {
         @Override
         public void onTaskCompleted(JSONObject result) {
+            //If the fragment has been destroyed, do nothing
             if(!active) return;
 
+            //Get Response Status
             String status;
             try {
                 status = result.getString("status");
@@ -165,12 +201,14 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
                 return;
             }
 
+            //If successful
             if(status.equals("OK")) {
                 if (edit) {
                     Toast.makeText(getActivity(), "Edited", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getActivity(), "Created", Toast.LENGTH_LONG).show();
                     try {
+                        //Set Result, needed sometimes
                         int moduleId = result.getInt("moduleid");
                         Intent intent = new Intent();
                         intent.putExtra("moduleid", moduleId);
@@ -179,6 +217,7 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
                         e.printStackTrace();
                     }
                 }
+                //Finish this activity
                 getActivity().finish();
             }
         }
@@ -186,25 +225,12 @@ public class FragmentEditModule extends Fragment implements View.OnClickListener
 
     @Override
     public void onDestroy() {
+        //Make sure no internal functions respond after this has been destroyed
         active = false;
+        //Cancel the api if active
         if(api != null) {
             api.cancel(true);
         }
         super.onDestroy();
-    }
-
-    private void loadEdit() {
-        if(!active) return;
-
-        View v2 = getMainView();
-
-        ((TextView)v2.findViewById(R.id.module_title)).setText(module.getTitle());
-        ((TextView)v2.findViewById(R.id.module_code)).setText(module.getCode());
-        ((TextView)v2.findViewById(R.id.module_lecturer)).setText(module.getLecturer());
-
-        ((Button)v2.findViewById(R.id.module_create)).setText(R.string.edit_label);
-
-        view.removeAllViews();
-        view.addView(v2);
     }
 }
